@@ -1,0 +1,32 @@
+/* Demo styles */
+is-land,
+vanilla-web-component,
+lit-web-component,
+lit-other-web-component {
+  display: block;
+  padding: .5em;
+  margin: .5em 0;
+}
+is-land[on\:idle] {
+  display: inline-flex;
+  gap: .25em;
+  align-items: center;
+}
+is-land span {
+  display: inline-flex;
+  width: 2em;
+  margin: 0 .25em;
+}
+
+/* Demo loading states */
+.test-waiting {
+  outline: 2px solid lightblue;
+}
+.test-finish {
+  background-color: rgba(114, 233, 110, 0.2);
+  outline: 2px solid rgb(85, 173, 82);
+}
+.test-c-finish {
+  background-color: rgba(112, 110, 233, 0.2);
+  outline: 2px solid rgb(97, 82, 173);
+}

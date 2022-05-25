@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<link rel="stylesheet" href="demo-styles.css">
+
+		<script type="importmap">
+		{
+			"imports": {
+				"@11ty/island": "/islands.js",
+				"lit": "https://unpkg.com/lit@latest/index.js",
+				"@lit/reactive-element": "https://unpkg.com/@lit/reactive-element@latest/reactive-element.js",
+				"lit-html": "https://unpkg.com/lit-html@latest/lit-html.js",
+				"lit-element/lit-element.js": "https://unpkg.com/lit-element@latest/lit-element.js"
+			}
+		}
+		</script>
+		<script type="module">
+		import "@11ty/island";
+
+		import "./vanilla-web-component.js"; // eager
+		</script>
+	</head>
+	<body>
+		<h1><a href="/demo.html">is-land</a> using Lit</h1>
+
+		<h2>Standalone</h2>
+
+		<p>This is a control to make sure the component initializes as expected without an island.</p>
+
+		<vanilla-web-component>Vanilla web component</vanilla-web-component>
+
+		<hr style="height: 100vh">
+
+		<p>You can use `dependency="./lit-component.js"` or `&lt;script init&gt;`:</p>
+
+		<is-land type="lit" on:visible dependency="./lit-component.js">
+			This is a lit component: <lit-web-component name="Zach"></lit-web-component>
+		</is-land>
+
+		<is-land type="lit" on:visible id="lit-test">
+			This is a lit component: <lit-other-web-component name="Friend"></lit-other-web-component>
+
+			<script type="module" init>
+			import { ready } from "@11ty/island";
+
+			let el = document.getElementById("lit-test");
+
+			const {html, css, LitElement} = await ready(el);
+
+			customElements.define('lit-other-web-component', class extends LitElement {
+				// encapsulated styles!
+				static styles = css`p { color: blue }`;
+			
+				static properties = {
+					name: {type: String},
+				};
+
+				render() {
+					this.classList.add("test-c-finish");
+					return html`<p>Hello, ${this.name || "Stranger"}!</p>`;
+				}
+			});
+			</script>
+		</is-land>
+	</body>
+</html>
