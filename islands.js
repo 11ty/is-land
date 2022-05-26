@@ -1,4 +1,4 @@
-const DEFAULT_TAG_NAME = "is-land";
+const TAG_NAME = "is-land";
 
 class Island extends HTMLElement {
   constructor(root) {
@@ -13,6 +13,8 @@ class Island extends HTMLElement {
       type: "type",
       init: "on",
       componentScript: "dependency",
+      forcedFallback: "fallback",
+      childNodeInit: "data-is-land"
     };
 
     this.conditionMap = {
@@ -43,13 +45,47 @@ class Island extends HTMLElement {
   }
 
   static async ready(el) {
-    let parents = Island.getParents(el, DEFAULT_TAG_NAME);
+    let parents = Island.getParents(el, TAG_NAME);
     let imports = await Promise.all(parents.map(el => el.wait()));
 
     // return innermost module import
     if(imports.length) {
       return imports[0];
     }
+  }
+
+  async forceFallback() {
+    // Reverse here as a cheap way to get the deepest nodes first
+    let components = Array.from(this.querySelectorAll(":not(:defined)")).reverse();
+    let promises = [];
+
+    // with thanks to https://gist.github.com/cowboy/938767
+    for(let node of components) {
+      if(!node.isConnected) {
+        continue;
+      }
+
+      // assign this before we remove it from the document
+      let readyP = Island.ready(node);
+
+      // remove from document to prevent web component init
+      let cloned = document.createElement("is-land-waiting--" + node.localName);
+      let children = Array.from(node.childNodes);
+      for(let child of children) {
+        cloned.append(child); // Keep the *same* child nodes, clicking on a details->summary child should keep the state of that child
+      }
+      node.replaceWith(cloned);
+
+      promises.push(readyP.then(() => {
+        // restore children (not cloned)
+        for(let child of Array.from(cloned.childNodes)) {
+          node.append(child);
+        }
+        cloned.replaceWith(node);
+      }));
+    }
+
+    return promises;
   }
 
   wait() {
@@ -67,11 +103,16 @@ class Island extends HTMLElement {
   }
 
   async connectedCallback() {
+    // Keep fallback content without initializing the components
+    if(this.getAttribute(this.attrs.forcedFallback) === "auto") {
+      await this.forceFallback();
+    }
+
     this.loading = this.getAttribute(this.attrs.loading);
     this.frameworkType = this.getAttribute(this.attrs.type);
 
     // if any ancestor has `on=""`
-    let selector = Object.keys(this.conditionMap).map(key => `${DEFAULT_TAG_NAME}[on\\:${key}]`).join(",");
+    let selector = Object.keys(this.conditionMap).map(key => `${TAG_NAME}[on\\:${key}]`).join(",");
     let hasAnyInitCondition = Island.getParents(this, selector).length > 0;
 
     // even with an init condition, you can bypass with `loading="eager"` to load dependencies up front
@@ -98,7 +139,11 @@ class Island extends HTMLElement {
   }
 
   hasInitScript() {
-    return this.querySelector(`:scope > script[init]`);
+    return this.querySelector(`:scope > script[${this.attrs.childNodeInit}]`);
+  }
+
+  getTemplates() {
+    return this.querySelectorAll(`:scope template[${this.attrs.childNodeInit}]`);
   }
 
   async hydrate() {
@@ -113,7 +158,7 @@ class Island extends HTMLElement {
         conditions.push(this.conditionMap[condition](attrs[condition], this));
       }
     }
-    // Loading conditions must finish before additional dependencies are loaded
+    // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
     let mods = [];
@@ -131,8 +176,16 @@ class Island extends HTMLElement {
     }
 
     let [mod, componentInitFn] = await Promise.all(mods);
-    if(componentInitFn?.default && typeof componentInitFn.default === "function") {
+
+    // run the async function returned from the dependency script
+    if(componentInitFn && componentInitFn.default && typeof componentInitFn.default === "function") {
       await componentInitFn.default(mod);
+    }
+
+    // replace <template> with the live content
+    let tmpls = this.getTemplates();
+    for(let node of tmpls) {
+      node.replaceWith(node.content);
     }
 
     // do nothing if has script[init], will init manually in script via ready()
@@ -203,14 +256,14 @@ class Conditions {
   }
 
   static waitForInteraction(eventOverrides, el) {
-    let events = ["focusin", "click", "touchstart"];
+    let events = ["click", "touchstart"];
     // event overrides e.g. on:interaction="mouseenter"
     if(eventOverrides) {
       events = (eventOverrides || "").split(",");
     }
 
     return new Promise(resolve => {
-      function resolveFn() {
+      function resolveFn(e) {
         resolve();
 
         // cleanup the other event handlers
@@ -253,13 +306,13 @@ class Conditions {
     }
 
     // dangly promise
-    return new Promise(resolve => {});
+    return new Promise(() => {});
   }
 }
 
 // Should this auto define? Folks can redefine later using { component } export
 if("customElements" in window) {
-  window.customElements.define(DEFAULT_TAG_NAME, Island);
+  window.customElements.define(TAG_NAME, Island);
 }
 
 // To redefine as a different component

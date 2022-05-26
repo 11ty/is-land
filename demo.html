@@ -15,15 +15,18 @@
 				// Vue
 				"petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js",
 				"vue": "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js" // remove .prod to use dev version
-
 			}
 		}
 		</script>
 		<script type="module">
 		import "@11ty/island";
-
+		
+		
 		// You can directly import dependencies (for eager loading)
 		// or for lazy loaded islands put dependencies into `dependency="./vanilla-web-component"`
+		import "./thirdparty-web-component.js";
+
+		// alternatively, you can `import { ready } from "@11ty/island";` and `await ready(el)` in your component code
 		import "./vanilla-web-component.js";
 		</script>
 	</head>
@@ -38,7 +41,12 @@
 			<li>Zero dependencies by default</li>
 			<li>Small footprint</li>
 			<li>Not tightly coupled to a server framework or site generator tool.</li>
-			<li>Examples using Web Components, Vue, and <code>petite-vue</code> (shown below). See also: <a href="demo-lit.html">Lit</a></li>
+		</ul>
+
+		<p>Examples:</p>
+		<ul>
+			<li>Web Components, Vue, and <code>petite-vue</code> (on this page)</li>
+			<li><a href="demo-lit.html">Lit</a></li>
 		</ul>
 
 		<h2>Standalone</h2>
@@ -70,13 +78,15 @@
 				<span v-html="count">0</span>
 			</div>
 
-			<script type="module" init>
+			<script type="module" data-is-land>
 			import { createApp } from "petite-vue";
 			createApp({
 				count: 0,
 			}).mount("#petite-vue-app")
 			</script>
 		</is-land>
+
+		<h2>Scroll down</h2>
 
 		<hr style="height: 100vh">
 
@@ -100,7 +110,7 @@
 				<span v-html="count">0</span>
 			</div>
 
-			<script type="module" init>
+			<script type="module" data-is-land>
 				import { ready } from "@11ty/island";
 
 				let app = document.getElementById("petite-vue-app-visible");
@@ -112,6 +122,8 @@
 			</script>
 		</is-land>
 
+		<h3>Lazy loaded Vue.js</h3>
+
 		<p>This is the first full Vue component (and it is off-viewport) so the library code is also lazy loaded. You can swap this behavior and eagerly load the library code by adding <code>loading="eager"</code> on any individual island.</p>
 
 		<is-land type="vue" on:visible>
@@ -122,7 +134,7 @@
 				<span v-html="count">0</span>
 			</div>
 
-			<script type="module" init>
+			<script type="module" data-is-land>
 				import { ready } from "@11ty/island";
 				let app = document.getElementById("vue-app");
 				let { createApp } = await ready(app);
@@ -135,7 +147,23 @@
 			</script>
 		</is-land>
 
-		<h2><code>on:visible</code> group</h2>
+		<h3>Works with &lt;details&gt;</h3>
+		<details>
+			<summary>The child content in this &lt;details&gt; will not be initialized until you open it</summary>
+
+			<is-land on:visible>
+				<vanilla-web-component>Vanilla web component</vanilla-web-component>
+
+				<is-land type="petite-vue" v-scope="{ count: 0 }">
+					Petite Vue:
+					<button @click="count++">⬆️</button>
+					<button @click="count--">⬇️</button>
+					<span v-html="count">0</span>
+				</is-land>
+			</is-land>
+		</details>
+
+		<h2><code>on:visible</code> nested group</h2>
 
 		<p>Parent island has <code>on:visible</code> but none of the child components have an explicit loading condition. They will inherit the loading conditions of all of the ancestors.</p>
 
@@ -148,34 +176,6 @@
 				<button @click="count--">⬇️</button>
 				<span v-html="count">0</span>
 			</is-land>
-		</is-land>
-
-		<h2><code>on:interaction</code> group</h2>
-
-		<p>Requires one of: touchstart, click, focusin.</p>
-		<p>Note here that we used one parent island to group both of these components, and interacting with either initializes the whole group.</p>
-
-		<is-land on:interaction>
-			<is-land type="petite-vue" v-scope="{ count: 0 }">
-				Petite Vue:
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</is-land>
-
-			<vanilla-web-component>Vanilla web component</vanilla-web-component>
-		</is-land>
-
-		<p>Use <code>on:interaction="mouseenter,focusin"</code> to override/change the event types.</p>
-		<is-land on:interaction="mouseenter,focusin">
-			<is-land type="petite-vue" v-scope="{ count: 0 }">
-				Petite Vue:
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</is-land>
-
-			<vanilla-web-component>Vanilla web component</vanilla-web-component>
 		</is-land>
 
 		<h2><code>on:idle</code></h2>
@@ -253,7 +253,36 @@
 			<span v-html="count">0</span>
 		</is-land>
 
+		<h2><code>on:interaction</code> nested group</h2>
+
+		<p>Requires one of: touchstart, click.</p>
+		<p>Note here that we used one parent island to group both of these components, and interacting with either initializes the whole group.</p>
+
+		<is-land on:interaction>
+			<is-land type="petite-vue" v-scope="{ count: 0 }">
+				Petite Vue:
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</is-land>
+
+			<vanilla-web-component>Vanilla web component</vanilla-web-component>
+		</is-land>
+
+		<p>Use <code>on:interaction="mouseenter,focusin"</code> to override the events.</p>
+		<is-land on:interaction="mouseenter,focusin">
+			<is-land type="petite-vue" v-scope="{ count: 0 }">
+				Petite Vue:
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</is-land>
+
+			<vanilla-web-component>Vanilla web component</vanilla-web-component>
+		</is-land>
+
 		<h2><code>on:media</code></h2>
+		<h3>Viewport size</h3>
 		<p><code>on:media="(min-width: 64em)"</code></p>
 		<p>This only runs when the viewport is greater than or equal to 1024px wide: <code>on:media="(min-width: 64em)"</code></p>
 		<is-land type="petite-vue" on:media="(min-width: 64em)" v-scope="{ count: 0 }">
@@ -271,9 +300,16 @@
 			<span v-html="count">0</span>
 		</is-land>
 
+		<h3>Reduced Motion</h3>
 		<p>This runs when the user prefers reduced motion: <code>on:media="(prefers-reduced-motion)"</code></p>
-
+		
 		<is-land on:media="(prefers-reduced-motion)">
+			<vanilla-web-component>Vanilla web component</vanilla-web-component>
+		</is-land>
+
+		<p>This runs when does not have a reduced motion preference: <code>on:media="(prefers-reduced-motion: no-preference)"</code></p>
+
+		<is-land on:media="(prefers-reduced-motion: no-preference)">
 			<vanilla-web-component>Vanilla web component</vanilla-web-component>
 		</is-land>
 
@@ -289,6 +325,75 @@
 
 		<is-land on:save-data="false">
 			<vanilla-web-component>Vanilla web component</vanilla-web-component>
+		</is-land>
+
+		<h2>Fallback content</h2>
+
+		<p>If you put child content in a &lt;template&gt; it will be JavaScript-only (no fallback). This doesn’t need to be all or nothing. You can mix and match &lt;template&gt; with other progressively enhanced content in the island.</p>
+
+		<p>In this example, disabling JavaScript will only show the content in the vanilla web component.</p>
+
+		<is-land on:visible>
+			<vanilla-web-component>Vanilla web component (available without JS)</vanilla-web-component>
+			
+			<template data-is-land>
+				<is-land type="petite-vue" v-scope="{ count: 0 }">
+					Petite Vue (in a JS-only &lt;template&gt;):
+					<button @click="count++">⬆️</button>
+					<button @click="count--">⬇️</button>
+					<span v-html="count">0</span>
+				</is-land>
+			</template>
+
+			<vanilla-web-component>
+				Vanilla web component (available without JS)
+
+				<template data-is-land>
+					<is-land type="petite-vue" v-scope="{ count: 0 }">
+						Petite Vue (nested in the web component in a JS-only &lt;template&gt;):
+						<button @click="count++">⬆️</button>
+						<button @click="count--">⬇️</button>
+						<span v-html="count">0</span>
+					</is-land>
+				</template>
+			</vanilla-web-component>
+		</is-land>
+
+		<h3>Use <code>fallback="auto"</code> with third-party components</h3>
+
+		<p>When using third party components, you aren’t able to make changes to the component code but still want lazy initialization! While you could put these into a &lt;template&gt; as shown above to hide fallback content, using <code>fallback="auto"</code> allows both lazy initialization and fallback content.</p>
+
+		<is-land on:visible fallback="auto">
+			<thirdparty-web-component>
+				Bare bones web component 1a
+				<thirdparty-web-component>Bare bones web component 1b</thirdparty-web-component>
+				Bare bones web component 1c
+				<thirdparty-web-component>Bare bones web component 1d</thirdparty-web-component>
+			</thirdparty-web-component>
+			<p>Testing A</p>
+			<thirdparty-web-component>Bare bones web component 2</thirdparty-web-component>
+			<p>Testing B</p>
+			<thirdparty-web-component>Bare bones web component 3</thirdparty-web-component>
+		</is-land>
+
+		<h4><code>fallback="auto" on:interaction</code></h4>
+
+		<p>In this example we use a third party web component (<a href="https://github.com/zachleat/details-utils">&lt;details-utils&gt;</a>) without any code changes made to the component. Note that children here are maintained before and after initialization (e.g. click the summary to expand before init and it keeps that state after init).</p>
+	
+		<is-land on:interaction fallback="auto" dependency="./lib/details-utils.js">
+			<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+
+			<details-utils close-click-outside>
+				<details open>
+					<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
+					<p>Note that interacting with content inside of the menu works without closing the menu.</p>
+				</details>
+
+				<details>
+					<summary>Toggle Menu (Default closed: will toggle before island initializes)</summary>
+					<p>Note that interacting with content inside of the menu works without closing the menu.</p>
+				</details>
+			</details-utils>
 		</is-land>
 	</body>
 </html>

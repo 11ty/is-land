@@ -11,17 +11,21 @@
 		{
 			"imports": {
 				"@11ty/island": "/islands.js",
-				"lit": "https://unpkg.com/lit@latest/index.js",
-				"@lit/reactive-element": "https://unpkg.com/@lit/reactive-element@latest/reactive-element.js",
-				"lit-html": "https://unpkg.com/lit-html@latest/lit-html.js",
-				"lit-element/lit-element.js": "https://unpkg.com/lit-element@latest/lit-element.js"
+				"lit": "https://ga.jspm.io/npm:lit@2.2.5/index.js"
+			},
+			"scopes": {
+				"https://ga.jspm.io/": {
+					"@lit/reactive-element": "https://ga.jspm.io/npm:@lit/reactive-element@1.3.2/development/reactive-element.js",
+					"lit-element/lit-element.js": "https://ga.jspm.io/npm:lit-element@3.2.0/development/lit-element.js",
+					"lit-html": "https://ga.jspm.io/npm:lit-html@2.2.5/development/lit-html.js"
+				}
 			}
 		}
 		</script>
 		<script type="module">
 		import "@11ty/island";
 
-		import "./vanilla-web-component.js"; // eager
+		import "./vanilla-web-component.js"; // eager, probably not typical
 		</script>
 	</head>
 	<body>
@@ -33,18 +37,24 @@
 
 		<vanilla-web-component>Vanilla web component</vanilla-web-component>
 
+		<h2>Scroll down</h2>
+
 		<hr style="height: 100vh">
 
 		<p>You can use `dependency="./lit-component.js"` or `&lt;script init&gt;`:</p>
 
 		<is-land type="lit" on:visible dependency="./lit-component.js">
-			This is a lit component: <lit-web-component name="Zach"></lit-web-component>
+			<template data-is-land>
+				This is a lit component: <lit-web-component name="Zach"></lit-web-component>
+			</template>
 		</is-land>
 
 		<is-land type="lit" on:visible id="lit-test">
-			This is a lit component: <lit-other-web-component name="Friend"></lit-other-web-component>
+			<template data-is-land>
+				This is a lit component: <lit-other-web-component name="Friend"></lit-other-web-component>
+			</template>
 
-			<script type="module" init>
+			<script type="module" data-is-land>
 			import { ready } from "@11ty/island";
 
 			let el = document.getElementById("lit-test");
@@ -53,7 +63,7 @@
 
 			customElements.define('lit-other-web-component', class extends LitElement {
 				// encapsulated styles!
-				static styles = css`p { color: blue }`;
+				static styles = css`p { color: blue; margin: 0; }`;
 			
 				static properties = {
 					name: {type: String},

@@ -5,7 +5,7 @@ export default async function({html, css, LitElement}) {
 
   customElements.define('lit-web-component', class extends LitElement {
     // encapsulated styles!
-    static styles = css`p { color: blue }`;
+    static styles = css`p { color: blue; margin: 0; }`;
   
     static properties = {
       name: {type: String},
