@@ -10,7 +10,7 @@ class Island extends HTMLElement {
       import: "import",
       fallback: "fallback",
       scriptType: "module/island",
-      childNodeInit: "data-island"
+      template: "data-island"
     };
 
     this.conditionMap = {
@@ -134,7 +134,24 @@ class Island extends HTMLElement {
   }
 
   getTemplates() {
-    return this.querySelectorAll(`:scope template[${this.attrs.childNodeInit}]`);
+    return this.querySelectorAll(`:scope template[${this.attrs.template}]`);
+  }
+
+  replaceTemplates(templates) {
+    // replace <template> with the live content
+    for(let node of templates) {
+      // get rid of the rest of the content on the island
+      if(node.getAttribute(this.attrs.template) === "replace") {
+        let children = Array.from(this.childNodes);
+        for(let child of children) {
+          this.removeChild(child);
+        }
+        this.appendChild(node.content);
+        break;
+      } else {
+        node.replaceWith(node.content);
+      }
+    }
   }
 
   async hydrate() {
@@ -152,11 +169,7 @@ class Island extends HTMLElement {
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
-    // replace <template> with the live content
-    let tmpls = this.getTemplates();
-    for(let node of tmpls) {
-      node.replaceWith(node.content);
-    }
+    this.replaceTemplates(this.getTemplates());
 
     let mod;
     // [dependency="my-component-code.js"]
