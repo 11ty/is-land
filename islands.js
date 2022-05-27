@@ -5,17 +5,12 @@ class Island extends HTMLElement {
     super();
     this.root = root || window;
 
-    // TODO Testing only
-    this.classList.add("test-waiting");
-
     this.attrs = {
-      loading: "loading",
-      type: "type",
-      init: "on",
-      componentScript: "script",
+      autoInitType: "autoinit",
+      import: "import",
       forcedFallback: "fallback",
       scriptType: "module/island",
-      childNodeInit: "data-is-land"
+      childNodeInit: "data-island"
     };
 
     this.conditionMap = {
@@ -27,7 +22,6 @@ class Island extends HTMLElement {
     };
 
     // Internal promises
-    this.modules = {};
     this.ready = new Promise((resolve, reject) => {
       this.readyResolve = resolve;
       this.readyReject = reject;
@@ -131,34 +125,9 @@ class Island extends HTMLElement {
       await this.forceFallback();
     }
 
-    this.loading = this.getAttribute(this.attrs.loading);
-    this.frameworkType = this.getAttribute(this.attrs.type);
-
-    // if any ancestor has `on=""`
-    let selector = Object.keys(this.conditionMap).map(key => `${TAG_NAME}[on\\:${key}]`).join(",");
-    let hasAnyInitCondition = Island.getParents(this, selector).length > 0;
-
-    // even with an init condition, you can bypass with `loading="eager"` to load dependencies up front
-    if(!hasAnyInitCondition || this.loading === "eager") {
-      await this.loadDependencies();
-    }
+    this.autoInitType = this.getAttribute(this.attrs.autoInitType);
 
     await this.hydrate();
-  }
-
-  async loadDependencies() {
-    if(!this.frameworkType) {
-      return;
-    }
-
-    // Load library once per framework
-    if(!this.modules[this.frameworkType]) {
-      // TODO use local bundle, maybe with import maps and a deep url package ref?
-      // Compatible with import maps
-      this.modules[this.frameworkType] = import(this.frameworkType);
-    }
-
-    return this.modules[this.frameworkType];
   }
 
   getInitScripts() {
@@ -184,31 +153,18 @@ class Island extends HTMLElement {
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
-    let mods = [];
-    // hasn’t yet loaded deps
-    if(!this.modules[this.frameworkType]) {
-      mods.push(this.loadDependencies());
-    } else {
-      mods.push(this.modules[this.frameworkType]);
-    }
-
-    // [dependency="my-component-code.js"]
-    let componentScript = this.getAttribute(this.attrs.componentScript);
-    if(componentScript) {
-      mods.push(import(componentScript));
-    }
-
-    let [mod, componentInitFn] = await Promise.all(mods);
-
-    // run the async function returned from the [dependency="my-component-code.js"] script
-    if(componentInitFn && componentInitFn.default && typeof componentInitFn.default === "function") {
-      await componentInitFn.default(mod);
-    }
-
     // replace <template> with the live content
     let tmpls = this.getTemplates();
     for(let node of tmpls) {
       node.replaceWith(node.content);
+    }
+
+    let mod;
+    // [dependency="my-component-code.js"]
+    let importScript = this.getAttribute(this.attrs.import);
+    if(importScript) {
+      // we could resolve import maps here manually but you’d still have to use the full URL in your script’s import anyway
+      mod = await import(importScript);
     }
 
     // do nothing if has script[type="module/island"], will init manually in script via ready()
@@ -219,20 +175,23 @@ class Island extends HTMLElement {
       for(let old of initScripts) {
         let script = document.createElement("script");
         script.setAttribute("type", "module");
+        // Idea: *could* modify this content to retrieve access to the modules therein
         script.textContent = old.textContent;
         old.replaceWith(script);
       }
-    } else {
-      // TODO this feels too one-off—remove?
-      if(this.frameworkType === "petite-vue" || this.frameworkType === "vue") {
+    } else if(mod) {
+      let autoInitType = this.autoInitType || importScript;
+      if(autoInitType === "petite-vue" || autoInitType === "vue") {
         mod.createApp().mount(this);
       }
     }
-
-    this.readyResolve(this.modules[this.frameworkType]);
+    
+    // When using <script type="module/island"> that readyResolve will fire before any internal imports finish there
+    this.readyResolve({
+      import: mod
+    });
 
     // TODO Testing only
-    this.classList.remove("test-waiting");
     this.classList.add("test-finish");
     if(!window.componentCount) {
       window.componentCount = 0;

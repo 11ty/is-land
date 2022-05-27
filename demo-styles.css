@@ -22,6 +22,7 @@ lit-other-web-component {
   display: block;
   padding: .5em;
   margin: .5em 0;
+  outline: 2px solid lightblue;
 }
 is-land:last-child,
 vanilla-web-component:last-child,
@@ -49,9 +50,6 @@ is-land span {
 }
 
 /* Demo loading states */
-.test-waiting {
-  outline: 2px solid lightblue;
-}
 .test-finish {
   display: block;
   background-color: rgba(114, 233, 110, 0.2);

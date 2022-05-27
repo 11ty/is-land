@@ -1,4 +1,4 @@
-import { ready } from "@11ty/island";
+import { ready } from "/islands.js";
 
 class MyWebComponent extends HTMLElement {
   async connectedCallback() {

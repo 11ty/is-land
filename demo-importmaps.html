@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<link rel="stylesheet" href="demo-styles.css">
+
+		<script type="importmap">
+		{
+			"imports": {
+				// Vue
+				"petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js",
+				"vue": "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js" // remove .prod to use dev version
+			}
+		}
+		</script>
+
+		<script type="module">
+		import "./islands.js";
+
+		// You can directly import dependencies (for eager loading)
+		// or for lazy loaded islands put dependencies into `import="./vanilla-web-component"`
+		import "./thirdparty-web-component.js";
+		</script>
+	</head>
+	<body>
+		<h1><a href="/demo.html">is-land</a> using Import Maps</h1>
+
+		<h2>Standalone</h2>
+
+		<p>This is a control to make sure the component initializes as expected without an island.</p>
+
+		<thirdparty-web-component>Bare bones web component</thirdparty-web-component>
+
+		<h2>Scroll down</h2>
+
+		<hr style="height: 100vh">
+
+		<h2><code>on:visible</code></h2>
+
+		<is-land import="petite-vue" on:visible v-scope="{ count: 0 }">
+			Petite Vue:
+			<button @click="count++">⬆️</button>
+			<button @click="count--">⬇️</button>
+			<span v-html="count">0</span>
+		</is-land>
+
+		<!-- You can add `import="petite-vue"` here if you want the import to finish before the component is declared “ready” -->
+		<is-land on:visible>
+			<div id="petite-vue-app-visible">
+				Petite Vue (using an inline script for extra init code):
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</div>
+
+			<script type="module/island">
+				import { createApp } from "petite-vue";
+
+				createApp({
+					count: 0,
+				}).mount("#petite-vue-app-visible")
+			</script>
+		</is-land>
+
+		<h3>Lazy loaded Vue.js</h3>
+
+		<p>This is the first full Vue component (and it is off-viewport) so the library code is also lazy loaded. You can swap this behavior and eagerly load the library code by adding <code>loading="eager"</code> on any individual island.</p>
+
+		<!-- You can add `import="vue"` here if you want the import to finish before the component is declared “ready” -->
+		<is-land on:visible>
+			<div id="vue-app">
+				Vue (using an inline script for extra init code):
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</div>
+
+			<script type="module/island">
+				import { createApp } from "vue";
+
+				createApp({
+					data() {
+						return { count: 0 };
+					}
+				}).mount("#vue-app")
+			</script>
+		</is-land>
+	</body>
+</html>
