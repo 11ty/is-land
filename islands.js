@@ -8,7 +8,7 @@ class Island extends HTMLElement {
     this.attrs = {
       autoInitType: "autoinit",
       import: "import",
-      forcedFallback: "fallback",
+      fallback: "fallback",
       scriptType: "module/island",
       childNodeInit: "data-island"
     };
@@ -51,15 +51,14 @@ class Island extends HTMLElement {
 
   async forceFallback() {
     let prefix = "is-island-waiting--";
-
-    let extraSelector = this.getAttribute(this.attrs.forcedFallback);
+    let extraSelector = this.fallback ? this.fallback : "";
     // Reverse here as a cheap way to get the deepest nodes first
     let components = Array.from(this.querySelectorAll(`:not(:defined)${extraSelector ? `,${extraSelector}` : ""}`)).reverse();
     let promises = [];
 
     // with thanks to https://gist.github.com/cowboy/938767
     for(let node of components) {
-      if(!node.isConnected) {
+      if(!node.isConnected || node.localName === TAG_NAME) {
         continue;
       }
 
@@ -120,12 +119,12 @@ class Island extends HTMLElement {
   }
 
   async connectedCallback() {
-    // Keep fallback content without initializing the components
-    if(this.hasAttribute(this.attrs.forcedFallback)) {
-      await this.forceFallback();
-    }
-
+    this.fallback = this.getAttribute(this.attrs.fallback)
     this.autoInitType = this.getAttribute(this.attrs.autoInitType);
+
+    // Keep fallback content without initializing the components
+    // TODO improvement: only run this for not-eager components?
+    await this.forceFallback();
 
     await this.hydrate();
   }

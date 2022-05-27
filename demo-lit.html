@@ -9,7 +9,7 @@
 
 		<script type="module">
 		import "./islands.js";
-		import "./thirdparty-web-component.js"; // eager, probably not typical
+		import "./vanilla-web-component.js"; // eager, probably not typical
 
 		// For testing
 		// import "./lit-component.js";
@@ -22,7 +22,7 @@
 
 		<p>This is a control to make sure the component initializes as expected without an island.</p>
 
-		<thirdparty-web-component>Bare bones web component</thirdparty-web-component>
+		<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
 
 		<h2>Scroll down</h2>
 
@@ -32,11 +32,11 @@
 
 		<is-land on:visible import="./lit-component.js">
 			This is a lit component:
-			<lit-web-component name="Zach">Fallback content!</lit-web-component>
+			<lit-web-component class="demo-component" name="Zach">Fallback content!</lit-web-component>
 		</is-land>
 
 		<is-land on:visible id="lit-test">
-			This is a lit component: <lit-other-web-component name="Friend">Fallback content!</lit-other-web-component>
+			This is a lit component: <lit-other-web-component class="demo-component" name="Friend">Fallback content!</lit-other-web-component>
 
 			<script type="module/island">
 			import {html, css, LitElement} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";

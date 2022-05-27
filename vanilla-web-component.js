@@ -1,9 +1,10 @@
-import { ready } from "/islands.js";
+// Programmatic usage
+// import { ready } from "/islands.js";
 
-class MyWebComponent extends HTMLElement {
+class VanillaWebComponent extends HTMLElement {
   async connectedCallback() {
-    // waiting to lazy load
-    await ready(this);
+    // Programmatic API: waiting to lazy load
+    // await ready(this);
 
     // ready to go
     this.classList.add("test-c-finish");
@@ -11,5 +12,5 @@ class MyWebComponent extends HTMLElement {
 }
 
 if("customElements" in window) {
-  customElements.define("vanilla-web-component", MyWebComponent);
+  customElements.define("vanilla-web-component", VanillaWebComponent);
 }
