@@ -1,6 +1,6 @@
-const TAG_NAME = "is-land";
-
 class Island extends HTMLElement {
+  static tagName = "is-land";
+
   constructor(root) {
     super();
     this.root = root || window;
@@ -40,7 +40,7 @@ class Island extends HTMLElement {
   }
 
   static async ready(el) {
-    let parents = Island.getParents(el, TAG_NAME);
+    let parents = Island.getParents(el, Island.tagName);
     let imports = await Promise.all(parents.map(el => el.wait()));
 
     // return innermost module import
@@ -58,7 +58,7 @@ class Island extends HTMLElement {
 
     // with thanks to https://gist.github.com/cowboy/938767
     for(let node of components) {
-      if(!node.isConnected || node.localName === TAG_NAME) {
+      if(!node.isConnected || node.localName === Island.tagName) {
         continue;
       }
 
@@ -185,7 +185,7 @@ class Island extends HTMLElement {
       }
     }
     
-    // When using <script type="module/island"> that readyResolve will fire before any internal imports finish there
+    // When using <script type="module/island"> `readyResolve` will fire before any internal imports finish!
     this.readyResolve({
       import: mod
     });
@@ -303,7 +303,7 @@ class Conditions {
 
 // Should this auto define? Folks can redefine later using { component } export
 if("customElements" in window) {
-  window.customElements.define(TAG_NAME, Island);
+  window.customElements.define(Island.tagName, Island);
 }
 
 // To redefine as a different component
