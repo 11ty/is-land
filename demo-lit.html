@@ -26,6 +26,9 @@
 		import "@11ty/island";
 
 		import "./vanilla-web-component.js"; // eager, probably not typical
+
+		// For testing
+		// import "./lit-component.js";
 		</script>
 	</head>
 	<body>
@@ -41,25 +44,18 @@
 
 		<hr style="height: 100vh">
 
-		<p>You can use `dependency="./lit-component.js"` or `&lt;script init&gt;`:</p>
+		<p>You can use `script="./lit-component.js"` or `&lt;script type="module/island"&gt;`:</p>
 
-		<is-land type="lit" on:visible dependency="./lit-component.js">
-			<template data-is-land>
-				This is a lit component: <lit-web-component name="Zach"></lit-web-component>
-			</template>
+		<is-land type="lit" on:visible script="./lit-component.js">
+			This is a lit component:
+			<lit-web-component name="Zach">Fallback content!</lit-web-component>
 		</is-land>
 
 		<is-land type="lit" on:visible id="lit-test">
-			<template data-is-land>
-				This is a lit component: <lit-other-web-component name="Friend"></lit-other-web-component>
-			</template>
+			This is a lit component: <lit-other-web-component name="Friend">Fallback content!</lit-other-web-component>
 
-			<script type="module" data-is-land>
-			import { ready } from "@11ty/island";
-
-			let el = document.getElementById("lit-test");
-
-			const {html, css, LitElement} = await ready(el);
+			<script type="module/island">
+			import {html, css, LitElement} from "lit";
 
 			customElements.define('lit-other-web-component', class extends LitElement {
 				// encapsulated styles!

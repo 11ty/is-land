@@ -12,8 +12,9 @@ class Island extends HTMLElement {
       loading: "loading",
       type: "type",
       init: "on",
-      componentScript: "dependency",
+      componentScript: "script",
       forcedFallback: "fallback",
+      scriptType: "module/island",
       childNodeInit: "data-is-land"
     };
 
@@ -55,8 +56,11 @@ class Island extends HTMLElement {
   }
 
   async forceFallback() {
+    let prefix = "is-island-waiting--";
+
+    let extraSelector = this.getAttribute(this.attrs.forcedFallback);
     // Reverse here as a cheap way to get the deepest nodes first
-    let components = Array.from(this.querySelectorAll(":not(:defined)")).reverse();
+    let components = Array.from(this.querySelectorAll(`:not(:defined)${extraSelector ? `,${extraSelector}` : ""}`)).reverse();
     let promises = [];
 
     // with thanks to https://gist.github.com/cowboy/938767
@@ -68,21 +72,39 @@ class Island extends HTMLElement {
       // assign this before we remove it from the document
       let readyP = Island.ready(node);
 
-      // remove from document to prevent web component init
-      let cloned = document.createElement("is-land-waiting--" + node.localName);
-      let children = Array.from(node.childNodes);
-      for(let child of children) {
-        cloned.append(child); // Keep the *same* child nodes, clicking on a details->summary child should keep the state of that child
-      }
-      node.replaceWith(cloned);
+      // Special case for img just removes the src to preserve aspect ratio while loading
+      if(node.localName === "img") {
+        let attr = prefix + "src";
+        // remove
+        node.setAttribute(attr, node.getAttribute("src"));
+        node.setAttribute("src", `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>`);
 
-      promises.push(readyP.then(() => {
-        // restore children (not cloned)
-        for(let child of Array.from(cloned.childNodes)) {
-          node.append(child);
+        promises.push(readyP.then(() => {
+          // restore
+          node.setAttribute("src", node.getAttribute(attr));
+          node.removeAttribute(attr);
+        }));
+      } else { // everything else renames the tag
+        // remove from document to prevent web component init
+        let cloned = document.createElement(prefix + node.localName);
+        for(let attr of node.getAttributeNames()) {
+          cloned.setAttribute(attr, node.getAttribute(attr));
         }
-        cloned.replaceWith(node);
-      }));
+
+        let children = Array.from(node.childNodes);
+        for(let child of children) {
+          cloned.append(child); // Keep the *same* child nodes, clicking on a details->summary child should keep the state of that child
+        }
+        node.replaceWith(cloned);
+  
+        promises.push(readyP.then(() => {
+          // restore children (not cloned)
+          for(let child of Array.from(cloned.childNodes)) {
+            node.append(child);
+          }
+          cloned.replaceWith(node);
+        }));
+      }
     }
 
     return promises;
@@ -99,12 +121,13 @@ class Island extends HTMLElement {
         map[key] = this.getAttribute(`on:${key}`);
       }
     }
+
     return map;
   }
 
   async connectedCallback() {
     // Keep fallback content without initializing the components
-    if(this.getAttribute(this.attrs.forcedFallback) === "auto") {
+    if(this.hasAttribute(this.attrs.forcedFallback)) {
       await this.forceFallback();
     }
 
@@ -138,8 +161,8 @@ class Island extends HTMLElement {
     return this.modules[this.frameworkType];
   }
 
-  hasInitScript() {
-    return this.querySelector(`:scope > script[${this.attrs.childNodeInit}]`);
+  getInitScripts() {
+    return this.querySelectorAll(`:scope script[type="${this.attrs.scriptType}"]`);
   }
 
   getTemplates() {
@@ -169,7 +192,7 @@ class Island extends HTMLElement {
       mods.push(this.modules[this.frameworkType]);
     }
 
-    // dependency="my-component-code.js"
+    // [dependency="my-component-code.js"]
     let componentScript = this.getAttribute(this.attrs.componentScript);
     if(componentScript) {
       mods.push(import(componentScript));
@@ -177,7 +200,7 @@ class Island extends HTMLElement {
 
     let [mod, componentInitFn] = await Promise.all(mods);
 
-    // run the async function returned from the dependency script
+    // run the async function returned from the [dependency="my-component-code.js"] script
     if(componentInitFn && componentInitFn.default && typeof componentInitFn.default === "function") {
       await componentInitFn.default(mod);
     }
@@ -188,10 +211,20 @@ class Island extends HTMLElement {
       node.replaceWith(node.content);
     }
 
-    // do nothing if has script[init], will init manually in script via ready()
-    let hasInitScript = this.hasInitScript();
-    if(this.frameworkType === "petite-vue" || this.frameworkType === "vue") {
-      if(!hasInitScript) {
+    // do nothing if has script[type="module/island"], will init manually in script via ready()
+    let initScripts = this.getInitScripts();
+
+    if(initScripts.length > 0) {
+      // activate <script type="module/island">
+      for(let old of initScripts) {
+        let script = document.createElement("script");
+        script.setAttribute("type", "module");
+        script.textContent = old.textContent;
+        old.replaceWith(script);
+      }
+    } else {
+      // TODO this feels too one-off—remove?
+      if(this.frameworkType === "petite-vue" || this.frameworkType === "vue") {
         mod.createApp().mount(this);
       }
     }

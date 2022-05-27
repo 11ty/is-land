@@ -20,10 +20,9 @@
 		</script>
 		<script type="module">
 		import "@11ty/island";
-		
-		
+
 		// You can directly import dependencies (for eager loading)
-		// or for lazy loaded islands put dependencies into `dependency="./vanilla-web-component"`
+		// or for lazy loaded islands put dependencies into `script="./vanilla-web-component"`
 		import "./thirdparty-web-component.js";
 
 		// alternatively, you can `import { ready } from "@11ty/island";` and `await ready(el)` in your component code
@@ -78,8 +77,10 @@
 				<span v-html="count">0</span>
 			</div>
 
-			<script type="module" data-is-land>
+			<!-- because this is eagerly loaded we want `type="module"` instead of `type="module/island"` so the preload scanner can find it-->
+			<script type="module">
 			import { createApp } from "petite-vue";
+
 			createApp({
 				count: 0,
 			}).mount("#petite-vue-app")
@@ -102,7 +103,7 @@
 			<span v-html="count">0</span>
 		</is-land>
 
-		<is-land type="petite-vue" on:visible>    
+		<is-land type="petite-vue" on:visible>
 			<div id="petite-vue-app-visible">
 				Petite Vue (using an inline script for extra init code):
 				<button @click="count++">⬆️</button>
@@ -110,15 +111,12 @@
 				<span v-html="count">0</span>
 			</div>
 
-			<script type="module" data-is-land>
-				import { ready } from "@11ty/island";
-
-				let app = document.getElementById("petite-vue-app-visible");
-				let { createApp } = await ready(app);
+			<script type="module/island">
+				import { createApp } from "petite-vue";
 
 				createApp({
 					count: 0,
-				}).mount(app)
+				}).mount("#petite-vue-app-visible")
 			</script>
 		</is-land>
 
@@ -134,16 +132,14 @@
 				<span v-html="count">0</span>
 			</div>
 
-			<script type="module" data-is-land>
-				import { ready } from "@11ty/island";
-				let app = document.getElementById("vue-app");
-				let { createApp } = await ready(app);
-			
+			<script type="module/island">
+				import { createApp } from "vue";
+
 				createApp({
 					data() {
 						return { count: 0 };
 					}
-				}).mount(app)
+				}).mount("#vue-app")
 			</script>
 		</is-land>
 
@@ -359,12 +355,12 @@
 			</vanilla-web-component>
 		</is-land>
 
-		<h3>Use <code>fallback="auto"</code> with third-party components</h3>
+		<h3>Use <code>fallback</code> with third-party components</h3>
 
-		<p>When using third party components, you aren’t able to make changes to the component code but still want lazy initialization! While you could put these into a &lt;template&gt; as shown above to hide fallback content, using <code>fallback="auto"</code> allows both lazy initialization and fallback content.</p>
+		<p>When using third party components, you aren’t able to make changes to the component code but still want lazy initialization! While you could put these into a &lt;template&gt; as shown above to hide fallback content, using <code>fallback</code> allows both lazy initialization and fallback content.</p>
 
-		<is-land on:visible fallback="auto">
-			<thirdparty-web-component>
+		<is-land on:visible fallback>
+			<thirdparty-web-component custom-attribute some other attributes>
 				Bare bones web component 1a
 				<thirdparty-web-component>Bare bones web component 1b</thirdparty-web-component>
 				Bare bones web component 1c
@@ -376,11 +372,11 @@
 			<thirdparty-web-component>Bare bones web component 3</thirdparty-web-component>
 		</is-land>
 
-		<h4><code>fallback="auto" on:interaction</code></h4>
+		<h4><code>fallback on:interaction</code></h4>
 
 		<p>In this example we use a third party web component (<a href="https://github.com/zachleat/details-utils">&lt;details-utils&gt;</a>) without any code changes made to the component. Note that children here are maintained before and after initialization (e.g. click the summary to expand before init and it keeps that state after init).</p>
 	
-		<is-land on:interaction fallback="auto" dependency="./lib/details-utils.js">
+		<is-land on:interaction fallback script="./lib/details-utils.js">
 			<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
 			<details-utils close-click-outside>
@@ -394,6 +390,15 @@
 					<p>Note that interacting with content inside of the menu works without closing the menu.</p>
 				</details>
 			</details-utils>
+		</is-land>
+
+		<h4>Pass in a selector for to progressively enhance other elements (<code>fallback="img" on:interaction</code>)</h4>
+		<p>This example uses <code>on:interaction</code> so you need to interact with the island for the image to load. Note the aspect ratio before/after is preserved via the width/height attributes on the img.</p>
+		<is-land on:interaction fallback="img">
+			<form>
+				<button type="button">Button for interaction</button>
+			</form>
+			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
 		</is-land>
 	</body>
 </html>
