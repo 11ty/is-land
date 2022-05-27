@@ -1,9 +1,8 @@
 class Island extends HTMLElement {
   static tagName = "is-land";
 
-  constructor(root) {
+  constructor() {
     super();
-    this.root = root || window;
 
     this.attrs = {
       autoInitType: "autoinit",
@@ -319,7 +318,6 @@ if("customElements" in window) {
   window.customElements.define(Island.tagName, Island);
 }
 
-// To redefine as a different component
 export const component = Island;
 
 export const ready = Island.ready;
