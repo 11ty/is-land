@@ -233,6 +233,9 @@ class Conditions {
     });
   }
 
+  // TODO make sure this runs after all of the conditions have finished, otherwise it will
+  // finish way before the other lazy loaded promises and will be the same as a noop when
+  // on:interaction or on:visible finishes much later
   static waitForIdle() {
     let onload = new Promise(resolve => {
       if(document.readyState !== "complete") {
@@ -304,7 +307,8 @@ class Conditions {
   }
 
   static checkSaveData(expects) {
-    if("connection" in navigator && navigator.connection.saveData === (expects !== "false")) {
+    // return early if API does not exist
+    if(!("connection" in navigator) || navigator.connection.saveData === (expects !== "false")) {
       return Promise.resolve();
     }
 
