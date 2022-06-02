@@ -172,11 +172,29 @@ class Island extends HTMLElement {
 
     let mod;
     // [dependency="my-component-code.js"]
-    let importScript = this.getAttribute(this.attrs.import);
-    if(importScript) {
-      // we could resolve import maps here manually but you’d still have to use the full URL in your script’s import anyway
-      mod = await import(importScript);
+
+    // Use any attribute that starts with `import`
+    let imports = this.getAttributeNames().filter(attr => attr.startsWith(this.attrs.import));
+    let importPromises = [];
+    let importScript;
+
+    for(let importAttrName of imports) {
+      let script = this.getAttribute(importAttrName);
+      if(script) {
+        // we *could* resolve import maps here manually but you’d still have to use the full URL in your script type="module" import
+        // TODO use eleventy-esm-import-transform so that you *wouldn’t* have to use the full URL!
+        let p = import(script);
+        importPromises.push(p);
+
+        if(importAttrName === this.attrs.import) {
+          importScript = script;
+          mod = p;
+        }
+      }
     }
+
+    await Promise.all(importPromises);
+    mod = await mod;
 
     // do nothing if has script[type="module/island"], will init manually in script via ready()
     let initScripts = this.getInitScripts();
