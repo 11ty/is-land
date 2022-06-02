@@ -118,8 +118,11 @@ class Island extends HTMLElement {
   }
 
   async connectedCallback() {
+    
     this.fallback = this.getAttribute(this.attrs.fallback)
     this.autoInitType = this.getAttribute(this.attrs.autoInitType);
+
+    this.attachDeclarativeShadowRoot(this);
 
     // Keep fallback content without initializing the components
     // TODO improvement: only run this for not-eager components?
@@ -134,6 +137,23 @@ class Island extends HTMLElement {
 
   getTemplates() {
     return this.querySelectorAll(`:scope template[${this.attrs.template}]`);
+  }
+
+  // https://web.dev/declarative-shadow-dom/#polyfill
+  attachDeclarativeShadowRoot(root) {
+    if(HTMLTemplateElement.prototype.hasOwnProperty('shadowRoot')) {
+      return;
+    }
+
+    root.querySelectorAll("template[shadowroot]").forEach(template => {
+      const shadowRoot = template.parentNode.attachShadow({
+        mode: template.getAttribute("shadowroot")
+      });
+      shadowRoot.appendChild(template.content);
+      template.remove();
+
+      this.attachDeclarativeShadowRoot(shadowRoot);
+    });
   }
 
   replaceTemplates(templates) {

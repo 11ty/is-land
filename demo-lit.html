@@ -11,6 +11,9 @@
 		import "/islands.js";
 		import "/vanilla-web-component.js"; // eager, probably not typical
 
+		// https://github.com/lit/lit/tree/main/packages/labs/eleventy-plugin-lit#example-bootup-strategy
+		// This file is used to hydrate server rendered lit components
+		import "/lib/lit/experimental-hydrate-support.js";
 		</script>
 	</head>
 	<body>
@@ -55,6 +58,16 @@
 				}
 			});
 			</script>
+		</is-land>
+
+		<h2>Server-rendered Lit</h2>
+		<p>
+			A few notes on the Lit implementation:
+			1. The <a href="https://github.com/lit/lit/blob/main/packages/lit-element/src/experimental-hydrate-support.ts"><code>experimental-hydrate-support.js</code></a> file is needed to be loaded up front. I think this should be baked better into the core framework.
+			2. Full <a href="https://caniuse.com/declarative-shadow-dom">Declarative Shadow DOM support</a> is required to show any fallback content without JS.
+		</p>
+		<is-land on:visible import="/lib/lit/lit-component.js">
+			<lit-component name="World"></lit-component>
 		</is-land>
 	</body>
 </html>
