@@ -1,0 +1,32 @@
+{
+  "name": "@11ty/islands",
+  "version": "1.0.0",
+  "description": "",
+  "main": "islands.js",
+  "type": "module",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "compress": "terser islands.js -o islands.min.js --compress",
+    "start": "npx @11ty/eleventy --config=eleventy.cjs --serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/11ty/is-land.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/11ty/is-land/issues"
+  },
+  "homepage": "https://github.com/11ty/is-land#readme",
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.0-canary.11",
+    "@lit-labs/eleventy-plugin-lit": "^0.2.1",
+    "acorn": "^8.7.1"
+  },
+  "dependencies": {
+  }
+}

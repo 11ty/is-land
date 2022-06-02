@@ -191,6 +191,7 @@ class Island extends HTMLElement {
         old.replaceWith(script);
       }
     } else if(mod) {
+      // Fallback to `import=""` works better when import maps are available e.g. `import="petite-vue"`
       let autoInitType = this.autoInitType || importScript;
       if(autoInitType === "petite-vue" || autoInitType === "vue") {
         mod.createApp().mount(this);
