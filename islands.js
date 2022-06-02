@@ -49,7 +49,7 @@ class Island extends HTMLElement {
   }
 
   async forceFallback() {
-    let prefix = "is-island-waiting--";
+    let prefix = "is-land--";
     let extraSelector = this.fallback ? this.fallback : "";
     // Reverse here as a cheap way to get the deepest nodes first
     let components = Array.from(this.querySelectorAll(`:not(:defined)${extraSelector ? `,${extraSelector}` : ""}`)).reverse();
