@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<link rel="stylesheet" href="demo-styles.css">
+
+		<script type="module">
+		import "/islands.js";
+		import "/vanilla-web-component.js"; // eager, probably not typical
+		</script>
+	</head>
+	<body>
+		<h1><a href="/demo.html">is-land</a> using Alpine.js</h1>
+
+		<h2>Standalone</h2>
+
+		<p>This is a control to make sure the component initializes as expected without an island.</p>
+
+		<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
+
+		<h2>Scroll down</h2>
+
+		<hr style="height: 100vh">
+
+		<h2>Client-rendered Lit</h2>
+
+		<is-land on:visible id="lit-test" import="//unpkg.com/alpinejs">
+			<div x-data="{ count: 0 }">
+				Hello from Alpine.js!
+
+				<button @click="count++">⬆️</button> <button @click="count--">⬇️</button> <span x-text="count"></span>
+			</div>
+		</is-land>
+	</body>
+</html>
