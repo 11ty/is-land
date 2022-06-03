@@ -9,7 +9,8 @@ class Island extends HTMLElement {
       import: "import",
       fallback: "fallback",
       scriptType: "module/island",
-      template: "data-island"
+      template: "data-island",
+      ready: "ready",
     };
 
     this.conditionMap = {
@@ -203,8 +204,9 @@ class Island extends HTMLElement {
       import: mod
     });
 
+    this.setAttribute(this.attrs.ready, "");
+
     // TODO Testing only
-    this.classList.add("test-finish");
     if(!window.componentCount) {
       window.componentCount = 0;
     }

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<link rel="stylesheet" href="demo-styles.css">
+
+		<script type="module">
+		import "/islands.js";
+		import "/vanilla-web-component.js"; // eager, probably not typical
+		</script>
+	</head>
+	<body>
+		<h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fvuejs.org%2F/"
+			alt="IndieWeb avatar for https://vuejs.org/"
+			width="28"
+			height="28"
+			decoding="async"
+			loading="lazy"> Vue.js</h1>
+
+		<h2>Standalone</h2>
+
+		<p>This is a control to make sure the component initializes as expected without an island.</p>
+
+		<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
+
+		<h2>Scroll down</h2>
+
+		<hr style="height: 100vh">
+
+		<h2><code>on:visible</code></h2>
+
+		<h3>Client-rendered petite-vue</h3>
+
+		<is-land on:visible autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+
+		<is-land on:visible>
+			<div id="petite-vue-app">
+				Petite Vue (using an inline script for extra init code)
+				<template data-island>
+					<button @click="count++">⬆️</button>
+					<button @click="count--">⬇️</button>
+					<span v-html="count">0</span>
+				</template>
+			</div>
+
+			<!-- when using eagerly loaded islands, use `type="module"` instead of `type="module/island"` so the preload scanner can find it-->
+			<script type="module/island">
+			import { createApp } from "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js";
+
+			createApp({
+				count: 0,
+			}).mount("#petite-vue-app")
+			</script>
+		</is-land>
+
+		<h3>Client-rendered Vue.js</h3>
+
+		<p>This is the first full Vue component (and it is off-viewport) so the library code is also lazy loaded. You can swap this behavior and eagerly load the library code by adding <code>loading="eager"</code> on any individual island.</p>
+
+		<!-- You can add `import="https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js"` here if you want the import to finish before the component is declared “ready” -->
+		<is-land on:visible>
+			<div id="vue-app">
+				Vue (using an inline script for extra init code)
+				<template data-island>
+					<button @click="count++">⬆️</button>
+					<button @click="count--">⬇️</button>
+					<span v-html="count">0</span>
+				</template>
+			</div>
+
+			<script type="module/island">
+				import { createApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
+
+				createApp({
+					data() {
+						return { count: 0 };
+					}
+				}).mount("#vue-app")
+			</script>
+		</is-land>
+
+		<h3>Works with &lt;details&gt;</h3>
+		<details>
+			<summary>The child content in this &lt;details&gt; will not be initialized until you open it</summary>
+
+			<is-land on:visible autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
+				Petite Vue
+				<template data-island>
+					<button @click="count++">⬆️</button>
+					<button @click="count--">⬇️</button>
+					<span v-html="count">0</span>
+				</template>
+			</is-land>
+		</details>
+
+		<h2><code>on:idle</code></h2>
+
+		<p>In this example (under the right conditions) you might be able to see these petite-vue islands wait until the full Vue.js island finishes above (if both are visible)</p>
+
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
+			Petite Vue
+			<template data-island>
+				<button @click="count++">⬆️</button>
+				<button @click="count--">⬇️</button>
+				<span v-html="count">0</span>
+			</template>
+		</is-land>
+
+		<h2>Fallback content</h2>
+
+		<p>If you put child content in a &lt;template&gt; it will be JavaScript-only (no fallback). Use this to your advantage! You can mix and match &lt;template&gt; with other progressively enhanced content in the island.</p>
+
+		<is-land on:interaction="mouseenter,focusin">
+			<p><code>on:interaction</code>: Hover or focus to hydrate the island:</p>
+
+			<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
+				Petite Vue (count fallback content is shown, buttons require JS):
+				<template data-island>
+					<button @click="count++">⬆️</button>
+					<button @click="count--">⬇️</button>
+				</template>
+				<span v-html="count">0</span>
+			</is-land>
+
+			<template data-island>
+				<p>This is an island nested in a &lt;template&gt; (it *can* have its own loading conditions!):</p>
+
+				<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
+					Petite Vue (JS is required for fallback):
+					<template data-island>
+						<button @click="count++">⬆️</button>
+						<button @click="count--">⬇️</button>
+						<span v-html="count">0</span>
+					</template>
+				</is-land>
+			</template>
+		</is-land>
+	</body>
+</html>

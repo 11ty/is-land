@@ -7,7 +7,7 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.setServerOptions({
     domdiff: false,
-    enabled: false,
+    // enabled: false, // incompatible with the import maps example https://github.com/11ty/eleventy-dev-server/issues/31
   })
 
   eleventyConfig.addGlobalData("permalink", () => {

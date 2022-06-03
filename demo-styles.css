@@ -29,7 +29,8 @@ is-land:first-child,
 .demo-component:first-child {
   margin-top: 0;
 }
-is-land[on\:idle] {
+is-land[on\:idle],
+is-land[on\:idle][ready] {
   display: inline-flex;
   gap: .25em;
   align-items: center;
@@ -41,7 +42,7 @@ is-land span {
 }
 
 /* Demo loading states */
-.test-finish {
+is-land[ready] {
   display: block;
   background-color: rgba(114, 233, 110, 0.2);
   outline: 2px solid rgb(85, 173, 82);

@@ -38,11 +38,12 @@
 
 		<p>Examples:</p>
 		<ul>
-			<li>Web Components, Vue, and <code>petite-vue</code> (on this page)</li>
+			<li>Web Components (on this page)</li>
+			<li><a href="demo-vue.html">Vue (and petite-vue)</a></li>
 			<li><a href="demo-lit.html">Lit</a></li>
 			<li><a href="demo-preact.html">Preact</a></li>
 			<li><a href="demo-alpine.html">Alpine.js</a></li>
-			<li><a href="demo-importmaps.html">Using import maps to simplify import URLs</a> (this is a for-future-reference feature when <a href="https://caniuse.com/import-maps">browser support broadens</a>)
+			<li><em>Do not use: </em><a href="demo-importmaps.html">Using import maps to simplify import URLs</a>. This is for-future-reference when <a href="https://caniuse.com/import-maps">browser support broadens</a>.
 		</ul>
 
 		<h2>Standalone</h2>
@@ -74,37 +75,6 @@
 			<vanilla-web-component class="demo-component">Vanilla web component 3</vanilla-web-component>
 		</is-land>
 
-		<p>Vue</p>
-
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
-		</is-land>
-
-		<is-land>
-			<div id="petite-vue-app">
-				Petite Vue (using an inline script for extra init code)
-				<template data-island>
-					<button @click="count++">⬆️</button>
-					<button @click="count--">⬇️</button>
-					<span v-html="count">0</span>
-				</template>
-			</div>
-
-			<!-- because this is eagerly loaded we want `type="module"` instead of `type="module/island"` so the preload scanner can find it-->
-			<script type="module">
-			import { createApp } from "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js";
-
-			createApp({
-				count: 0,
-			}).mount("#petite-vue-app")
-			</script>
-		</is-land>
-
 		<h2>Scroll down</h2>
 
 		<hr style="height: 100vh">
@@ -114,76 +84,12 @@
 			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
 
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:visible v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
-		</is-land>
-
-		<!-- You can add `import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js"` here if you want the import to finish before the component is declared “ready” -->
-		<is-land on:visible>
-			<div id="petite-vue-app-visible">
-				Petite Vue (using an inline script for extra init code)
-				<template data-island>
-					<button @click="count++">⬆️</button>
-					<button @click="count--">⬇️</button>
-					<span v-html="count">0</span>
-				</template>
-			</div>
-
-			<script type="module/island">
-				import { createApp } from "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js";
-
-				createApp({
-					count: 0,
-				}).mount("#petite-vue-app-visible")
-			</script>
-		</is-land>
-
-		<h3>Lazy loaded Vue.js</h3>
-
-		<p>This is the first full Vue component (and it is off-viewport) so the library code is also lazy loaded. You can swap this behavior and eagerly load the library code by adding <code>loading="eager"</code> on any individual island.</p>
-
-		<!-- You can add `import="https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js"` here if you want the import to finish before the component is declared “ready” -->
-		<is-land on:visible>
-			<div id="vue-app">
-				Vue (using an inline script for extra init code)
-				<template data-island>
-					<button @click="count++">⬆️</button>
-					<button @click="count--">⬇️</button>
-					<span v-html="count">0</span>
-				</template>
-			</div>
-
-			<script type="module/island">
-				import { createApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
-
-				createApp({
-					data() {
-						return { count: 0 };
-					}
-				}).mount("#vue-app")
-			</script>
-		</is-land>
-
 		<h3>Works with &lt;details&gt;</h3>
 		<details>
 			<summary>The child content in this &lt;details&gt; will not be initialized until you open it</summary>
 
 			<is-land on:visible>
 				<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
-
-				<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
-					Petite Vue
-					<template data-island>
-						<button @click="count++">⬆️</button>
-						<button @click="count--">⬇️</button>
-						<span v-html="count">0</span>
-					</template>
-				</is-land>
 			</is-land>
 		</details>
 
@@ -193,6 +99,8 @@
 
 		<is-land on:visible>
 			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
+
+			Here’s a nested island:
 
 			<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
 				Petite Vue
@@ -206,101 +114,35 @@
 
 		<h2><code>on:idle</code></h2>
 
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
-		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
-		</is-land>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:idle v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:idle>
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
 
 		<h2><code>on:interaction</code></h2>
@@ -357,23 +199,13 @@
 		<h3>Viewport size</h3>
 		<p><code>on:media="(min-width: 64em)"</code></p>
 		<p>This only runs when the viewport is greater than or equal to 1024px wide: <code>on:media="(min-width: 64em)"</code></p>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:media="(min-width: 64em)" v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:media="(min-width: 64em)">
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
 		
 		<p>This only runs when the viewport is less than 1024px wide: <code>on:media="(max-width: 63.9375em)"</code></p>
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" on:media="(max-width: 63.9375em)" v-scope="{ count: 0 }">
-			Petite Vue
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
+		<is-land on:media="(max-width: 63.9375em)">
+			<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 		</is-land>
 
 		<h3>Reduced Motion</h3>
@@ -430,6 +262,27 @@
 			</template>
 		</is-land>
 
+		<p>Use the <code>ready</code> attribute on <code>&lt;is-land&gt;</code> (added when the island is hydrated) for additional styling!</p>
+		<is-land on:interaction id="demo-island-ready">
+			<style>
+			#demo-island-ready[ready] {
+				color: purple;
+			}
+			#demo-island-ready[ready] .emoji {
+				display: none;
+			}
+			</style>
+
+			<form>
+				<button type="button">Hydrate the island</button>
+			</form>
+
+			<vanilla-web-component class="demo-component">
+				When hydrated the text turns purple and the clock goes away
+				<span class="emoji">⏰</span>
+			</vanilla-web-component>
+		</is-land>
+
 		<p>Use <code>data-island="replace"</code> to replace the island content with the template. If more than one of these exists in an island, only the first is used.</p>
 
 		<is-land on:interaction>
@@ -444,9 +297,9 @@
 			</template>
 		</is-land>
 
-		<h4>Pass in a selector for to progressively enhance other elements (<code>fallback="img" on:interaction</code>)</h4>
+		<h4>Experimental: pass in a CSS selector to progressively enhance other elements (<code>fallback</code>)</h4>
 
-		<p>This example uses <code>on:interaction</code> so you need to interact with the island for the image to load. Note the aspect ratio before/after is preserved via the width/height attributes on the img.</p>
+		<p>This example uses <code>fallback="img" on:interaction</code>. You will need to interact with the island for the image to load. Note the aspect ratio before/after is preserved via the width/height attributes on the img.</p>
 
 		<is-land on:interaction fallback="img">
 			<form>
