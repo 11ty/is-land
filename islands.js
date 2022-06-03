@@ -118,7 +118,6 @@ class Island extends HTMLElement {
   }
 
   async connectedCallback() {
-    
     this.fallback = this.getAttribute(this.attrs.fallback)
     this.autoInitType = this.getAttribute(this.attrs.autoInitType);
 
