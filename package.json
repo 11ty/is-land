@@ -24,9 +24,6 @@
   "homepage": "https://github.com/11ty/is-land#readme",
   "devDependencies": {
     "@11ty/eleventy": "^2.0.0-canary.11",
-    "@lit-labs/eleventy-plugin-lit": "^0.2.1",
     "acorn": "^8.7.1"
-  },
-  "dependencies": {
   }
 }
