@@ -233,5 +233,12 @@
 				</is-land>
 			</template>
 		</is-land>
+
+		<h2>Server-rendered Vue (SSR)</h2>
+		<is-land on:visible>
+			Increment the counter:
+
+			{% renderVueComponent "vue-ssr-app", "./lib/vue/vue-component.cjs" %}
+		</is-land>
 	</body>
 </html>
