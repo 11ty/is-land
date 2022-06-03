@@ -28,5 +28,6 @@
     "acorn": "^8.7.1"
   },
   "dependencies": {
+    "esm-import-transformer": "^1.0.1"
   }
 }

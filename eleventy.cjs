@@ -1,7 +1,7 @@
 const fsp = require('fs').promises;
 const path = require('path');
 const litPlugin = require('@lit-labs/eleventy-plugin-lit');
-const ImportTransformer = require('./build/eleventy-esm-import-transform.cjs');
+const { ImportTransformer } = require('esm-import-transformer');
 
 module.exports = function(eleventyConfig) {
   eleventyConfig.setQuietMode(true);
