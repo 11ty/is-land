@@ -36,7 +36,7 @@ module.exports = function(eleventyConfig) {
       let input = await fsp.readFile(c, "utf8");
       let importMap = {
         "imports": {
-          "lit": "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js"
+          "lit": "/lib/lit/experimental-hydrate-support.js"
         }
       };
       
