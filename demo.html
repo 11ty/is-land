@@ -6,13 +6,6 @@
 		<meta name="description" content="">
 		<title></title>
 		<link rel="stylesheet" href="demo-styles.css">
-		<style>
-		/* “disable” a few JS-only buttons on this demo */
-		is-land[on\:interaction]:not(:defined) button {
-			opacity: .5;
-			cursor: not-allowed;
-		}
-		</style>
 
 		<script type="module">
 		import "./islands.js";
@@ -43,7 +36,8 @@
 			<li><a href="demo-lit.html">Lit</a></li>
 			<li><a href="demo-preact.html">Preact</a></li>
 			<li><a href="demo-alpine.html">Alpine.js</a></li>
-			<li><em>Do not use: </em><a href="demo-importmaps.html">Using import maps to simplify import URLs</a>. This is for-future-reference when <a href="https://caniuse.com/import-maps">browser support broadens</a>.
+			<li><em>Experimental:</em> <a href="demo-image-loading.html">Image Loading</a></li>
+			<li><em>Experimental:</em> <a href="demo-importmaps.html">Using import maps to simplify import URLs</a>. This is for-future-reference when <a href="https://caniuse.com/import-maps">browser support broadens</a>.
 		</ul>
 
 		<h2>Standalone</h2>
@@ -266,7 +260,7 @@
 		<is-land on:interaction id="demo-island-ready">
 			<style>
 			#demo-island-ready[ready] {
-				color: purple;
+				font-weight: bold;
 			}
 			#demo-island-ready[ready] .emoji {
 				display: none;
@@ -278,7 +272,7 @@
 			</form>
 
 			<vanilla-web-component class="demo-component">
-				When hydrated the text turns purple and the clock goes away
+				When hydrated the text turns bold and the clock goes away
 				<span class="emoji">⏰</span>
 			</vanilla-web-component>
 		</is-land>
@@ -295,18 +289,6 @@
 			<template data-island="replace">
 				<vanilla-web-component class="demo-component">Vanilla web component (requires JS)</vanilla-web-component>
 			</template>
-		</is-land>
-
-		<h4>Experimental: pass in a CSS selector to progressively enhance other elements (<code>fallback</code>)</h4>
-
-		<p>This example uses <code>fallback="img" on:interaction</code>. You will need to interact with the island for the image to load. Note the aspect ratio before/after is preserved via the width/height attributes on the img.</p>
-
-		<is-land on:interaction fallback="img">
-			<form>
-				<button type="button">Hydrate the island</button>
-			</form>
-
-			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
 		</is-land>
 	</body>
 </html>

@@ -1,24 +1,53 @@
 class Island extends HTMLElement {
   static tagName = "is-land";
 
+  static fallback = {
+    ":not(:defined)": (readyPromise, node, prefix) => {
+      // remove from document to prevent web component init
+      let cloned = document.createElement(prefix + node.localName);
+      for(let attr of node.getAttributeNames()) {
+        cloned.setAttribute(attr, node.getAttribute(attr));
+      }
+
+      let children = Array.from(node.childNodes);
+      for(let child of children) {
+        cloned.append(child); // Keep the *same* child nodes, clicking on a details->summary child should keep the state of that child
+      }
+      node.replaceWith(cloned);
+
+      return readyPromise.then(() => {
+        // restore children (not cloned)
+        for(let child of Array.from(cloned.childNodes)) {
+          node.append(child);
+        }
+        cloned.replaceWith(node);
+      });
+    }
+  };
+
+  static autoinit = {
+    "petite-vue": function(library) {
+      library.createApp().mount(this);
+    }
+  }
+
   constructor() {
     super();
 
     this.attrs = {
       autoInitType: "autoinit",
       import: "import",
-      fallback: "fallback",
       scriptType: "module/island",
       template: "data-island",
       ready: "ready",
     };
 
     this.conditionMap = {
-      visible: Conditions.waitForVisible,
-      idle: Conditions.waitForIdle,
-      interaction: Conditions.waitForInteraction,
-      media: Conditions.waitForMedia,
-      "save-data": Conditions.checkSaveData,
+      visible: Conditions.visible,
+      idle: Conditions.idle,
+      interaction: Conditions.interaction,
+      media: Conditions.media,
+      "save-data": Conditions.saveData,
     };
 
     // Internal promises
@@ -50,53 +79,25 @@ class Island extends HTMLElement {
   }
 
   async forceFallback() {
-    let prefix = "is-land--";
-    let extraSelector = this.fallback ? this.fallback : "";
-    // Reverse here as a cheap way to get the deepest nodes first
-    let components = Array.from(this.querySelectorAll(`:not(:defined)${extraSelector ? `,${extraSelector}` : ""}`)).reverse();
+    let prefix = Island.tagName + "--";
     let promises = [];
 
-    // with thanks to https://gist.github.com/cowboy/938767
-    for(let node of components) {
-      if(!node.isConnected || node.localName === Island.tagName) {
-        continue;
-      }
+    if(window.Island) {
+      Object.assign(Island.fallback, window.Island.fallback);
+    }
 
-      // assign this before we remove it from the document
-      let readyP = Island.ready(node);
+    for(let selector in Island.fallback) {
+      // Reverse here as a cheap way to get the deepest nodes first
+      let components = Array.from(this.querySelectorAll(selector)).reverse();
 
-      // Special case for img just removes the src to preserve aspect ratio while loading
-      if(node.localName === "img") {
-        let attr = prefix + "src";
-        // remove
-        node.setAttribute(attr, node.getAttribute("src"));
-        node.setAttribute("src", `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>`);
-
-        promises.push(readyP.then(() => {
-          // restore
-          node.setAttribute("src", node.getAttribute(attr));
-          node.removeAttribute(attr);
-        }));
-      } else { // everything else renames the tag
-        // remove from document to prevent web component init
-        let cloned = document.createElement(prefix + node.localName);
-        for(let attr of node.getAttributeNames()) {
-          cloned.setAttribute(attr, node.getAttribute(attr));
+      // with thanks to https://gist.github.com/cowboy/938767
+      for(let node of components) {
+        if(!node.isConnected || node.localName === Island.tagName) {
+          continue;
         }
 
-        let children = Array.from(node.childNodes);
-        for(let child of children) {
-          cloned.append(child); // Keep the *same* child nodes, clicking on a details->summary child should keep the state of that child
-        }
-        node.replaceWith(cloned);
-  
-        promises.push(readyP.then(() => {
-          // restore children (not cloned)
-          for(let child of Array.from(cloned.childNodes)) {
-            node.append(child);
-          }
-          cloned.replaceWith(node);
-        }));
+        let readyPromise = Island.ready(node);
+        promises.push(Island.fallback[selector](readyPromise, node, prefix));
       }
     }
 
@@ -119,9 +120,6 @@ class Island extends HTMLElement {
   }
 
   async connectedCallback() {
-    this.fallback = this.getAttribute(this.attrs.fallback)
-    this.autoInitType = this.getAttribute(this.attrs.autoInitType);
-
     // Keep fallback content without initializing the components
     // TODO improvement: only run this for not-eager components?
     await this.forceFallback();
@@ -192,10 +190,11 @@ class Island extends HTMLElement {
         old.replaceWith(script);
       }
     } else if(mod) {
-      // Fallback to `import=""` works better when import maps are available e.g. `import="petite-vue"`
-      let autoInitType = this.autoInitType || importScript;
-      if(autoInitType === "petite-vue" || autoInitType === "vue") {
-        mod.createApp().mount(this);
+      // Fallback to `import=""` for when import maps are available e.g. `import="petite-vue"`
+      let fn = Island.autoinit[this.getAttribute(this.attrs.autoInitType) || importScript];
+
+      if(fn) {
+        await fn.call(this, mod);
       }
     }
     
@@ -205,19 +204,11 @@ class Island extends HTMLElement {
     });
 
     this.setAttribute(this.attrs.ready, "");
-
-    // TODO Testing only
-    if(!window.componentCount) {
-      window.componentCount = 0;
-    }
-    window.componentCount++
-    console.log( `${window.componentCount} island${window.componentCount !== 1 ? "s" : ""}`, this );
-    // End testing
   }
 }
 
 class Conditions {
-  static waitForVisible(noop, el) {
+  static visible(noop, el) {
     if(!('IntersectionObserver' in window)) {
       // runs immediately
       return;
@@ -239,7 +230,7 @@ class Conditions {
   // TODO make sure this runs after all of the conditions have finished, otherwise it will
   // finish way before the other lazy loaded promises and will be the same as a noop when
   // on:interaction or on:visible finishes much later
-  static waitForIdle() {
+  static idle() {
     let onload = new Promise(resolve => {
       if(document.readyState !== "complete") {
         window.addEventListener("load", () => resolve(), { once: true });
@@ -264,7 +255,7 @@ class Conditions {
     ]);
   }
 
-  static waitForInteraction(eventOverrides, el) {
+  static interaction(eventOverrides, el) {
     let events = ["click", "touchstart"];
     // event overrides e.g. on:interaction="mouseenter"
     if(eventOverrides) {
@@ -287,7 +278,7 @@ class Conditions {
     });
   }
 
-  static waitForMedia(query) {
+  static media(query) {
     let mm = {
       matches: true
     };
@@ -309,7 +300,7 @@ class Conditions {
     });
   }
 
-  static checkSaveData(expects) {
+  static saveData(expects) {
     // return early if API does not exist
     if(!("connection" in navigator) || navigator.connection.saveData === (expects !== "false")) {
       return Promise.resolve();
@@ -323,6 +314,7 @@ class Conditions {
 // Should this auto define? Folks can redefine later using { component } export
 if("customElements" in window) {
   window.customElements.define(Island.tagName, Island);
+  window.Island = Island;
 }
 
 export const component = Island;
