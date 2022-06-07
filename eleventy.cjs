@@ -1,4 +1,5 @@
 const EleventySveltePlugin = require("./11ty/SveltePlugin.cjs");
+const EleventyVuePlugin = require("./11ty/VuePlugin.cjs");
 
 module.exports = function(eleventyConfig) {
   eleventyConfig.setQuietMode(true);
@@ -13,6 +14,7 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addPlugin(EleventySveltePlugin);
+  eleventyConfig.addPlugin(EleventyVuePlugin);
 
   eleventyConfig.addGlobalData("permalink", () => {
     return (data) => `${data.page.filePathStem}.${data.page.outputFileExtension}`;
