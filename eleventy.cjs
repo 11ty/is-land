@@ -11,15 +11,20 @@ module.exports = function(eleventyConfig) {
     domdiff: false,
     // enabled: false, // incompatible with the import maps example https://github.com/11ty/eleventy-dev-server/issues/31
   })
-  
-  eleventyConfig.addShortcode("renderSvelteClient", async function(filename) {
-    let component = new EleventySvelteComponent(filename);
-    return component.renderIsland(false);
+
+  eleventyConfig.addFilter("svelteComponentUrl", async function(filename) {
+    let component = new EleventySvelteComponent(filename, {
+      ssr: false
+    });
+    let {clientJsUrl} = component.get();
+    return clientJsUrl;
   });
 
-  eleventyConfig.addShortcode("renderSvelte", async function(filename) {
-    let component = new EleventySvelteComponent(filename);
-    return component.renderIsland(true);
+  eleventyConfig.addFilter("svelteSSR", async function(filename) {
+    let component = new EleventySvelteComponent(filename, {
+      ssr: true
+    });
+    return component.get();
   });
 
   eleventyConfig.addGlobalData("permalink", () => {

@@ -21,11 +21,38 @@ layout: layout.html
 <h2><code>on:visible</code></h2>
 
 <h3>Client-rendered Svelte</h3>
+<is-land on:visible autoinit="svelte" import="{{ "./lib/svelte/my-component.svelte" | svelteComponentUrl }}"></is-land>
+
 <is-land on:visible>
-	{% renderSvelteClient "./lib/svelte/my-component.svelte" %}
+  <div id="svelte-app-client"></div>
+  <script type="module/island">
+  import App from '{{ "./lib/svelte/my-component.svelte" | svelteComponentUrl }}';
+
+  new App({
+    target: document.getElementById("svelte-app-client"),
+		// prop override
+    props: {
+      name: "milky way galaxy"
+    },
+  });
+  </script>
 </is-land>
 
 <h3>Server-rendered Svelte</h3>
+{% assign component = "./lib/svelte/my-component.svelte" | svelteSSR %}
 <is-land on:visible>
-	{% renderSvelte "./lib/svelte/my-component.svelte" %}
+	<style>{{ component.css }}</style>
+	<div id="svelte-app-ssr">{{ component.html }}</div>
+	<script type="module/island">
+		import App from '{{ component.clientJsUrl }}';
+
+		new App({
+			target: document.getElementById("svelte-app-ssr"),
+			hydrate: true,
+			// prop override
+			props: {
+				name: "universe"
+			},
+		});
+	</script>
 </is-land>

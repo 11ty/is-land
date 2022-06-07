@@ -7,10 +7,11 @@ const { ImportTransformer } = require("esm-import-transformer");
 let id = 0;
 
 class EleventySvelteComponent {
-  constructor(filename) {
+  constructor(filename, options = { ssr: true }) {
     this.filename = filename;
     this.parsed = path.parse(this.filename);
     this.content = fs.readFileSync(filename, "utf8");
+    this.isSSR = options.ssr;
 
     this.clientImportMap = {
       imports: {
@@ -20,17 +21,21 @@ class EleventySvelteComponent {
     };
   }
 
+  getFilename() {
+    return this.parsed.name + (this.isSSR ? "" : ".client") + ".js";
+  }
+
   getImportUrl() {
-    return "/" + path.join(this.parsed.dir, this.parsed.name + ".js");
+    return "/" + path.join(this.parsed.dir, this.getFilename());
   }
 
   // pass in `hydratable: false, css: true` for a client only component
-  generateClientBundle(isSSR = true) {
+  generateClientBundle() {
     let options = {
       filename: this.filename,
       generate: "dom",
-      hydratable: isSSR ? true : false,
-      css: isSSR ? false : true,
+      hydratable: this.isSSR ? true : false,
+      css: this.isSSR ? false : true,
     };
 
     let component = svelte.compile(this.content, options);
@@ -43,11 +48,11 @@ class EleventySvelteComponent {
     let outDir = path.join("./_site", this.parsed.dir);
 
     fs.mkdirSync(outDir, {recursive: true});
-    fs.writeFileSync(path.join(outDir, this.parsed.name + ".js"), code, "utf8");
+    fs.writeFileSync(path.join(outDir, this.getFilename()), code, "utf8");
   }
 
-  renderOnServer(isSSR = true) {
-    if(!isSSR) {
+  renderOnServer(options = {}) {
+    if(!this.isSSR || options.autoinit) {
       return {
         html: "",
         css: "",
@@ -73,28 +78,18 @@ class EleventySvelteComponent {
     };
   }
 
-  renderIsland(isSSR = true) {
-    this.generateClientBundle(isSSR);
+  get(options = {
+    autoinit: false
+  }) {
+    this.generateClientBundle(this.isSSR);
 
-    let {html, css} = this.renderOnServer(isSSR);
+    let {html, css} = this.renderOnServer(options);
 
-    id++;
-
-    return `
-  ${css ? `<style>${css}</style>` : ""}
-  <div id="svelte-app-${id}">${html}</div>
-  <script type="module/island">
-  import App from '${this.getImportUrl()}';
-
-  new App({
-    target: document.getElementById('svelte-app-${id}'),
-    ${isSSR ? "hydrate: true," : ""}
-    props: {
-      // If you pass a prop in here it must be declared using export in the component
-    },
-  });
-  </script>
-`;
+    return {
+      html,
+      css,
+      clientJsUrl: this.getImportUrl()
+    };
   }
 }
 
