@@ -235,10 +235,19 @@
 		</is-land>
 
 		<h2>Server-rendered Vue (SSR)</h2>
+
 		<is-land on:visible>
 			Increment the counter:
 
-			{% renderVueComponent "vue-ssr-app", "./lib/vue/vue-component.cjs" %}
+			{% assign component = "./lib/vue/vue-component.js" | vueSSR %}
+			<div id="vue-app-ssr">{{ component.html }}</div>
+
+			<script type="module/island">
+			import { createSSRApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
+			import app from "{{ component.clientJsUrl }}";
+
+			createSSRApp(app).mount("#vue-app-ssr");
+			</script>
 		</is-land>
 	</body>
 </html>
