@@ -4,8 +4,6 @@ const { Module } = require("module");
 const svelte = require('svelte/compiler');
 const { ImportTransformer } = require("esm-import-transformer");
 
-let id = 0;
-
 class EleventySvelteComponent {
   constructor(filename, options = { ssr: true }) {
     this.filename = filename;
@@ -29,6 +27,11 @@ class EleventySvelteComponent {
     return "/" + path.join(this.parsed.dir, this.getFilename());
   }
 
+  getOutputFile() {
+    // TODO change _site to work with any output dir
+    return path.join("./_site", this.parsed.dir, this.getFilename());
+  }
+
   // pass in `hydratable: false, css: true` for a client only component
   generateClientBundle() {
     let options = {
@@ -44,15 +47,16 @@ class EleventySvelteComponent {
     let transformer = new ImportTransformer();
     let code = transformer.transform(component.js.code, this.clientImportMap)
 
-    // TODO change _site to work with any output dir
-    let outDir = path.join("./_site", this.parsed.dir);
+    let outputFile = this.getOutputFile();
+    let {dir} = path.parse(outputFile);
+    fs.mkdirSync(dir, {recursive: true});
 
-    fs.mkdirSync(outDir, {recursive: true});
-    fs.writeFileSync(path.join(outDir, this.getFilename()), code, "utf8");
+    // TODO this writes every time it’s referenced
+    fs.writeFileSync(outputFile, code, "utf8");
   }
 
-  renderOnServer(options = {}) {
-    if(!this.isSSR || options.autoinit) {
+  renderOnServer() {
+    if(!this.isSSR) {
       return {
         html: "",
         css: "",
@@ -78,12 +82,10 @@ class EleventySvelteComponent {
     };
   }
 
-  get(options = {
-    autoinit: false
-  }) {
-    this.generateClientBundle(this.isSSR);
+  get() {
+    this.generateClientBundle();
 
-    let {html, css} = this.renderOnServer(options);
+    let {html, css} = this.renderOnServer();
 
     return {
       html,

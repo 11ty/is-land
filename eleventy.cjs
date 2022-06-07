@@ -10,20 +10,22 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.setServerOptions({
     domdiff: false,
     // enabled: false, // incompatible with the import maps example https://github.com/11ty/eleventy-dev-server/issues/31
-  })
+  });
 
   eleventyConfig.addFilter("svelteComponentUrl", async function(filename) {
     let component = new EleventySvelteComponent(filename, {
-      ssr: false
+      ssr: false,
     });
+
     let {clientJsUrl} = component.get();
     return clientJsUrl;
   });
 
   eleventyConfig.addFilter("svelteSSR", async function(filename) {
     let component = new EleventySvelteComponent(filename, {
-      ssr: true
+      ssr: true,
     });
+
     return component.get();
   });
 
