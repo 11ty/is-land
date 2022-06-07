@@ -4,6 +4,8 @@ const { Module } = require("module");
 const svelte = require('svelte/compiler');
 const { ImportTransformer } = require("esm-import-transformer");
 
+let id = 0;
+
 class EleventySvelteComponent {
   constructor(filename) {
     this.filename = filename;
@@ -22,13 +24,16 @@ class EleventySvelteComponent {
     return "/" + path.join(this.parsed.dir, this.parsed.name + ".js");
   }
 
-  generateClientBundle() {
-    let component = svelte.compile(this.content, {
+  // pass in `hydratable: false, css: true` for a client only component
+  generateClientBundle(isSSR = true) {
+    let options = {
       filename: this.filename,
       generate: "dom",
-      hydratable: true,
-      css: false,
-    });
+      hydratable: isSSR ? true : false,
+      css: isSSR ? false : true,
+    };
+
+    let component = svelte.compile(this.content, options);
 
     // instead of the `sveltePath` option above, which tried to use the `cjs` not the `mjs`  version on unpkg
     let transformer = new ImportTransformer();
@@ -41,7 +46,14 @@ class EleventySvelteComponent {
     fs.writeFileSync(path.join(outDir, this.parsed.name + ".js"), code, "utf8");
   }
 
-  renderOnServer() {
+  renderOnServer(isSSR = true) {
+    if(!isSSR) {
+      return {
+        html: "",
+        css: "",
+      };
+    }
+
     let component = svelte.compile(this.content, {
       filename: this.filename,
       generate: "ssr",
@@ -55,7 +67,34 @@ class EleventySvelteComponent {
 
     let fn = m.exports.default.render;
     let result = fn();
-    return result;
+    return {
+      html: result.html,
+      css: result.css.code
+    };
+  }
+
+  renderIsland(isSSR = true) {
+    this.generateClientBundle(isSSR);
+
+    let {html, css} = this.renderOnServer(isSSR);
+
+    id++;
+
+    return `
+  ${css ? `<style>${css}</style>` : ""}
+  <div id="svelte-app-${id}">${html}</div>
+  <script type="module/island">
+  import App from '${this.getImportUrl()}';
+
+  new App({
+    target: document.getElementById('svelte-app-${id}'),
+    ${isSSR ? "hydrate: true," : ""}
+    props: {
+      // If you pass a prop in here it must be declared using export in the component
+    },
+  });
+  </script>
+`;
   }
 }
 

@@ -20,8 +20,12 @@ layout: layout.html
 
 <h2><code>on:visible</code></h2>
 
-<h3>Server-rendered Svelte</h3>
+<h3>Client-rendered Svelte</h3>
+<is-land on:visible>
+	{% renderSvelteClient "./lib/svelte/my-component.svelte" %}
+</is-land>
 
+<h3>Server-rendered Svelte</h3>
 <is-land on:visible>
 	{% renderSvelte "./lib/svelte/my-component.svelte" %}
 </is-land>
