@@ -30,6 +30,7 @@ layout: layout.html
 
   new App({
     target: document.getElementById("svelte-app-client"),
+
 		// prop override
     props: {
       name: "milky way galaxy"
@@ -48,7 +49,10 @@ layout: layout.html
 
 		new App({
 			target: document.getElementById("svelte-app-ssr"),
+
+			// SSR must have hydrate: true
 			hydrate: true,
+
 			// prop override
 			props: {
 				name: "universe"
