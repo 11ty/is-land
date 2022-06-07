@@ -1,0 +1,27 @@
+<style>
+img[is-land--src] {
+  background-color: #eee;
+}
+</style>
+
+<script type="module">
+// Experimental Plugin API
+window.Island = {
+  // Add custom fallback behavior, keys here are CSS selectors
+  fallback: {
+    "img[loading='lazy']": function(readyPromise, node, prefix) {
+      let attr = prefix + "src";
+
+      // remove
+      node.setAttribute(attr, node.getAttribute("src"));
+      node.setAttribute("src", `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>`);
+
+      return readyPromise.then(() => {
+        // restore
+        node.setAttribute("src", node.getAttribute(attr));
+        node.removeAttribute(attr);
+      });
+    }
+  }
+};
+</script>

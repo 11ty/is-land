@@ -1,67 +1,24 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="">
-		<title></title>
-		<link rel="stylesheet" href="demo-styles.css">
-		<style>
-		img[is-land--src] {
-			background-color: #eee;
-		}
-		</style>
+---
+layout: layout.html
+title: Islands with Import Maps
+showImagePlugin: true
+---
+<h1><a href="/demo.html">is-land</a> for image loading</h1>
 
-		<script type="module">
-		// Plugin API
-		window.Island = {
-			// Add custom fallback behavior, keys here are CSS selectors
-			fallback: {
-				"img[loading='lazy']": function(readyPromise, node, prefix) {
-					let attr = prefix + "src";
-	
-					// remove
-					node.setAttribute(attr, node.getAttribute("src"));
-					node.setAttribute("src", `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>`);
-	
-					return readyPromise.then(() => {
-						// restore
-						node.setAttribute("src", node.getAttribute(attr));
-						node.removeAttribute(attr);
-					});
-				}
-			}
-		};
-		</script>
+<h4>Experimental: pass in a CSS selector to progressively enhance other elements (<code>fallback</code>)</h4>
 
-		<script type="module">
-		import "./islands.js";
+<p>This example uses <code>on:interaction</code>. You will need to interact with the island for the images to load. Note the aspect ratio before/after is preserved via the width/height attributes on the img.</p>
 
-		// You can directly import dependencies (for eager loading)
-		// or for lazy loaded islands put dependencies into `import="./vanilla-web-component.js"`
-		// Look inside this file for a commented-out example of using this programmatically in your component code
-		import "./vanilla-web-component.js";
-		</script>
-	</head>
-	<body>
-		<h1><a href="/demo.html">is-land</a> for image loading</h1>
+<is-land on:interaction>
+	<form>
+		<button type="button">Hydrate the island</button>
+	</form>
 
-		<h4>Experimental: pass in a CSS selector to progressively enhance other elements (<code>fallback</code>)</h4>
-
-		<p>This example uses <code>on:interaction</code>. You will need to interact with the island for the images to load. Note the aspect ratio before/after is preserved via the width/height attributes on the img.</p>
-
-		<is-land on:interaction>
-			<form>
-				<button type="button">Hydrate the island</button>
-			</form>
-
-			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-			<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-		</is-land>
-	</body>
-</html>
+	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+</is-land>

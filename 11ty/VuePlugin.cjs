@@ -13,6 +13,8 @@ module.exports = function(eleventyConfig) {
     return {
       // TODO css
       html,
+
+      // Uses `addPassthroughCopy("lib/")` for this file to exist in the output directory
       clientJsUrl: "/" + path.join(parsed.dir, parsed.base),
     }
   });

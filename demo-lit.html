@@ -1,68 +1,54 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="">
-		<title></title>
-		<link rel="stylesheet" href="demo-styles.css">
+---
+layout: layout.html
+title: Lit Islands
+---
+<h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Flit.dev%2F/"
+	alt="IndieWeb avatar for https://lit.dev/"
+	width="28"
+	height="28"
+	decoding="async"
+	loading="lazy"> Lit</h1>
 
-		<script type="module">
-		import "/islands.js";
-		import "/vanilla-web-component.js"; // eager, probably not typical
+<h2>Standalone</h2>
 
-		</script>
-	</head>
-	<body>
-		<h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Flit.dev%2F/"
-			alt="IndieWeb avatar for https://lit.dev/"
-			width="28"
-			height="28"
-			decoding="async"
-			loading="lazy"> Lit</h1>
+<p>This is a control to make sure the component initializes as expected without an island.</p>
 
-		<h2>Standalone</h2>
+<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
 
-		<p>This is a control to make sure the component initializes as expected without an island.</p>
+<h2>Scroll down</h2>
 
-		<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
+<hr style="height: 100vh">
 
-		<h2>Scroll down</h2>
+<h2>Client-rendered Lit</h2>
 
-		<hr style="height: 100vh">
+<p>You can use `import="./lit-component.js"` or `&lt;import type="module/island"&gt;`:</p>
 
-		<h2>Client-rendered Lit</h2>
+<is-land on:visible import="./lib/lit/lit-component-client.js">
+	This is a lit component:
+	<lit-component-client class="demo-component" name="World">Fallback content!</lit-web-component>
+</is-land>
 
-		<p>You can use `import="./lit-component.js"` or `&lt;import type="module/island"&gt;`:</p>
+<is-land on:visible id="lit-test">
+	This is a lit component: <lit-other-web-component class="demo-component" name="World">Fallback content!</lit-other-web-component>
 
-		<is-land on:visible import="./lib/lit/lit-component-client.js">
-			This is a lit component:
-			<lit-component-client class="demo-component" name="World">Fallback content!</lit-web-component>
-		</is-land>
+	<script type="module/island">
+	import {html, css, LitElement} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
 
-		<is-land on:visible id="lit-test">
-			This is a lit component: <lit-other-web-component class="demo-component" name="World">Fallback content!</lit-other-web-component>
+	customElements.define('lit-other-web-component', class extends LitElement {
+		// encapsulated styles!
+		static styles = css`p { color: blue; margin: 0; }`;
+	
+		static properties = {
+			name: {type: String},
+		};
 
-			<script type="module/island">
-			import {html, css, LitElement} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
+		render() {
+			this.classList.add("test-c-finish");
+			return html`<p>Hello, ${this.name || "Stranger"}!</p>`;
+		}
+	});
+	</script>
+</is-land>
 
-			customElements.define('lit-other-web-component', class extends LitElement {
-				// encapsulated styles!
-				static styles = css`p { color: blue; margin: 0; }`;
-			
-				static properties = {
-					name: {type: String},
-				};
-
-				render() {
-					this.classList.add("test-c-finish");
-					return html`<p>Hello, ${this.name || "Stranger"}!</p>`;
-				}
-			});
-			</script>
-		</is-land>
-
-		<h2>Server-rendered Lit (SSR)</h2>
-		<p>In order to keep the stock example code light, this deeper integration using the <a href="https://lit.dev/blog/2022-02-07-eleventy/"><code>@lit-labs/eleventy-plugin-lit</code></a> plugin lives in the <a href="https://github.com/11ty/is-land/compare/lit-ssr?expand=1"><code>lit-ssr</code> branch</a>.</p>
-	</body>
-</html>
+<h2>Server-rendered Lit (SSR)</h2>
+<p>In order to keep the stock example code light, this deeper integration using the <a href="https://lit.dev/blog/2022-02-07-eleventy/"><code>@lit-labs/eleventy-plugin-lit</code></a> plugin lives in the <a href="https://github.com/11ty/is-land/compare/lit-ssr?expand=1"><code>lit-ssr</code> branch</a>.</p>

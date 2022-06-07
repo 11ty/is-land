@@ -1,58 +1,42 @@
 ---
-templateEngineOverride: liquid
+layout: layout.html
+title: Preact Islands
 ---
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="">
-		<title></title>
-		<link rel="stylesheet" href="demo-styles.css">
+<h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fpreactjs.com%2F/"
+	alt="IndieWeb avatar for https://preactjs.com/"
+	width="28"
+	height="28"
+	decoding="async"
+	loading="lazy">Preact</h1>
 
-		<script type="module">
-		import "./islands.js";
-		import "./vanilla-web-component.js"; // eager, probably not typical
-		</script>
-	</head>
-	<body>
-		<h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fpreactjs.com%2F/"
-			alt="IndieWeb avatar for https://preactjs.com/"
-			width="28"
-			height="28"
-			decoding="async"
-			loading="lazy">Preact</h1>
+<h2>Standalone</h2>
 
-		<h2>Standalone</h2>
+<p>This is a control to make sure the component initializes as expected without an island.</p>
 
-		<p>This is a control to make sure the component initializes as expected without an island.</p>
+<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
 
-		<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
+<h2>Scroll down</h2>
 
-		<h2>Scroll down</h2>
+<hr style="height: 100vh">
 
-		<hr style="height: 100vh">
+<h2>Client-rendered Preact</h2>
 
-		<h2>Client-rendered Preact</h2>
+<p>Example from <a href="https://preactjs.com/guide/v10/getting-started#no-build-tools-route"><code>https://preactjs.com/guide/v10/getting-started#no-build-tools-route</code></a></p>
 
-		<p>Example from <a href="https://preactjs.com/guide/v10/getting-started#no-build-tools-route"><code>https://preactjs.com/guide/v10/getting-started#no-build-tools-route</code></a></p>
+<is-land on:visible>
+	This is a preact component:
+	<div id="preact-app"></div>
 
-		<is-land on:visible>
-			This is a preact component:
-			<div id="preact-app"></div>
+	<script type="module/island">
+	import { h, Component, render } from 'https://unpkg.com/preact?module';
+	import htm from 'https://unpkg.com/htm?module';
 
-			<script type="module/island">
-			import { h, Component, render } from 'https://unpkg.com/preact?module';
-			import htm from 'https://unpkg.com/htm?module';
+	const html = htm.bind(h);
 
-			const html = htm.bind(h);
+	function App (props) {
+		return html`<p><strong>Hello ${props.name}!</strong></p>`;
+	}
 
-			function App (props) {
-				return html`<p><strong>Hello ${props.name}!</strong></p>`;
-			}
-
-			render(html`<${App} name="from Preact" />`, document.getElementById("preact-app"));
-			</script>
-		</is-land>
-	</body>
-</html>
+	render(html`<${App} name="from Preact" />`, document.getElementById("preact-app"));
+	</script>
+</is-land>

@@ -4,12 +4,31 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
-		<title></title>
+		<title>{{ title }}</title>
 		<link rel="stylesheet" href="demo-styles.css">
+
+{% if showImagePlugin %}
+		{% include "plugin-img.html" %}
+{% endif %}
+
+{% if showImportMaps %}
+		<script type="importmap">
+		{
+			"imports": {
+				"petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js",
+				"vue": "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js"
+			}
+		}
+		</script>
+{% endif %}
 
 		<script type="module">
 		import "/islands.js";
-		import "/vanilla-web-component.js"; // eager, probably not typical
+
+		// You can directly import dependencies (for eager loading)
+		// or for lazy loaded islands put dependencies into `import="./vanilla-web-component.js"`
+		// Look inside this file for a commented-out example of using this programmatically in your component code
+		import "/vanilla-web-component.js";
 		</script>
 	</head>
 	<body>

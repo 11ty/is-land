@@ -1,5 +1,6 @@
 ---
 layout: layout.html
+title: Svelte Islands
 ---
 <h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fsvelte.dev%2F/"
 	alt="IndieWeb avatar for https://svelte.dev/"
@@ -39,7 +40,10 @@ layout: layout.html
   </script>
 </is-land>
 
-<h3>Server-rendered Svelte</h3>
+<h3>Server-rendered Svelte (SSR)</h3>
+
+<p>SSR requires server-side integration, in this case provided by Eleventy.</p>
+
 {% assign component = "./lib/svelte/my-component.svelte" | svelteSSR %}
 <is-land on:visible>
 	<style>{{ component.css }}</style>
