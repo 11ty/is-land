@@ -1,0 +1,62 @@
+---
+layout: layout.html
+---
+<h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fsvelte.dev%2F/"
+	alt="IndieWeb avatar for https://svelte.dev/"
+	width="28"
+	height="28"
+	decoding="async"
+	loading="lazy"> Svelte</h1>
+
+<h2>Standalone</h2>
+
+<p>This is a control to make sure the component initializes as expected without an island.</p>
+
+<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
+
+<h2>Scroll down</h2>
+
+<hr style="height: 100vh">
+
+<h2><code>on:visible</code></h2>
+
+<h3>Client-rendered Svelte</h3>
+<is-land on:visible autoinit="svelte" import="{{ "./lib/svelte/my-component.svelte" | svelteComponentUrl }}"></is-land>
+
+<is-land on:visible>
+  <div id="svelte-app-client"></div>
+  <script type="module/island">
+  import App from '{{ "./lib/svelte/my-component.svelte" | svelteComponentUrl }}';
+
+  new App({
+    target: document.getElementById("svelte-app-client"),
+
+		// prop override
+    props: {
+      name: "milky way galaxy"
+    },
+  });
+  </script>
+</is-land>
+
+<h3>Server-rendered Svelte</h3>
+{% assign component = "./lib/svelte/my-component.svelte" | svelteSSR %}
+<is-land on:visible>
+	<style>{{ component.css }}</style>
+	<div id="svelte-app-ssr">{{ component.html }}</div>
+	<script type="module/island">
+		import App from '{{ component.clientJsUrl }}';
+
+		new App({
+			target: document.getElementById("svelte-app-ssr"),
+
+			// SSR must have hydrate: true
+			hydrate: true,
+
+			// prop override
+			props: {
+				name: "universe"
+			},
+		});
+	</script>
+</is-land>

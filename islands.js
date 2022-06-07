@@ -28,6 +28,12 @@ class Island extends HTMLElement {
   static autoinit = {
     "petite-vue": function(library) {
       library.createApp().mount(this);
+    },
+    "vue": function(library) {
+      library.createApp().mount(this);
+    },
+    "svelte": function(library) {
+      new library.default({ target: this });
     }
   }
 
