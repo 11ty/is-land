@@ -32,9 +32,6 @@ class Island extends HTMLElement {
     "vue": function(library) {
       library.createApp().mount(this);
     },
-    "vue-ssr": function(library) {
-      library.createSSRApp().mount(this);
-    },
     "svelte": function(library) {
       new library.default({ target: this });
     }
