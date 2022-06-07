@@ -1,0 +1,27 @@
+---
+layout: layout.html
+---
+<h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fsvelte.dev%2F/"
+	alt="IndieWeb avatar for https://svelte.dev/"
+	width="28"
+	height="28"
+	decoding="async"
+	loading="lazy"> Svelte</h1>
+
+<h2>Standalone</h2>
+
+<p>This is a control to make sure the component initializes as expected without an island.</p>
+
+<vanilla-web-component class="demo-component">Vanilla Web Component</vanilla-web-component>
+
+<h2>Scroll down</h2>
+
+<hr style="height: 100vh">
+
+<h2><code>on:visible</code></h2>
+
+<h3>Server-rendered Svelte</h3>
+
+<is-land on:visible>
+	{% renderSvelte "./lib/svelte/my-component.svelte" %}
+</is-land>
