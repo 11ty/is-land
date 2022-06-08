@@ -1,6 +1,7 @@
 ---
 layout: layout.html
 title: Svelte Islands
+showPageCss: true
 ---
 <h1><a href="/demo.html">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fsvelte.dev%2F/"
 	alt="IndieWeb avatar for https://svelte.dev/"
@@ -44,10 +45,16 @@ title: Svelte Islands
 
 <p>SSR requires server-side integration, in this case provided by Eleventy.</p>
 
-{% assign component = "./lib/svelte/my-component.svelte" | svelteSSR %}
+{% assign component = "./lib/svelte/my-component.svelte" | svelteSSR: page.url %}
 <is-land on:visible>
+	{% comment %}
+	<!-- Skip this because we add the component CSS to the <head> in layout.html -->
+	<!-- Multiple instances of the same SSR component should only have one instance of the CSS -->
 	<style>{{ component.css }}</style>
+	{% endcomment %}
+
 	<div id="svelte-app-ssr">{{ component.html }}</div>
+
 	<script type="module/island">
 		import App from '{{ component.clientJsUrl }}';
 

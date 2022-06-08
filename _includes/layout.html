@@ -22,6 +22,12 @@
 		</script>
 {% endif %}
 
+{% if showPageCss %}
+		<style>
+		{{ page.url | getSvelteCss }}
+		</style>
+{% endif %}
+
 		<script type="module">
 		import "/islands.js";
 

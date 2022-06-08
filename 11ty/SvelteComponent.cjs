@@ -2,7 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const { Module } = require("module");
 const svelte = require('svelte/compiler');
-const { ImportTransformer } = require("esm-import-transformer");
+
+const FileTarget = require("./FileTarget.cjs");
 
 class EleventySvelteComponent {
   constructor(filename, options = { ssr: true }) {
@@ -19,19 +20,6 @@ class EleventySvelteComponent {
     };
   }
 
-  getFilename() {
-    return this.parsed.name + (this.isSSR ? "" : ".client") + ".js";
-  }
-
-  getImportUrl() {
-    return "/" + path.join(this.parsed.dir, this.getFilename());
-  }
-
-  getOutputFile() {
-    // TODO change _site to work with any output dir
-    return path.join("./_site", this.parsed.dir, this.getFilename());
-  }
-
   // pass in `hydratable: false, css: true` for a client only component
   generateClientBundle() {
     let options = {
@@ -43,16 +31,10 @@ class EleventySvelteComponent {
 
     let component = svelte.compile(this.content, options);
 
-    // instead of the `sveltePath` option above, which tried to use the `cjs` not the `mjs`  version on unpkg
-    let transformer = new ImportTransformer();
-    let code = transformer.transform(component.js.code, this.clientImportMap)
-
-    let outputFile = this.getOutputFile();
-    let {dir} = path.parse(outputFile);
-    fs.mkdirSync(dir, {recursive: true});
-
-    // TODO this writes every time it’s referenced
-    fs.writeFileSync(outputFile, code, "utf8");
+    let target = new FileTarget(this.filename);
+    // we transform the import URL here instead of using `sveltePath` option above, which tried to use the `cjs` not the `mjs`  version on unpkg
+    target.write(component.js.code, this.clientImportMap);
+    return target;
   }
 
   renderOnServer() {
@@ -83,14 +65,13 @@ class EleventySvelteComponent {
   }
 
   get() {
-    this.generateClientBundle();
-
+    let target = this.generateClientBundle();
     let {html, css} = this.renderOnServer();
 
     return {
       html,
       css,
-      clientJsUrl: this.getImportUrl()
+      clientJsUrl: target.getImportUrl()
     };
   }
 }

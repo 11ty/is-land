@@ -28,15 +28,27 @@ title: Preact Islands
 	<div id="preact-app"></div>
 
 	<script type="module/island">
-	import { h, Component, render } from 'https://unpkg.com/preact?module';
-	import htm from 'https://unpkg.com/htm?module';
-
-	const html = htm.bind(h);
+	import { html, render } from 'https://unpkg.com/htm/preact/index.mjs?module'
 
 	function App (props) {
 		return html`<p><strong>Hello ${props.name}!</strong></p>`;
 	}
 
 	render(html`<${App} name="from Preact" />`, document.getElementById("preact-app"));
+	</script>
+</is-land>
+
+<h2>Server-rendered Preact (SSR)</h2>
+
+{% assign component = "./lib/preact/preact-component.js" | preactSSR %}
+<is-land on:visible import>
+	This is a preact component:
+	<div id="preact-app-ssr">{{ component.html }}</div>
+
+	<script type="module">
+	import { render } from 'https://unpkg.com/htm/preact/index.mjs?module';
+	import Counter from '{{ component.clientJsUrl }}';
+
+	render(Counter(), document.getElementById("preact-app-ssr"));
 	</script>
 </is-land>
