@@ -22,6 +22,7 @@ module.exports = function(eleventyConfig) {
 
   let litComponents = [
     'lib/lit/lit-component.js',
+    'lib/lit/lit-component-html-only.js',
   ];
   eleventyConfig.addPlugin(litPlugin, {
     mode: 'worker',

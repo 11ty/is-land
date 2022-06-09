@@ -66,6 +66,14 @@
 			1. The <a href="https://github.com/lit/lit/blob/main/packages/lit-element/src/experimental-hydrate-support.ts"><code>experimental-hydrate-support.js</code></a> file is needed to be loaded up front (the library can’t be lazy loaded, though the component initialization can). Hoping this improves.
 			2. Full <a href="https://caniuse.com/declarative-shadow-dom">Declarative Shadow DOM support</a> is required to show any fallback content without JS.
 		</p>
+		{% comment %}
+		<!-- This doesn’t work in non Declarative Shadow DOM worlds -->
+		<is-land on:visible>
+			<lit-component-html-only name="World"></lit-component>
+		</is-land>
+		{% endcomment %}
+
+		<p>With Hydration:</p>
 		<is-land on:visible import="/lib/lit/lit-component.js">
 			<lit-component name="World"></lit-component>
 		</is-land>
