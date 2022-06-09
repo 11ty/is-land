@@ -1,6 +1,9 @@
 # `<is-land>`
 
-A framework independent partial hydration islands architecture implementation. Check out the [screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188)
+A framework independent partial hydration islands architecture implementation.
+
+* See the [source code on GitHub](https://github.com/11ty/is-land)
+* Check out the [screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188).
 
 Features:
 
