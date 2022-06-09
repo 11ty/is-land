@@ -9,7 +9,8 @@
   },
   "scripts": {
     "compress": "terser islands.js -o islands.min.js --compress",
-    "start": "npx @11ty/eleventy --config=eleventy.cjs --serve"
+    "start": "npx @11ty/eleventy --config=eleventy.cjs --serve",
+    "build": "npx @11ty/eleventy --config=eleventy.cjs"
   },
   "repository": {
     "type": "git",
