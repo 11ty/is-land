@@ -4,9 +4,6 @@
   "description": "A framework independent partial hydration islands architecture implementation.",
   "type": "module",
   "main": "islands.js",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
     "compress": "terser islands.js -o islands.min.js --compress",
     "start": "npx @11ty/eleventy --config=eleventy.cjs --serve",
@@ -16,11 +13,21 @@
     "type": "git",
     "url": "git+https://github.com/11ty/is-land.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/11ty"
+  },
   "bugs": {
     "url": "https://github.com/11ty/is-land/issues"
+  },
+  "author": {
+    "name": "Zach Leatherman",
+    "email": "zachleatherman@gmail.com",
+    "url": "https://zachleat.com/"
   },
   "homepage": "https://github.com/11ty/is-land#readme",
   "devDependencies": {
