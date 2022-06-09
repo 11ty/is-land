@@ -6,7 +6,7 @@ const FileTarget = require("./FileTarget.cjs");
 
 module.exports = function(eleventyConfig) {
   // TODO Vue SFC
-  eleventyConfig.addFilter("vueSSR", async (filename) => {
+  eleventyConfig.addFilter("vue", async (filename) => {
     let target = new FileTarget(filename);
     target.setSuffix("");
 

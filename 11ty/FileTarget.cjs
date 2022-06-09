@@ -4,7 +4,7 @@ const { ImportTransformer } = require("esm-import-transformer");
 
 // Writes the isomorphic component JS file to the output directory
 class FileTarget {
-  constructor(filename, suffix = ".client") {
+  constructor(filename) {
     this.filename = filename;
     this.parsed = path.parse(this.filename);
     this.suffix = ".client";

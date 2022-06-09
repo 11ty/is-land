@@ -5,7 +5,7 @@ const render = require('preact-render-to-string');
 const FileTarget = require("./FileTarget.cjs");
 
 module.exports = function(eleventyConfig) {
-  eleventyConfig.addFilter("preactSSR", async (filename) => {
+  eleventyConfig.addFilter("preact", async (filename) => {
     let content = fs.readFileSync(filename, "utf8");
     let target = new FileTarget(filename);
     target.write(content, {

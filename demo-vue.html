@@ -227,10 +227,21 @@ title: Vue Islands
 
 <p>SSR requires server-side integration, in this case provided by Eleventy.</p>
 
+<h3>No hydration, HTML only</h3>
+
+<p>Without hydration, the island is unnecessary.</p>
+
+<div class="demo-component">
+	{% assign component = "./lib/vue/vue-component-html-only.js" | vue %}
+	{{ component.html }}
+</div>
+
+<h3>With Hydration</h3>
+
 <is-land on:visible>
 	Increment the counter:
 
-	{% assign component = "./lib/vue/vue-component.js" | vueSSR %}
+	{% assign component = "./lib/vue/vue-component.js" | vue %}
 	<div id="vue-app-ssr">{{ component.html }}</div>
 
 	<script type="module/island">

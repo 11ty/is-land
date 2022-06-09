@@ -21,10 +21,11 @@ title: Preact Islands
 
 <h2>Client-rendered Preact</h2>
 
+<!-- no autoinit for preact -->
+
 <p>Example from <a href="https://preactjs.com/guide/v10/getting-started#no-build-tools-route"><code>https://preactjs.com/guide/v10/getting-started#no-build-tools-route</code></a></p>
 
 <is-land on:visible>
-	This is a preact component:
 	<div id="preact-app"></div>
 
 	<script type="module/island">
@@ -38,16 +39,39 @@ title: Preact Islands
 	</script>
 </is-land>
 
+{% assign componentHydration = "./lib/preact/preact-component.js" | preact %}
+<is-land on:visible>
+	<div id="preact-app-client"></div>
+
+	<script type="module/island">
+	import { render } from 'https://unpkg.com/htm/preact/index.mjs?module';
+	import Counter from '{{ componentHydration.clientJsUrl }}';
+
+	render(Counter(), document.getElementById("preact-app-client"));
+	</script>
+</is-land>
+
 <h2>Server-rendered Preact (SSR)</h2>
 
-{% assign component = "./lib/preact/preact-component.js" | preactSSR %}
-<is-land on:visible import>
-	This is a preact component:
-	<div id="preact-app-ssr">{{ component.html }}</div>
+<h3>No hydration, HTML only</h3>
 
-	<script type="module">
+<p>Without hydration, the island is unnecessary.</p>
+
+<div class="demo-component">
+	{% assign component = "./lib/preact/preact-component-html-only.js" | preact %}
+	{{ component.html }}
+</div>
+
+<h3>With Hydration</h3>
+
+{% assign componentHydration = "./lib/preact/preact-component.js" | preact %}
+<is-land on:visible>
+	This is a preact component:
+	<div id="preact-app-ssr">{{ componentHydration.html }}</div>
+
+	<script type="module/island">
 	import { render } from 'https://unpkg.com/htm/preact/index.mjs?module';
-	import Counter from '{{ component.clientJsUrl }}';
+	import Counter from '{{ componentHydration.clientJsUrl }}';
 
 	render(Counter(), document.getElementById("preact-app-ssr"));
 	</script>

@@ -20,38 +20,63 @@ showPageCss: true
 
 <hr style="height: 100vh">
 
-<h2><code>on:visible</code></h2>
+<p>Svelte requires a compiler for both client and server rendering, in this case provided by Eleventy.</p>
 
-<h3>Client-rendered Svelte</h3>
-<is-land on:visible autoinit="svelte" import="{{ "./lib/svelte/my-component.svelte" | svelteComponentUrl }}"></is-land>
+<h2>Client-rendered Svelte</h2>
+
+{% assign component = "./lib/svelte/my-component-client.svelte" | svelte %}
+
+<p>Using autoinit:</p>
+
+<is-land on:visible autoinit="svelte" import="{{ component.clientJsUrl }}"></is-land>
+
+<p>Using script:</p>
 
 <is-land on:visible>
-  <div id="svelte-app-client"></div>
-  <script type="module/island">
-  import App from '{{ "./lib/svelte/my-component.svelte" | svelteComponentUrl }}';
+	<div id="svelte-app-client"></div>
+	<script type="module/island">
+	import App from '{{ component.clientJsUrl }}';
 
-  new App({
-    target: document.getElementById("svelte-app-client"),
+	new App({
+		target: document.getElementById("svelte-app-client"),
 
 		// prop override
-    props: {
-      name: "milky way galaxy"
-    },
-  });
-  </script>
+		props: {
+			name: "milky way galaxy"
+		},
+	});
+	</script>
 </is-land>
 
-<h3>Server-rendered Svelte (SSR)</h3>
+{% comment %}
+<p>Super advanced use case documented for complete-ness: server-rendered, island-toggled Svelte.</p>
 
-<p>SSR requires server-side integration, in this case provided by Eleventy.</p>
-
-{% assign component = "./lib/svelte/my-component.svelte" | svelteSSR: page.url %}
+{% assign component = "./lib/svelte/my-component-html-only.svelte" | svelte: page.url %}
 <is-land on:visible>
-	{% comment %}
-	<!-- Skip this because we add the component CSS to the <head> in layout.html -->
-	<!-- Multiple instances of the same SSR component should only have one instance of the CSS -->
-	<style>{{ component.css }}</style>
-	{% endcomment %}
+	<template data-island>{{ component.html }}</template>
+</is-land>
+{% endcomment %}
+
+<h2>Server-rendered Svelte (SSR)</h2>
+
+<h3>No hydration, HTML only</h3>
+
+<p>Without hydration, the island is unnecessary.</p>
+
+<div class="demo-component">
+	<!-- Component CSS is added to the <head> in layout.html -->
+	{% assign component = "./lib/svelte/my-component-html-only.svelte" | svelte: page.url %}
+	{{ component.html }}
+</div>
+
+<h3>With Hydration</h3>
+
+{% comment %}TODO autoinit for SSR?{% endcomment %}
+
+{% assign component = "./lib/svelte/my-component.svelte" | svelte: page.url %}
+<is-land on:visible>
+	<!-- Component CSS is added to the <head> in layout.html, we don’t need duplicated CSS littered throughout every use of the component -->
+	{% comment %}<style>{{ component.css }}</style>{% endcomment %}
 
 	<div id="svelte-app-ssr">{{ component.html }}</div>
 

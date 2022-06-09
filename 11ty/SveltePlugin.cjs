@@ -28,18 +28,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("getSvelteCss", pageUrl => pageCss.getCssForPage(pageUrl));
   // End page-level CSS
 
-  eleventyConfig.addFilter("svelteComponentUrl", async function(filename) {
-    let c = new EleventySvelteComponent(filename, {
-      ssr: false,
-    });
+  eleventyConfig.addFilter("svelte", async function(filename, pageUrl) {
+    let ssr = !!pageUrl;
 
-    let {clientJsUrl} = c.get();
-    return clientJsUrl;
-  });
-
-  eleventyConfig.addFilter("svelteSSR", async function(filename, pageUrl) {
     let c = new EleventySvelteComponent(filename, {
-      ssr: true,
+      ssr,
     });
 
     let component = c.get();
