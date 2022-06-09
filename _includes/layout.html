@@ -28,14 +28,15 @@
 		</style>
 {% endif %}
 
-		<script type="module">
-		import "/islands.js";
+		<script type="module" src="/islands.js"></script>
 
-		// You can directly import dependencies (for eager loading)
-		// or for lazy loaded islands put dependencies into `import="./lib/vanilla-web-component.js"`
-		// Look inside this file for a commented-out example of using this programmatically in your component code
-		import "/lib/vanilla-web-component.js";
-		</script>
+		<!--
+		You can directly import dependencies (for eager loading)
+		or for lazy loaded islands put dependencies into `import="./lib/vanilla-web-component.js"`
+		Look inside this file for a commented-out example of using this programmatically in your component code
+		-->
+		<script type="module" src="/lib/vanilla-web-component.js"></script>
+
 	</head>
 	<body>
 		{{ content }}

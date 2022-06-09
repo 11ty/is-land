@@ -60,9 +60,7 @@ title: Vue Islands
 		import { createApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
 
 		createApp({
-			data() {
-				return { count: 0 };
-			}
+			data: () => ({ count: 0 })
 		}).mount("#vue-app")
 	</script>
 </is-land>

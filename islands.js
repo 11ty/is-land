@@ -32,8 +32,11 @@ class Island extends HTMLElement {
     "vue": function(library) {
       library.createApp().mount(this);
     },
-    "svelte": function(library) {
-      new library.default({ target: this });
+    "svelte": function(mod) {
+      new mod.default({ target: this });
+    },
+    "preact": function(mod) {
+      mod.default(this);
     }
   }
 
@@ -265,7 +268,7 @@ class Conditions {
     let events = ["click", "touchstart"];
     // event overrides e.g. on:interaction="mouseenter"
     if(eventOverrides) {
-      events = (eventOverrides || "").split(",");
+      events = (eventOverrides || "").split(",").map(entry => entry.trim());
     }
 
     return new Promise(resolve => {

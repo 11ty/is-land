@@ -12,6 +12,8 @@ module.exports = function(eleventyConfig) {
     // enabled: false, // incompatible with the import maps example https://github.com/11ty/eleventy-dev-server/issues/31
   });
 
+  eleventyConfig.ignores.add("README.md");
+
   eleventyConfig.addPlugin(EleventySveltePlugin);
   eleventyConfig.addPlugin(EleventyVuePlugin);
   eleventyConfig.addPlugin(EleventyPreactPlugin);
