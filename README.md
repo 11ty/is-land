@@ -12,7 +12,7 @@ Features:
 
 Examples for
 
-* [Web Components](./demo.html)
+* [Web Components](./index.html)
 * [Svelte](./demo-svelte.html) (and SSR)
 * [Vue (and petite-vue)](./demo-vue.html) (and SSR)
 * [Preact](./demo-preact.html) (and SSR)
