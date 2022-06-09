@@ -212,7 +212,7 @@ This example uses [an Eleventy/Svelte integration](./11ty/SveltePlugin.cjs) to c
 <h1>Hello {name}</h1>
 
 <button on:click={handleClick}>
-	Clicked {count} {count === 1 ? 'time' : 'times'}
+  Clicked {count} {count === 1 ? 'time' : 'times'}
 </button>
 ```
 
@@ -220,7 +220,7 @@ This example uses [an Eleventy/Svelte integration](./11ty/SveltePlugin.cjs) to c
 
 #### Preact
 
-* Smallest library (~5 kB)
+* Very small library (~5 kB)
 * Rendering modes: Client-only, Server-only, Server + Client (Hydration)
 * Support for `autoinit`
 
@@ -250,12 +250,13 @@ export default function(el) {
 #### Lit
 
 * Small library (~7 kB)
-* Rendering modes: Client-only, TODO
+* Rendering modes: Client-only, Server + Client (Hydration)
+  * Note: Server-only is not supported: it requires Declarative Shadow DOM support to work without JS.
 * No support for `autoinit`
 
 ```html
 <is-land on:visible import="./lib/lit/lit-component.js">
-	<lit-component name="Post-JS">Pre-JS Content</lit-web-component>
+  <lit-component name="Post-JS">Pre-JS Content</lit-web-component>
 </is-land>
 ```
 
@@ -279,3 +280,17 @@ customElements.define('lit-component', class extends LitElement {
 </details>
 
 #### Alpine.js
+
+* Smaller library (15 kB)
+* Rendering modes: Client-only
+* No `autoinit` but it is not needed (functionality included for-free by Alpine.js)
+
+```html
+<is-land on:visible import="https://unpkg.com/alpinejs">
+  <div x-data="{ count: 0 }">
+    Hello from Alpine.js!
+
+    <button @click="count++">⬆️</button> <button @click="count--">⬇️</button> <span x-text="count"></span>
+  </div>
+</is-land>
+```
