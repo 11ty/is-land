@@ -27,12 +27,12 @@ Examples for
 npm install @11ty/is-land
 ```
 
-Add `islands.js` to your primary bundle. It can be deferred and/or loaded asynchronously.
+Add `is-land.js` to your primary bundle. It can be deferred and/or loaded asynchronously.
 
 When using with web components it must be the first custom element defined (via `customElements.define`) on the page. Choose your style:
 
 ```html
-<script type="module" src="/islands.js"></script>
+<script type="module" src="/is-land.js"></script>
 ```
 
 ```html

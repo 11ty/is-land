@@ -1,11 +1,11 @@
 {
-  "name": "@11ty/islands",
+  "name": "@11ty/is-land",
   "version": "1.0.0",
   "description": "A framework independent partial hydration islands architecture implementation.",
   "type": "module",
-  "main": "islands.js",
+  "main": "is-land.js",
   "scripts": {
-    "compress": "terser islands.js -o islands.min.js --compress",
+    "compress": "terser is-land.js -o is-land.min.js --compress",
     "start": "npx @11ty/eleventy --config=eleventy.cjs --serve",
     "build": "npx @11ty/eleventy --config=eleventy.cjs"
   },
