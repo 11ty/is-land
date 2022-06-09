@@ -4,7 +4,7 @@ const EleventyPreactPlugin = require("./11ty/PreactPlugin.cjs");
 
 module.exports = function(eleventyConfig) {
   eleventyConfig.setQuietMode(true);
-  eleventyConfig.addPassthroughCopy("lib/**/*.{css,svg,js}");
+  eleventyConfig.addPassthroughCopy("lib/**/*.{css,png,svg,js}");
   eleventyConfig.addPassthroughCopy("*.{css,js}");
 
   eleventyConfig.setServerOptions({

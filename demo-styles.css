@@ -51,3 +51,14 @@ is-land[ready] {
   background-color: rgba(112, 110, 233, 0.2);
   outline: 2px solid rgb(97, 82, 173);
 }
+
+/* List logos */
+.examples {
+  line-height: 2;
+}
+.examples img {
+  margin-right: .3em;
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: text-bottom;
+}

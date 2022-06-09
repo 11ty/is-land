@@ -1,9 +1,9 @@
 {
   "name": "@11ty/islands",
   "version": "1.0.0",
-  "description": "",
-  "main": "islands.js",
+  "description": "A framework independent partial hydration islands architecture implementation.",
   "type": "module",
+  "main": "islands.js",
   "directories": {
     "lib": "lib"
   },
