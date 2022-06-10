@@ -1,7 +1,7 @@
 const EleventySveltePlugin = require("./11ty/SveltePlugin.cjs");
 const EleventyVuePlugin = require("./11ty/VuePlugin.cjs");
 const EleventyPreactPlugin = require("./11ty/PreactPlugin.cjs");
-const markdownIt = require("markdown-it");
+const EleventyIslandMarkdownPlugin = require("./11ty/MarkdownPlugin.cjs");
 
 module.exports = function(eleventyConfig) {
   eleventyConfig.setQuietMode(true);
@@ -18,12 +18,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(EleventySveltePlugin);
   eleventyConfig.addPlugin(EleventyVuePlugin);
   eleventyConfig.addPlugin(EleventyPreactPlugin);
+  eleventyConfig.addPlugin(EleventyIslandMarkdownPlugin);
 
   eleventyConfig.addGlobalData("permalink", () => {
     return (data) => `${data.page.filePathStem}.${data.page.outputFileExtension}`;
   });
-
-  eleventyConfig.setLibrary("md", markdownIt({ html: true }).disable('code'));
 
   return {
     htmlTemplateEngine: "liquid",
