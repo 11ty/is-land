@@ -4,7 +4,7 @@ A framework independent partial hydration islands architecture implementation.
 
 * View the [demos](https://is-land.11ty.dev/)
 * Check out the [screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188).
-* [Learn more about Islands Architecture](https://jasonformat.com/islands-architecture/)[
+* [Learn more about Islands Architecture](https://jasonformat.com/islands-architecture/)
 
 Features:
 
