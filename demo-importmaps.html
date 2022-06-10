@@ -44,7 +44,7 @@ showImportMaps: true
 
 <h3>Lazy loaded Vue.js</h3>
 
-<p>This is the first full Vue component (and it is off-viewport) so the library code is also lazy loaded. You can swap this behavior and eagerly load the library code by adding <code>loading="eager"</code> on any individual island.</p>
+<p>This is the first full Vue component (and it is off-viewport) so the library code is also lazy loaded. The island will eagerly load the library code if it has no loading conditions.</p>
 
 <!-- You can add `import="vue"` here if you want the import to finish before the component is declared “ready” -->
 <is-land on:visible>

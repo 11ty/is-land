@@ -31,7 +31,7 @@ title: Vue Islands
 		</template>
 	</div>
 
-	<!-- when using eagerly loaded islands, use `type="module"` instead of `type="module/island"` so the preload scanner can find it-->
+	<!-- when using eagerly loaded islands (no loading conditions), use `type="module"` instead of `type="module/island"` so the preload scanner can find it-->
 	<script type="module/island">
 	import { createApp } from "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js";
 
@@ -43,7 +43,7 @@ title: Vue Islands
 
 <h3>Client-rendered Vue.js</h3>
 
-<p>This is the first full Vue component (and it is off-viewport) so the library code is also lazy loaded. You can swap this behavior and eagerly load the library code by adding <code>loading="eager"</code> on any individual island.</p>
+<p>This is the first full Vue component (and it is off-viewport) so the library code is also lazy loaded. The island will eagerly load the library code if it has no loading conditions.</p>
 
 <!-- You can add `import="https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js"` here if you want the import to finish before the component is declared “ready” -->
 <is-land on:visible>
