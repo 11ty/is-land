@@ -120,9 +120,11 @@ is-land[ready] {
 This code runs when the island’s loading conditions have been satisfied! Note the `type="module/island"`.
 
 ```html
-<script type="module/island">
-console.log("Hydrating!");
-</script>
+<is-land on:visible>
+  <script type="module/island">
+  console.log("Hydrating!");
+  </script>
+</is-land>
 ```
 
 ### Framework Support
