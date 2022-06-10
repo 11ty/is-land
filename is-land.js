@@ -35,6 +35,9 @@ class Island extends HTMLElement {
     "svelte": function(mod) {
       new mod.default({ target: this });
     },
+    "svelte-ssr": function(mod) {
+      new mod.default({ target: this, hydrate: true });
+    },
     "preact": function(mod) {
       mod.default(this);
     }

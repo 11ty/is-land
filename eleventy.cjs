@@ -1,6 +1,7 @@
 const EleventySveltePlugin = require("./11ty/SveltePlugin.cjs");
 const EleventyVuePlugin = require("./11ty/VuePlugin.cjs");
 const EleventyPreactPlugin = require("./11ty/PreactPlugin.cjs");
+const markdownIt = require("markdown-it");
 
 module.exports = function(eleventyConfig) {
   eleventyConfig.setQuietMode(true);
@@ -22,7 +23,10 @@ module.exports = function(eleventyConfig) {
     return (data) => `${data.page.filePathStem}.${data.page.outputFileExtension}`;
   });
 
+  eleventyConfig.setLibrary("md", markdownIt({ html: true }).disable('code'));
+
   return {
     htmlTemplateEngine: "liquid",
+    markdownTemplateEngine: "liquid",
   }
 };

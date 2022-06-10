@@ -59,7 +59,7 @@ class EleventySvelteComponent {
     let fn = m.exports.default.render;
     let result = fn();
     return {
-      html: result.html,
+      html: result.html.replace(/\n/g, ""),
       css: result.css.code
     };
   }
@@ -69,7 +69,7 @@ class EleventySvelteComponent {
     let {html, css} = this.renderOnServer();
 
     return {
-      html,
+      html: html.replace(/\n/g, ""),
       css,
       clientJsUrl: target.getImportUrl()
     };
