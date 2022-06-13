@@ -10,8 +10,6 @@ title: Preact Islands
 
 <h2>Client-rendered Preact</h2>
 
-<!-- no autoinit for preact -->
-
 <p>Example from <a href="https://preactjs.com/guide/v10/getting-started#no-build-tools-route"><code>https://preactjs.com/guide/v10/getting-started#no-build-tools-route</code></a></p>
 
 <is-land on:visible autoinit="preact" import="/lib/preact/preact-component-js-only.js"></is-land>
@@ -55,9 +53,7 @@ title: Preact Islands
 
 <h3>With Hydration</h3>
 
-{% assign componentHydration = "./lib/preact/preact-component.js" | preact %}
 <is-land on:visible>
-	This is a preact component:
 	<div id="preact-app-ssr">{{ componentHydration.html }}</div>
 
 	<script type="module/island">

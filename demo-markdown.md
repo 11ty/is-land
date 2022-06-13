@@ -26,7 +26,6 @@ Some code
 ## Svelte (SSR) Component
 
 {% assign component = "./lib/svelte/my-component.svelte" | svelte: page.url %}
-<!-- TODO remove this wrapper div. Added to avoid a <p> wrapper around the island -->
 
 <is-land on:visible autoinit="svelte-ssr" import="{{ component.clientJsUrl }}">{{ component.html }}</is-land>
 
