@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+			html, body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+			}
+			body {
+				display: grid;
+				grid-template-columns: repeat( auto-fill, minmax(10em, 1fr) );
+				grid-gap: 1em;
+				overflow: scroll;
+				padding: .5em;
+			}
+			.island {
+				font-family: monospace;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 4em;
+				border: 2px solid rgba(60, 60, 60, .6);
+			}
+			is-land[ready] slide-scroller {
+				background-color: lightgreen;
+				border-color: darkgreen;
+			}
+		</style>
+		<script type="module" src="/is-land.js" defer></script>
+		<script type="module" defer>
+		customElements.define("slide-scroller", class extends HTMLElement {
+			connectedCallback() {
+				console.log( this );
+			}
+		});
+		</script>
+	</head>
+	<body>
+{% for i in (1..5000) %}
+	<is-land on:visible on:idle>
+		<slide-scroller class="island">&lt;is-land&gt; #{{i}}</slide-scroller>
+	</is-land>
+{% endfor %}
+{% for i in (1..5000) %}
+	<is-land on:visible on:idle>
+		<slide-scroller class="island">&lt;is-land&gt; #{{i | plus: 5000}}</slide-scroller>
+	</is-land>
+{% endfor %}
+	</body>
+</html>
