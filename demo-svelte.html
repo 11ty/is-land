@@ -65,9 +65,12 @@ showPageCss: true
 
 <h3>With Hydration</h3>
 
-{% comment %}TODO autoinit for SSR?{% endcomment %}
-
 {% assign component = "./lib/svelte/my-component.svelte" | svelte: page.url %}
+<!-- Component CSS is added to the <head> in layout.html, we don’t need duplicated CSS littered throughout every use of the component -->
+<is-land on:visible autoinit="svelte-ssr" import="{{ component.clientJsUrl }}">
+	{{ component.html }}
+</is-land>
+
 <is-land on:visible>
 	<!-- Component CSS is added to the <head> in layout.html, we don’t need duplicated CSS littered throughout every use of the component -->
 	{% comment %}<style>{{ component.css }}</style>{% endcomment %}
@@ -81,12 +84,7 @@ showPageCss: true
 			target: document.getElementById("svelte-app-ssr"),
 
 			// SSR must have hydrate: true
-			hydrate: true,
-
-			// prop override
-			props: {
-				name: "universe"
-			},
+			hydrate: true
 		});
 	</script>
 </is-land>

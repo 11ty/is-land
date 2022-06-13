@@ -6,7 +6,7 @@ const { ImportTransformer } = require("esm-import-transformer");
 class FileTarget {
   constructor(filename) {
     this.filename = filename;
-    this.parsed = path.parse(this.filename);
+    this.parsed = path.parse(filename);
     this.suffix = ".client";
   }
 

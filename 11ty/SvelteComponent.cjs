@@ -8,7 +8,7 @@ const FileTarget = require("./FileTarget.cjs");
 class EleventySvelteComponent {
   constructor(filename, options = { ssr: true }) {
     this.filename = filename;
-    this.parsed = path.parse(this.filename);
+    this.parsed = path.parse(filename);
     this.content = fs.readFileSync(filename, "utf8");
     this.isSSR = options.ssr;
 
