@@ -21,7 +21,7 @@
 				min-height: 4em;
 				border: 2px solid rgba(60, 60, 60, .6);
 			}
-			is-land[ready] slide-scroller {
+			is-land[ready] {
 				background-color: lightgreen;
 				border-color: darkgreen;
 			}
@@ -38,28 +38,28 @@
 	<body>
 {% comment %}Liquid.js was having trouble with such a large loop!{% endcomment %}
 {% for i in (1..2000) %}
-	<is-land on:visible on:idle>
-		<slide-scroller class="island">&lt;is-land&gt; #{{i}}</slide-scroller>
+	<is-land on:visible on:idle class="island">
+		<slide-scroller>&lt;is-land&gt; #{{i}}</slide-scroller>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
-	<is-land on:visible on:idle>
-		<slide-scroller class="island">&lt;is-land&gt; #{{i | plus: 2000}}</slide-scroller>
+	<is-land on:visible on:idle class="island">
+		<slide-scroller>&lt;is-land&gt; #{{i | plus: 2000}}</slide-scroller>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
-	<is-land on:visible on:idle>
-		<slide-scroller class="island">&lt;is-land&gt; #{{i | plus: 4000}}</slide-scroller>
+	<is-land on:visible on:idle class="island">
+		<slide-scroller>&lt;is-land&gt; #{{i | plus: 4000}}</slide-scroller>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
-	<is-land on:visible on:idle>
-		<slide-scroller class="island">&lt;is-land&gt; #{{i | plus: 6000}}</slide-scroller>
+	<is-land on:visible on:idle class="island">
+		<slide-scroller>&lt;is-land&gt; #{{i | plus: 6000}}</slide-scroller>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
-	<is-land on:visible on:idle>
-		<slide-scroller class="island">&lt;is-land&gt; #{{i | plus: 8000}}</slide-scroller>
+	<is-land on:visible on:idle class="island">
+		<slide-scroller>&lt;is-land&gt; #{{i | plus: 8000}}</slide-scroller>
 	</is-land>
 {% endfor %}
 	</body>
