@@ -10,7 +10,7 @@ module.exports = function(eleventyConfig) {
     let target = new FileTarget(filename);
     target.write(content, {
       imports: {
-        // For this demo I’m using unpkg for the Svelte library
+        // For this demo I’m using unpkg for the Preact library
         "htm/preact": "https://unpkg.com/htm/preact/index.mjs?module"
       }
     });
