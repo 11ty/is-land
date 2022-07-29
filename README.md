@@ -5,7 +5,7 @@ A new performance-focused way to add interactive client-side components to your 
 Or, more technically: a framework independent partial hydration islands architecture implementation.
 
 * View the [demos](https://is-land.11ty.dev/)
-* Check out the [initial screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188) and [the follow up scrrencast](https://www.youtube.com/watch?v=V9hWgVV_5mg).
+* Check out the [initial screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188) and [the follow up screencast with more framework examples](https://www.youtube.com/watch?v=V9hWgVV_5mg).
 * [Learn more about Islands Architecture](https://jasonformat.com/islands-architecture/)
 
 Features:
