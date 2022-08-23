@@ -5,7 +5,7 @@ A new performance-focused way to add interactive client-side components to your 
 Or, more technically: a framework independent partial hydration islands architecture implementation.
 
 * View the [demos](https://is-land.11ty.dev/)
-* Check out the [screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188).
+* Check out the [initial screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188) and [the follow up screencast with more framework examples](https://www.youtube.com/watch?v=V9hWgVV_5mg).
 * [Learn more about Islands Architecture](https://jasonformat.com/islands-architecture/)
 
 Features:
@@ -24,7 +24,7 @@ Examples for
 * [Preact](./demo-preact.html) (and SSR)
 * [Lit](./demo-lit.html) (and SSR)
 * [Alpine.js](./demo-alpine.html)
-* [Embedded in Markdown](./demo-markdown.html)
+* [Embedded in Markdown](./demo-markdown.md)
 * _Experimental:_ [Image Loading](./demo-image-loading.html)
 * _Experimental:_ [Using import maps to simplify import URLs](./demo-importmaps.html). This is for-future-reference when [browser support broadens](https://caniuse.com/import-maps).
 
@@ -133,7 +133,7 @@ This code runs when the island’s loading conditions have been satisfied! Note 
 
 ### Framework Support
 
-[Demos with source code](https://is-land.11ty.dev/) are available for each framework listed here.
+[Demos and source in the HTML](https://is-land.11ty.dev/) are available for each framework listed here.
 
 #### `autoinit`
 
