@@ -44,7 +44,7 @@ When using with web components it must be the first custom element defined (via 
 
 ```html
 <script type="module">
-import "/island.js";
+import "/is-land.js";
 </script>
 ```
 
