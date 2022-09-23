@@ -310,3 +310,22 @@ title: Islands
 	</form>
 	<template data-island="replace">Your video player here.</template>
 </is-land>
+
+<h2>Custom Lazy Asset Loading</h2>
+
+<is-land on:interaction id="script-style-loading">
+	<form>
+		<button type="button">Hydrate the island</button>
+	</form>
+
+	<p>Loading <code>&lt;script type="module/island"&gt;</code>, <code>&lt;style media="style/island"&gt;</code>, <code>&lt;link rel="stylesheet" media="style/island"&gt;</code> when conditions are met. The text will turn red when the inline CSS loads and bold when the external stylesheet loads.</p>
+
+	<script type="module/island">
+	console.log( "Inline JS executed." );
+	</script>
+	<script type="module/island" src="./lib/js-file.js"></script>
+	<style media="style/island" data-media="(min-width: 1px)">
+	#script-style-loading { color: red; }
+	</style>
+	<link rel="stylesheet" media="style/island" data-media="(min-width: 1px)" href="./lib/css-file.css">
+</is-land>
