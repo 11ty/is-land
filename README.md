@@ -12,7 +12,7 @@ Features:
 
 * Easy to add to existing components
 * Zero dependencies
-* Small footprint (4.56 kB minimized; 1.47 kB with Brotli compression)
+* Small footprint (4.71 kB minimized; 1.52 kB with Brotli compression)
 * Not tightly coupled to a server framework or site generator tool.
 * Server-rendered (SSR) component examples available for SSR-friendly frameworks (Lit, Svelte, Vue, Preact are provided)
 
