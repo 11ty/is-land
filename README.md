@@ -107,23 +107,25 @@ Place any post-JS content inside of one or more `<template data-island>` element
 </is-land>
 ```
 
-#### Run your own custom JavaScript
+#### Run your own custom JavaScript, load your own CSS
 
 Embed a script inside the template to run custom JS when the island’s loading conditions have been satisfied!
 
 ```html
 <is-land on:visible>
   <template data-island>
-    <script type="module">
-    console.log("Hydrating!");
-    </script>
+    <!-- CSS -->
+    <style>/* My custom CSS */</style>
+    <link rel="stylesheet" href="my-css-file.css">
+
+    <!-- JS -->
+    <script type="module">console.log("Hydrating!");</script>
+    <script type="module" src="my-js-file.js"></script>
   </template>
 </is-land>
 ```
 
-#### Styling
-
-The `ready` attribute is added to the `<is-land>` when the island has been hydrated.
+You can also use the `ready` attribute for styling, added to the `<is-land>` when the island has been hydrated.
 
 ```html
 <style>
