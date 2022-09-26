@@ -1,3 +1,5 @@
+const islandOnceCache = {};
+
 class Island extends HTMLElement {
   static tagName = "is-land";
 
@@ -145,8 +147,9 @@ class Island extends HTMLElement {
   replaceTemplates(templates) {
     // replace <template> with the live content
     for(let node of templates) {
+      let value = node.getAttribute(this.attrs.template);
       // get rid of the rest of the content on the island
-      if(node.getAttribute(this.attrs.template) === "replace") {
+      if(value === "replace") {
         let children = Array.from(this.childNodes);
         for(let child of children) {
           this.removeChild(child);
@@ -154,6 +157,15 @@ class Island extends HTMLElement {
         this.appendChild(node.content);
         break;
       } else {
+        if(value === "once") {
+          if(islandOnceCache[node.content]) {
+            node.remove();
+            return;
+          }
+
+          islandOnceCache[node.content] = true;
+        }
+
         node.replaceWith(node.content);
       }
     }

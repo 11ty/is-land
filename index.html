@@ -331,3 +331,24 @@ title: Islands
 		<link rel="stylesheet" href="./lib/css-file.css">
 	</template>
 </is-land>
+
+<h2>Once per page template</h2>
+
+<is-land on:visible>
+	Each of these islands has a console.log but you should only see one.
+	<template data-island="once">
+		<script type="module">console.log( "You should only see this once." );</script>
+	</template>
+</is-land>
+<is-land on:visible>
+	Each of these islands has a console.log but you should only see one.
+	<template data-island="once">
+		<script type="module">console.log( "You should only see this once." );</script>
+	</template>
+</is-land>
+<is-land on:visible>
+	Each of these islands has a console.log but you should only see one.
+	<template data-island="once">
+		<script type="module">console.log( "You should only see this once." );</script>
+	</template>
+</is-land>
