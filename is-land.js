@@ -70,10 +70,14 @@ class Island extends HTMLElement {
     });
   }
 
-  static getParents(el, selector) {
+  static getParents(el, selector, stopAt = false) {
     let nodes = [];
     while(el) {
       if(el.matches && el.matches(selector)) {
+        if(stopAt && el === stopAt) {
+          break;
+        }
+
         nodes.push(el);
       }
       el = el.parentNode;
@@ -147,6 +151,9 @@ class Island extends HTMLElement {
   replaceTemplates(templates) {
     // replace <template> with the live content
     for(let node of templates) {
+      if(Island.getParents(node, Island.tagName, this).length > 0) {
+        continue;
+      }
       let value = node.getAttribute(this.attrs.template);
       // get rid of the rest of the content on the island
       if(value === "replace") {
