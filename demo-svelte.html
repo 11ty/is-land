@@ -28,18 +28,20 @@ showPageCss: true
 
 <is-land on:visible>
 	<div id="svelte-app-client"></div>
-	<script type="module/island">
-	import App from '{{ component.clientJsUrl }}';
+	<template data-island>
+		<script type="module">
+		import App from '{{ component.clientJsUrl }}';
 
-	new App({
-		target: document.getElementById("svelte-app-client"),
+		new App({
+			target: document.getElementById("svelte-app-client"),
 
-		// prop override
-		props: {
-			name: "milky way galaxy"
-		},
-	});
-	</script>
+			// prop override
+			props: {
+				name: "milky way galaxy"
+			},
+		});
+		</script>
+	</template>
 </is-land>
 
 {% comment %}
@@ -77,7 +79,8 @@ showPageCss: true
 
 	<div id="svelte-app-ssr">{{ component.html }}</div>
 
-	<script type="module/island">
+	<template data-island>
+		<script type="module">
 		import App from '{{ component.clientJsUrl }}';
 
 		new App({
@@ -86,5 +89,6 @@ showPageCss: true
 			// SSR must have hydrate: true
 			hydrate: true
 		});
-	</script>
+		</script>
+	</template>
 </is-land>

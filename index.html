@@ -318,14 +318,16 @@ title: Islands
 		<button type="button">Hydrate the island</button>
 	</form>
 
-	<p>Loading <code>&lt;script type="module/island"&gt;</code>, <code>&lt;style media="style/island"&gt;</code>, <code>&lt;link rel="stylesheet" media="style/island"&gt;</code> when conditions are met. The text will turn red when the inline CSS loads and bold when the external stylesheet loads.</p>
+	<p>Nest any inline <code>&lt;script&gt;</code>, <code>&lt;script src&gt;</code>, <code>&lt;style&gt;</code>, <code>&lt;link rel="stylesheet"&gt;</code> inside a <code>&lt;template data-island&gt;</code> to execute when conditions are met. The text will turn red when the inline CSS loads and bold when the external stylesheet loads.</p>
 
-	<script type="module/island">
-	console.log( "Inline JS executed." );
-	</script>
-	<script type="module/island" src="./lib/js-file.js"></script>
-	<style media="style/island" data-media="(min-width: 1px)">
-	#script-style-loading { color: red; }
-	</style>
-	<link rel="stylesheet" media="style/island" data-media="(min-width: 1px)" href="./lib/css-file.css">
+	<template data-island>
+		<script type="module">
+		console.log( "Inline JS executed." );
+		</script>
+		<script type="module" src="./lib/js-file.js"></script>
+		<style>
+		#script-style-loading { color: red; }
+		</style>
+		<link rel="stylesheet" href="./lib/css-file.css">
+	</template>
 </is-land>

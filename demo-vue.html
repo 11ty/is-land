@@ -31,14 +31,15 @@ title: Vue Islands
 		</template>
 	</div>
 
-	<!-- when using eagerly loaded islands (no loading conditions), use `type="module"` instead of `type="module/island"` so the preload scanner can find it-->
-	<script type="module/island">
-	import { createApp } from "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js";
+	<template data-island>
+		<script type="module">
+		import { createApp } from "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js";
 
-	createApp({
-		count: 0,
-	}).mount("#petite-vue-app")
-	</script>
+		createApp({
+			count: 0,
+		}).mount("#petite-vue-app")
+		</script>
+	</template>
 </is-land>
 
 <h3>Client-rendered Vue.js</h3>
@@ -56,13 +57,15 @@ title: Vue Islands
 		</template>
 	</div>
 
-	<script type="module/island">
+	<template data-island>
+		<script type="module">
 		import { createApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
 
 		createApp({
 			data: () => ({ count: 0 })
 		}).mount("#vue-app")
-	</script>
+		</script>
+	</template>
 </is-land>
 
 <h3>Works with &lt;details&gt;</h3>
@@ -231,10 +234,12 @@ title: Vue Islands
 	{% assign component = "./lib/vue/vue-component.js" | vue %}
 	<div id="vue-app-ssr">{{ component.html }}</div>
 
-	<script type="module/island">
-	import { createSSRApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
-	import app from "{{ component.clientJsUrl }}";
+	<template data-island>
+		<script type="module">
+		import { createSSRApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
+		import app from "{{ component.clientJsUrl }}";
 
-	createSSRApp(app).mount("#vue-app-ssr");
-	</script>
+		createSSRApp(app).mount("#vue-app-ssr");
+		</script>
+	</template>
 </is-land>

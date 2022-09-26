@@ -10,7 +10,7 @@ title: Lit Islands
 
 <h2>Client-rendered Lit</h2>
 
-<p>You can use `import="./lit-component.js"` or `&lt;import type="module/island"&gt;`:</p>
+<p>You can use `import="./lit-component.js"` or `&lt;template data-island&gt; with &lt;script type="module"&gt;`:</p>
 
 <is-land on:visible import="./lib/lit/lit-component-client.js">
 	This is a lit component:
@@ -20,23 +20,25 @@ title: Lit Islands
 <is-land on:visible id="lit-test">
 	This is a lit component: <lit-other-web-component class="demo-component" name="World">Fallback content!</lit-other-web-component>
 
-	<script type="module/island">
-	import {html, css, LitElement} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
+	<template data-island>
+		<script type="module">
+		import {html, css, LitElement} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
 
-	customElements.define('lit-other-web-component', class extends LitElement {
-		// encapsulated styles!
-		static styles = css`p { color: blue; margin: 0; }`;
-	
-		static properties = {
-			name: {type: String},
-		};
+		customElements.define('lit-other-web-component', class extends LitElement {
+			// encapsulated styles!
+			static styles = css`p { color: blue; margin: 0; }`;
+		
+			static properties = {
+				name: {type: String},
+			};
 
-		render() {
-			this.classList.add("test-c-finish");
-			return html`<p>Hello, ${this.name || "Stranger"}!</p>`;
-		}
-	});
-	</script>
+			render() {
+				this.classList.add("test-c-finish");
+				return html`<p>Hello, ${this.name || "Stranger"}!</p>`;
+			}
+		});
+		</script>
+	</template>
 </is-land>
 
 <h2>Server-rendered Lit (SSR)</h2>

@@ -17,27 +17,31 @@ title: Preact Islands
 <is-land on:visible>
 	<div id="preact-app"></div>
 
-	<script type="module/island">
-	import { html, render } from 'https://unpkg.com/htm/preact/index.mjs?module'
+	<template data-island>
+		<script type="module">
+		import { html, render } from 'https://unpkg.com/htm/preact/index.mjs?module'
 
-	function App (props) {
-		return html`<p><strong>Hello ${props.name}!</strong></p>`;
-	}
+		function App (props) {
+			return html`<p><strong>Hello ${props.name}!</strong></p>`;
+		}
 
-	render(html`<${App} name="from Preact" />`, document.getElementById("preact-app"));
-	</script>
+		render(html`<${App} name="from Preact" />`, document.getElementById("preact-app"));
+		</script>
+	</template>
 </is-land>
 
 {% assign componentHydration = "./lib/preact/preact-component.js" | preact %}
 <is-land on:visible>
 	<div id="preact-app-client"></div>
 
-	<script type="module/island">
-	import { render } from 'https://unpkg.com/htm/preact/index.mjs?module';
-	import Counter from '{{ componentHydration.clientJsUrl }}';
+	<template data-island>
+		<script type="module">
+		import { render } from 'https://unpkg.com/htm/preact/index.mjs?module';
+		import Counter from '{{ componentHydration.clientJsUrl }}';
 
-	render(Counter(), document.getElementById("preact-app-client"));
-	</script>
+		render(Counter(), document.getElementById("preact-app-client"));
+		</script>
+	</template>
 </is-land>
 
 <h2>Server-rendered Preact (SSR)</h2>
@@ -56,10 +60,12 @@ title: Preact Islands
 <is-land on:visible>
 	<div id="preact-app-ssr">{{ componentHydration.html }}</div>
 
-	<script type="module/island">
-	import { render } from 'https://unpkg.com/htm/preact/index.mjs?module';
-	import Counter from '{{ componentHydration.clientJsUrl }}';
+	<template data-island>
+		<script type="module">
+		import { render } from 'https://unpkg.com/htm/preact/index.mjs?module';
+		import Counter from '{{ componentHydration.clientJsUrl }}';
 
-	render(Counter(), document.getElementById("preact-app-ssr"));
-	</script>
+		render(Counter(), document.getElementById("preact-app-ssr"));
+		</script>
+	</template>
 </is-land>

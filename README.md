@@ -107,6 +107,20 @@ Place any post-JS content inside of one or more `<template data-island>` element
 </is-land>
 ```
 
+#### Run your own custom JavaScript
+
+Embed a script inside the template to run custom JS when the island’s loading conditions have been satisfied!
+
+```html
+<is-land on:visible>
+  <template data-island>
+    <script type="module">
+    console.log("Hydrating!");
+    </script>
+  </template>
+</is-land>
+```
+
 #### Styling
 
 The `ready` attribute is added to the `<is-land>` when the island has been hydrated.
@@ -117,18 +131,6 @@ is-land[ready] {
   background-color: lightgreen;
 }
 </style>
-```
-
-#### Run your own custom JavaScript
-
-This code runs when the island’s loading conditions have been satisfied! Note the `type="module/island"`.
-
-```html
-<is-land on:visible>
-  <script type="module/island">
-  console.log("Hydrating!");
-  </script>
-</is-land>
 ```
 
 ### Framework Support
@@ -175,13 +177,15 @@ Use the `autoinit` and `import` attributes together to import a third party libr
     Hello from <span v-html="name">pre-JS</span>
   </div>
 
-  <script type="module/island">
+  <template data-island>
+    <script type="module">
     import { createApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
 
     createApp({
       data: () => ({ name: "post-JS" })
     }).mount("#vue-app")
-  </script>
+    </script>
+  </template>
 </is-land>
 ```
 

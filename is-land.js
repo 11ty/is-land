@@ -49,8 +49,6 @@ class Island extends HTMLElement {
     this.attrs = {
       autoInitType: "autoinit",
       import: "import",
-      scriptType: "module/island",
-      stylesheetType: "style/island",
       template: "data-island",
       ready: "ready",
     };
@@ -140,15 +138,6 @@ class Island extends HTMLElement {
     await this.hydrate();
   }
 
-  getInitScripts() {
-    return this.querySelectorAll(`:scope script[type="${this.attrs.scriptType}"]`);
-  }
-
-  getInitStylesheets() {
-    return this.querySelectorAll(`:scope :is(style, link)[media="${this.attrs.stylesheetType}"]`);
-    // return this.querySelectorAll(`:scope style[media="${this.attrs.stylesheetType}"], :scope link[media="${this.attrs.stylesheetType}"]`);
-  }
-
   getTemplates() {
     return this.querySelectorAll(`:scope template[${this.attrs.template}]`);
   }
@@ -170,58 +159,20 @@ class Island extends HTMLElement {
     }
   }
 
-  replaceNode(oldNode) {
-    let attrMap = {
-      script: { type: "module" },
-      style: { media: false },
-      link: { media: false },
-    };
-
-    if(!attrMap[oldNode.localName]) {
-      return;
-    }
-
-    let newNode = document.createElement(oldNode.localName);
-    for(let attrName of oldNode.getAttributeNames()) {
-      // don’t clone the data-media attribute to the new node
-      if(attrName.startsWith("data-") && attrMap[oldNode.localName][attrName.slice(5)] === false) {
-        continue;
-      }
-
-      let value;
-      if(attrMap[oldNode.localName][attrName] === false ) {
-        let replacement = oldNode.getAttribute(`data-${attrName}`);
-        if(replacement) {
-          value = replacement;
-        }
-      } else if(attrMap[oldNode.localName][attrName]) {
-        value = attrMap[oldNode.localName][attrName];
-      } else {
-        value = oldNode.getAttribute(attrName);
-      }
-      if(value || value === "") {
-        newNode.setAttribute(attrName, value);
-      }
-    }
-
-    // Idea: *could* modify this content to retrieve access to the modules therein
-    newNode.textContent = oldNode.textContent;
-
-    oldNode.replaceWith(newNode);
-  }
-
   async hydrate() {
     let conditions = [];
     if(this.parentNode) {
       // wait for all parents before hydrating
       conditions.push(Island.ready(this.parentNode));
     }
+
     let attrs = this.getConditions();
     for(let condition in attrs) {
       if(this.conditionMap[condition]) {
         conditions.push(this.conditionMap[condition](attrs[condition], this));
       }
     }
+
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
@@ -235,21 +186,8 @@ class Island extends HTMLElement {
       mod = await import(importScript);
     }
 
-    let initStylesheets = this.getInitStylesheets();
-    for(let old of initStylesheets) {
-      this.replaceNode(old);
-    }
-
-    // do nothing if has script[type="module/island"], will init manually in script via ready()
-    let initScripts = this.getInitScripts();
-
-    if(initScripts.length > 0) {
-      // activate <script type="module/island">
-      for(let old of initScripts) {
-        this.replaceNode(old);
-      }
-    } else if(mod) {
-      // Fallback to `import=""` for when import maps are available e.g. `import="petite-vue"`
+    if(mod) {
+      // Use `import=""` for when import maps are available e.g. `import="petite-vue"`
       let fn = Island.autoinit[this.getAttribute(this.attrs.autoInitType) || importScript];
 
       if(fn) {
@@ -257,7 +195,6 @@ class Island extends HTMLElement {
       }
     }
 
-    // When using <script type="module/island"> `readyResolve` will fire before any internal imports finish!
     this.readyResolve({
       import: mod
     });
