@@ -1,4 +1,4 @@
-const islandOnceCache = {};
+const islandOnceCache = new Map();
 
 class Island extends HTMLElement {
   static tagName = "is-land";
@@ -157,13 +157,13 @@ class Island extends HTMLElement {
         this.appendChild(node.content);
         break;
       } else {
-        if(value === "once") {
-          if(islandOnceCache[node.content]) {
+        if(value === "once" && node.innerHTML) {
+          if(islandOnceCache.has(node.innerHTML)) {
             node.remove();
             return;
           }
 
-          islandOnceCache[node.content] = true;
+          islandOnceCache.set(node.innerHTML, true);
         }
 
         node.replaceWith(node.content);
