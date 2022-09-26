@@ -108,7 +108,7 @@ Place any post-JS content inside of one or more `<template data-island>` element
 ```
 
 * Use `data-island="replace"` to replace the contents of the `<is-land>` with the template.
-* Use `data-island="once"` to run a template’s contents once per page (keyed from template contents).
+* Use `data-island="once"` to run a template’s contents once per page (keyed from template contents). _(New in v2.0.1)_
 
 #### Run your own custom JavaScript, load your own CSS
 
