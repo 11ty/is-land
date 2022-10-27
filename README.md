@@ -28,7 +28,7 @@ Examples for:
 * _Experimental:_ [Image Loading](./demo-image-loading.html)
 * _Experimental:_ [Using import maps to simplify import URLs](./demo-importmaps.html). This is for-future-reference when [browser support broadens](https://caniuse.com/import-maps).
 
-Integration examples:
+Integrations in the wild:
 
 * [Eleventy](https://is-land.11ty.dev/)
 * [WebC](https://demo-webc-image-compare.netlify.app)
