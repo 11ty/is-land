@@ -12,11 +12,11 @@ Features:
 
 * Easy to add to existing components
 * Zero dependencies
-* Small footprint (4.86 kB minimized; 1.57 kB with Brotli compression)
 * Not tightly coupled to a server framework or site generator tool.
+* Small footprint (4.86 kB minimized; 1.57 kB with Brotli compression)
 * Server-rendered (SSR) component examples available for SSR-friendly frameworks (Lit, Svelte, Vue, Preact are provided)
 
-Examples for
+Examples for:
 
 * [Web Components](./index.html)
 * [Svelte](./demo-svelte.html) (and SSR)
@@ -27,6 +27,14 @@ Examples for
 * [Embedded in Markdown](./demo-markdown.md)
 * _Experimental:_ [Image Loading](./demo-image-loading.html)
 * _Experimental:_ [Using import maps to simplify import URLs](./demo-importmaps.html). This is for-future-reference when [browser support broadens](https://caniuse.com/import-maps).
+
+Framework integration examples:
+
+* [Eleventy](https://is-land.11ty.dev/)
+* [WebC](https://demo-webc-image-compare.netlify.app)
+* [Slinkity](https://twitter.com/slinkitydotdev/status/1544322804774064133)
+* [SvelteKit](https://twitter.com/geoffrich_/status/1576932300960342018)
+* [Bridgetown](https://twitter.com/jaredcwhite/status/1585433466770173953)
 
 ## Installation
 
