@@ -9,16 +9,38 @@ showImagePlugin: true
 
 <p>This example uses <code>on:interaction</code>. You will need to interact with the island for the images to load. Note the aspect ratio before/after is preserved via the width/height attributes on the img.</p>
 
+<p>Uses <code>&lt;noscript&gt;</code> for No-JS friendly images.</p>
+
 <is-land on:interaction>
 	<form>
 		<button type="button">Hydrate the island</button>
 	</form>
 
-	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
-	<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	<noscript data-island-img-skeleton>
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	</noscript>
+</is-land>
+
+<p>Uses <code>&lt;template&gt;</code> for JS-only images.</p>
+
+<is-land on:interaction>
+	<form>
+		<button type="button">Hydrate the island</button>
+	</form>
+
+	<template data-island-img-skeleton>
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+		<img src="lib/logo-bg.svg" loading="lazy" width="200" height="200">
+	</template>
 </is-land>
