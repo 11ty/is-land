@@ -5,7 +5,7 @@ class Island extends HTMLElement {
   static prefix = "is-land--"
 
   static fallback = {
-    ":scope :not(:defined)": (readyPromise, node, prefix) => {
+    ":scope:not([ssr]) :not(:defined)": (readyPromise, node, prefix) => {
       // remove from document to prevent web component init
       let cloned = document.createElement(prefix + node.localName);
       for(let attr of node.getAttributeNames()) {

@@ -1,0 +1,94 @@
+---
+layout: layout.html
+title: Islands
+---
+<h1><a href="/">is-land</a></h1>
+
+<p>For <a href="https://github.com/11ty/is-land/issues/13">GitHub issue #13</a>.</p>
+
+<!-- <is-land import="/lib/details-utils.js">
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+	<p>This island will load without fallback because it’s eager (no loading conditions).</p>
+	<details-utils close-click-outside>
+		<details open>
+			<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
+			<p>Note that interacting with content inside of the menu works without closing the menu.</p>
+		</details>
+	</details-utils>
+</is-land> -->
+
+<is-land ssr on:interaction import="/lib/details-utils.js">
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+
+	<details-utils close-click-outside>
+		<details open>
+			<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
+			<p>Note that interacting with content inside of the menu works without closing the menu.</p>
+		</details>
+	</details-utils>
+</is-land>
+
+<!-- <is-land on:idle import="/lib/details-utils.js">
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+
+	<details-utils close-click-outside>
+		<details open>
+			<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
+			<p>Note that interacting with content inside of the menu works without closing the menu.</p>
+		</details>
+	</details-utils>
+</is-land> -->
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<is-land ssr on:visible import="/lib/details-utils.js">
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+
+	<details-utils close-click-outside>
+		<details open>
+			<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
+			<p>Note that interacting with content inside of the menu works without closing the menu.</p>
+		</details>
+	</details-utils>
+</is-land>
+
+<!-- <is-land on:visible>
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+
+	<some-other-custom-element>Some other custom element</some-other-custom-element>
+</is-land> -->
