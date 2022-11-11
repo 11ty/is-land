@@ -4,7 +4,7 @@ class Island extends HTMLElement {
   static tagName = "is-land";
 
   static fallback = {
-    ":not(:defined)": (readyPromise, node, prefix) => {
+    ":scope :not(:defined)": (readyPromise, node, prefix) => {
       // remove from document to prevent web component init
       let cloned = document.createElement(prefix + node.localName);
       for(let attr of node.getAttributeNames()) {
