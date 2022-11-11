@@ -2,6 +2,7 @@ const islandOnceCache = new Map();
 
 class Island extends HTMLElement {
   static tagName = "is-land";
+  static prefix = "is-land--"
 
   static fallback = {
     ":scope :not(:defined)": (readyPromise, node, prefix) => {
@@ -55,14 +56,6 @@ class Island extends HTMLElement {
       ready: "ready",
     };
 
-    this.conditionMap = {
-      visible: Conditions.visible,
-      idle: Conditions.idle,
-      interaction: Conditions.interaction,
-      media: Conditions.media,
-      "save-data": Conditions.saveData,
-    };
-
     // Internal promises
     this.ready = new Promise((resolve, reject) => {
       this.readyResolve = resolve;
@@ -70,15 +63,18 @@ class Island extends HTMLElement {
     });
   }
 
-  static getParents(el, selector, stopAt = false) {
+  // <is-land> parent nodes (that *have* island conditions)
+  static getParents(el, stopAt = false) {
     let nodes = [];
     while(el) {
-      if(el.matches && el.matches(selector)) {
+      if(el.matches && el.matches(Island.tagName)) {
         if(stopAt && el === stopAt) {
           break;
         }
 
-        nodes.push(el);
+        if(Conditions.hasConditions(el)) {
+          nodes.push(el);
+        }
       }
       el = el.parentNode;
     }
@@ -86,19 +82,19 @@ class Island extends HTMLElement {
   }
 
   static async ready(el) {
-    let parents = Island.getParents(el, Island.tagName);
-    let imports = await Promise.all(parents.map(el => el.wait()));
+    let parents = Island.getParents(el);
+    if(parents.length === 0) {
+      return;
+    }
 
+    let imports = await Promise.all(parents.map(el => el.wait()));
     // return innermost module import
     if(imports.length) {
       return imports[0];
     }
   }
 
-  async forceFallback() {
-    let prefix = Island.tagName + "--";
-    let promises = [];
-
+  forceFallback() {
     if(window.Island) {
       Object.assign(Island.fallback, window.Island.fallback);
     }
@@ -109,37 +105,27 @@ class Island extends HTMLElement {
 
       // with thanks to https://gist.github.com/cowboy/938767
       for(let node of components) {
+        // must be connected, must not be an island
         if(!node.isConnected || node.localName === Island.tagName) {
           continue;
         }
 
-        let readyPromise = Island.ready(node);
-        promises.push(Island.fallback[selector](readyPromise, node, prefix));
+        let p = Island.ready(node);
+        Island.fallback[selector](p, node, Island.prefix);
       }
     }
-
-    return promises;
   }
 
   wait() {
     return this.ready;
   }
 
-  getConditions() {
-    let map = {};
-    for(let key of Object.keys(this.conditionMap)) {
-      if(this.hasAttribute(`on:${key}`)) {
-        map[key] = this.getAttribute(`on:${key}`);
-      }
-    }
-
-    return map;
-  }
-
   async connectedCallback() {
-    // Keep fallback content without initializing the components
-    // TODO improvement: only run this for not-eager components?
-    await this.forceFallback();
+    // Only use fallback content with loading conditions
+    if(Conditions.hasConditions(this)) {
+      // Keep fallback content without initializing the components
+      this.forceFallback();
+    }
 
     await this.hydrate();
   }
@@ -151,9 +137,11 @@ class Island extends HTMLElement {
   replaceTemplates(templates) {
     // replace <template> with the live content
     for(let node of templates) {
-      if(Island.getParents(node, Island.tagName, this).length > 0) {
+      // if the template is nested inside another child <is-land> inside, skip
+      if(Island.getParents(node, this).length > 0) {
         continue;
       }
+
       let value = node.getAttribute(this.attrs.template);
       // get rid of the rest of the content on the island
       if(value === "replace") {
@@ -164,13 +152,14 @@ class Island extends HTMLElement {
         this.appendChild(node.content);
         break;
       } else {
-        if(value === "once" && node.innerHTML) {
-          if(islandOnceCache.has(node.innerHTML)) {
+        let html = node.innerHTML;
+        if(value === "once" && html) {
+          if(islandOnceCache.has(html)) {
             node.remove();
             return;
           }
 
-          islandOnceCache.set(node.innerHTML, true);
+          islandOnceCache.set(html, true);
         }
 
         node.replaceWith(node.content);
@@ -185,10 +174,10 @@ class Island extends HTMLElement {
       conditions.push(Island.ready(this.parentNode));
     }
 
-    let attrs = this.getConditions();
+    let attrs = Conditions.getConditions(this);
     for(let condition in attrs) {
-      if(this.conditionMap[condition]) {
-        conditions.push(this.conditionMap[condition](attrs[condition], this));
+      if(Conditions.map[condition]) {
+        conditions.push(Conditions.map[condition](attrs[condition], this));
       }
     }
 
@@ -223,6 +212,29 @@ class Island extends HTMLElement {
 }
 
 class Conditions {
+  static map = {
+    visible: Conditions.visible,
+    idle: Conditions.idle,
+    interaction: Conditions.interaction,
+    media: Conditions.media,
+    "save-data": Conditions.saveData,
+  };
+
+  static hasConditions(node) {
+    return Object.keys(Conditions.getConditions(node)).length > 0;
+  }
+
+  static getConditions(node) {
+    let map = {};
+    for(let key of Object.keys(Conditions.map)) {
+      if(node.hasAttribute(`on:${key}`)) {
+        map[key] = node.getAttribute(`on:${key}`);
+      }
+    }
+
+    return map;
+  }
+
   static visible(noop, el) {
     if(!('IntersectionObserver' in window)) {
       // runs immediately
