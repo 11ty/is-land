@@ -1,8 +1,11 @@
+const islandOnceCache = new Map();
+
 class Island extends HTMLElement {
   static tagName = "is-land";
+  static prefix = "is-land--"
 
   static fallback = {
-    ":not(:defined)": (readyPromise, node, prefix) => {
+    ":scope:not([ssr]) :not(:defined)": (readyPromise, node, prefix) => {
       // remove from document to prevent web component init
       let cloned = document.createElement(prefix + node.localName);
       for(let attr of node.getAttributeNames()) {
@@ -32,8 +35,14 @@ class Island extends HTMLElement {
     "vue": function(library) {
       library.createApp().mount(this);
     },
-    "svelte": function(library) {
-      new library.default({ target: this });
+    "svelte": function(mod) {
+      new mod.default({ target: this });
+    },
+    "svelte-ssr": function(mod) {
+      new mod.default({ target: this, hydrate: true });
+    },
+    "preact": function(mod) {
+      mod.default(this);
     }
   }
 
@@ -43,17 +52,8 @@ class Island extends HTMLElement {
     this.attrs = {
       autoInitType: "autoinit",
       import: "import",
-      scriptType: "module/island",
       template: "data-island",
       ready: "ready",
-    };
-
-    this.conditionMap = {
-      visible: Conditions.visible,
-      idle: Conditions.idle,
-      interaction: Conditions.interaction,
-      media: Conditions.media,
-      "save-data": Conditions.saveData,
     };
 
     // Internal promises
@@ -63,11 +63,18 @@ class Island extends HTMLElement {
     });
   }
 
-  static getParents(el, selector) {
+  // <is-land> parent nodes (that *have* island conditions)
+  static getParents(el, stopAt = false) {
     let nodes = [];
     while(el) {
-      if(el.matches && el.matches(selector)) {
-        nodes.push(el);
+      if(el.matches && el.matches(Island.tagName)) {
+        if(stopAt && el === stopAt) {
+          break;
+        }
+
+        if(Conditions.hasConditions(el)) {
+          nodes.push(el);
+        }
       }
       el = el.parentNode;
     }
@@ -75,19 +82,19 @@ class Island extends HTMLElement {
   }
 
   static async ready(el) {
-    let parents = Island.getParents(el, Island.tagName);
-    let imports = await Promise.all(parents.map(el => el.wait()));
+    let parents = Island.getParents(el);
+    if(parents.length === 0) {
+      return;
+    }
 
+    let imports = await Promise.all(parents.map(el => el.wait()));
     // return innermost module import
     if(imports.length) {
       return imports[0];
     }
   }
 
-  async forceFallback() {
-    let prefix = Island.tagName + "--";
-    let promises = [];
-
+  forceFallback() {
     if(window.Island) {
       Object.assign(Island.fallback, window.Island.fallback);
     }
@@ -98,43 +105,29 @@ class Island extends HTMLElement {
 
       // with thanks to https://gist.github.com/cowboy/938767
       for(let node of components) {
+        // must be connected, must not be an island
         if(!node.isConnected || node.localName === Island.tagName) {
           continue;
         }
 
-        let readyPromise = Island.ready(node);
-        promises.push(Island.fallback[selector](readyPromise, node, prefix));
+        let p = Island.ready(node);
+        Island.fallback[selector](p, node, Island.prefix);
       }
     }
-
-    return promises;
   }
 
   wait() {
     return this.ready;
   }
 
-  getConditions() {
-    let map = {};
-    for(let key of Object.keys(this.conditionMap)) {
-      if(this.hasAttribute(`on:${key}`)) {
-        map[key] = this.getAttribute(`on:${key}`);
-      }
+  async connectedCallback() {
+    // Only use fallback content with loading conditions
+    if(Conditions.hasConditions(this)) {
+      // Keep fallback content without initializing the components
+      this.forceFallback();
     }
 
-    return map;
-  }
-
-  async connectedCallback() {
-    // Keep fallback content without initializing the components
-    // TODO improvement: only run this for not-eager components?
-    await this.forceFallback();
-
     await this.hydrate();
-  }
-
-  getInitScripts() {
-    return this.querySelectorAll(`:scope script[type="${this.attrs.scriptType}"]`);
   }
 
   getTemplates() {
@@ -144,8 +137,14 @@ class Island extends HTMLElement {
   replaceTemplates(templates) {
     // replace <template> with the live content
     for(let node of templates) {
+      // if the template is nested inside another child <is-land> inside, skip
+      if(Island.getParents(node, this).length > 0) {
+        continue;
+      }
+
+      let value = node.getAttribute(this.attrs.template);
       // get rid of the rest of the content on the island
-      if(node.getAttribute(this.attrs.template) === "replace") {
+      if(value === "replace") {
         let children = Array.from(this.childNodes);
         for(let child of children) {
           this.removeChild(child);
@@ -153,6 +152,16 @@ class Island extends HTMLElement {
         this.appendChild(node.content);
         break;
       } else {
+        let html = node.innerHTML;
+        if(value === "once" && html) {
+          if(islandOnceCache.has(html)) {
+            node.remove();
+            return;
+          }
+
+          islandOnceCache.set(html, true);
+        }
+
         node.replaceWith(node.content);
       }
     }
@@ -164,12 +173,14 @@ class Island extends HTMLElement {
       // wait for all parents before hydrating
       conditions.push(Island.ready(this.parentNode));
     }
-    let attrs = this.getConditions();
+
+    let attrs = Conditions.getConditions(this);
     for(let condition in attrs) {
-      if(this.conditionMap[condition]) {
-        conditions.push(this.conditionMap[condition](attrs[condition], this));
+      if(Conditions.map[condition]) {
+        conditions.push(Conditions.map[condition](attrs[condition], this));
       }
     }
+
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
@@ -183,28 +194,15 @@ class Island extends HTMLElement {
       mod = await import(importScript);
     }
 
-    // do nothing if has script[type="module/island"], will init manually in script via ready()
-    let initScripts = this.getInitScripts();
-
-    if(initScripts.length > 0) {
-      // activate <script type="module/island">
-      for(let old of initScripts) {
-        let script = document.createElement("script");
-        script.setAttribute("type", "module");
-        // Idea: *could* modify this content to retrieve access to the modules therein
-        script.textContent = old.textContent;
-        old.replaceWith(script);
-      }
-    } else if(mod) {
-      // Fallback to `import=""` for when import maps are available e.g. `import="petite-vue"`
+    if(mod) {
+      // Use `import=""` for when import maps are available e.g. `import="petite-vue"`
       let fn = Island.autoinit[this.getAttribute(this.attrs.autoInitType) || importScript];
 
       if(fn) {
         await fn.call(this, mod);
       }
     }
-    
-    // When using <script type="module/island"> `readyResolve` will fire before any internal imports finish!
+
     this.readyResolve({
       import: mod
     });
@@ -214,6 +212,29 @@ class Island extends HTMLElement {
 }
 
 class Conditions {
+  static map = {
+    visible: Conditions.visible,
+    idle: Conditions.idle,
+    interaction: Conditions.interaction,
+    media: Conditions.media,
+    "save-data": Conditions.saveData,
+  };
+
+  static hasConditions(node) {
+    return Object.keys(Conditions.getConditions(node)).length > 0;
+  }
+
+  static getConditions(node) {
+    let map = {};
+    for(let key of Object.keys(Conditions.map)) {
+      if(node.hasAttribute(`on:${key}`)) {
+        map[key] = node.getAttribute(`on:${key}`);
+      }
+    }
+
+    return map;
+  }
+
   static visible(noop, el) {
     if(!('IntersectionObserver' in window)) {
       // runs immediately
@@ -265,7 +286,7 @@ class Conditions {
     let events = ["click", "touchstart"];
     // event overrides e.g. on:interaction="mouseenter"
     if(eventOverrides) {
-      events = (eventOverrides || "").split(",");
+      events = (eventOverrides || "").split(",").map(entry => entry.trim());
     }
 
     return new Promise(resolve => {

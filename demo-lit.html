@@ -8,7 +8,7 @@
 		<link rel="stylesheet" href="demo-styles.css">
 
 		<script type="module">
-		import "/islands.js";
+		import "/is-land.js";
 		import "/vanilla-web-component.js"; // eager, probably not typical
 
 		// https://github.com/lit/lit/tree/main/packages/labs/eleventy-plugin-lit#example-bootup-strategy
@@ -41,23 +41,25 @@
 		<is-land on:visible id="lit-test">
 			This is a lit component: <lit-other-web-component class="demo-component" name="World">Fallback content!</lit-other-web-component>
 
-			<script type="module/island">
-			import {html, css, LitElement} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
+			<template data-island>
+				<script type="module">
+				import {html, css, LitElement} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
 
-			customElements.define('lit-other-web-component', class extends LitElement {
-				// encapsulated styles!
-				static styles = css`p { color: blue; margin: 0; }`;
-			
-				static properties = {
-					name: {type: String},
-				};
+				customElements.define('lit-other-web-component', class extends LitElement {
+					// encapsulated styles!
+					static styles = css`p { color: blue; margin: 0; }`;
+				
+					static properties = {
+						name: {type: String},
+					};
 
-				render() {
-					this.classList.add("test-c-finish");
-					return html`<p>Hello, ${this.name || "Stranger"}!</p>`;
-				}
-			});
-			</script>
+					render() {
+						this.classList.add("test-c-finish");
+						return html`<p>Hello, ${this.name || "Stranger"}!</p>`;
+					}
+				});
+				</script>
+			</template>
 		</is-land>
 
 		<h2>Server-rendered Lit (SSR)</h2>
@@ -66,15 +68,14 @@
 			1. The <a href="https://github.com/lit/lit/blob/main/packages/lit-element/src/experimental-hydrate-support.ts"><code>experimental-hydrate-support.js</code></a> file is needed to be loaded up front (the library can’t be lazy loaded, though the component initialization can). Hoping this improves.
 			2. Full <a href="https://caniuse.com/declarative-shadow-dom">Declarative Shadow DOM support</a> is required to show any fallback content without JS.
 		</p>
-		{% comment %}
+
 		<!-- This doesn’t work in non Declarative Shadow DOM worlds -->
 		<is-land on:visible>
 			<lit-component-html-only name="World"></lit-component>
 		</is-land>
-		{% endcomment %}
 
 		<p>With Hydration:</p>
-		<is-land on:visible import="/lib/lit/lit-component.js">
+		<is-land on:visible ssr import="/lib/lit/lit-component.js">
 			<lit-component name="World"></lit-component>
 		</is-land>
 	</body>

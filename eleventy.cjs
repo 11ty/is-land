@@ -5,6 +5,8 @@ const { ImportTransformer } = require('esm-import-transformer');
 
 module.exports = function(eleventyConfig) {
   eleventyConfig.setQuietMode(true);
+  eleventyConfig.setServerPassthroughCopyBehavior("copy");
+
   eleventyConfig
     .addPassthroughCopy("lib/")
     .addPassthroughCopy("*.css")
@@ -37,12 +39,13 @@ module.exports = function(eleventyConfig) {
       let input = await fsp.readFile(c, "utf8");
       let importMap = {
         "imports": {
-          "lit": "/lib/lit/experimental-hydrate-support.js"
+          "lit": "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js"
         }
       };
-      
+
       let i = new ImportTransformer();
       await fsp.writeFile(path.join(dir.output, c), i.transform(input, importMap), "utf8");
+      console.log( "Wrote to", path.join(dir.output, c) );
     }
   })
 
