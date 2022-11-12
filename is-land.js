@@ -12,9 +12,15 @@ class Island extends HTMLElement {
         cloned.setAttribute(attr, node.getAttribute(attr));
       }
 
-      // declarative shadow dom
-      // cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
+      // Declarative Shadow DOM
       let shadowroot = node.shadowRoot;
+      if(!shadowroot) {
+        // polyfill
+        let tmpl = node.querySelector(":scope > template[shadowroot]");
+        shadowroot = node.attachShadow({ mode: "open" });
+        shadowroot.appendChild(tmpl.content.cloneNode(true));
+      }
+      // cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
       if(shadowroot) {
         cloned.attachShadow({ mode: shadowroot.mode }).append(...[].map.call(shadowroot.childNodes, c => c.cloneNode(true)));
       }

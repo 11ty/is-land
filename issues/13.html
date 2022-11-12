@@ -20,7 +20,10 @@ title: Islands
 <is-land on:interaction import="/lib/chocolate-web-component.js">
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
-	<chocolate-web-component class="demo-component" ssr>Vanilla web component</chocolate-web-component>
+	<chocolate-web-component class="demo-component">
+		<template shadowroot="open">Chocolate shadow root</template>
+		Chocolate web component
+	</chocolate-web-component>
 </is-land>
 
 <!-- <is-land on:idle import="/lib/details-utils.js">
@@ -74,7 +77,10 @@ title: Islands
 <is-land on:visible import="/lib/chocolate-web-component.js">
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
-	<chocolate-web-component class="demo-component" ssr>Vanilla web component</chocolate-web-component>
+	<chocolate-web-component class="demo-component">
+		<template shadowroot="open">Chocolate shadow root</template>
+		Chocolate web component
+	</chocolate-web-component>
 </is-land>
 
 <!-- <is-land on:visible>
