@@ -5,11 +5,26 @@ class Island extends HTMLElement {
   static prefix = "is-land--"
 
   static fallback = {
-    ":scope:not([ssr]) :not(:defined)": (readyPromise, node, prefix) => {
+    ":scope :not(:defined):not([skip])": (readyPromise, node, prefix) => {
       // remove from document to prevent web component init
       let cloned = document.createElement(prefix + node.localName);
       for(let attr of node.getAttributeNames()) {
         cloned.setAttribute(attr, node.getAttribute(attr));
+      }
+
+      // Declarative Shadow DOM
+      let shadowroot = node.shadowRoot;
+      if(!shadowroot) {
+        // polyfill
+        let tmpl = node.querySelector(":scope > template[shadowroot]");
+        if(tmpl) {
+          shadowroot = node.attachShadow({ mode: "open" });
+          shadowroot.appendChild(tmpl.content.cloneNode(true));
+        }
+      }
+      // cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
+      if(shadowroot) {
+        cloned.attachShadow({ mode: shadowroot.mode }).append(...[].map.call(shadowroot.childNodes, c => c.cloneNode(true)));
       }
 
       let children = Array.from(node.childNodes);

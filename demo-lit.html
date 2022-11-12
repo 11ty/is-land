@@ -75,8 +75,17 @@
 		</is-land>
 
 		<p>With Hydration:</p>
-		<is-land on:visible ssr import="/lib/lit/lit-component.js">
+		
+		<is-land on:interaction import="/lib/lit/lit-component.js">
+			<button>Hydrate me</button>
 			<lit-component name="World"></lit-component>
 		</is-land>
+		
+		<is-land on:interaction import="/lib/lit/lit-component.js">
+			<button>Hydrate me</button>
+			<lit-component name="World"></lit-component>
+		</is-land>
+
+		<lit-component name="World"></lit-component>
 	</body>
 </html>
