@@ -24,20 +24,19 @@ class Island extends HTMLElement {
       }
       // cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
       if(shadowroot) {
-        cloned.attachShadow({ mode: shadowroot.mode }).append(...[].map.call(shadowroot.childNodes, c => c.cloneNode(true)));
+        cloned.attachShadow({ mode: shadowroot.mode }).append(...shadowroot.childNodes);
       }
 
-      let children = Array.from(node.childNodes);
-      for(let child of children) {
-        cloned.append(child); // Keep the *same* child nodes, clicking on a details->summary child should keep the state of that child
-      }
+      // Keep the *same* child nodes, clicking on a details->summary child should keep the state of that child
+      cloned.append(...node.childNodes);
       node.replaceWith(cloned);
 
       return readyPromise.then(() => {
-        // restore children (not cloned)
-        for(let child of Array.from(cloned.childNodes)) {
-          node.append(child);
+        // restore children (not cloned), including declarative shadow dom nodes
+        if(cloned.shadowRoot) {
+          node.shadowRoot.append(...cloned.shadowRoot.childNodes);
         }
+        node.append(...cloned.childNodes);
         cloned.replaceWith(node);
       });
     }

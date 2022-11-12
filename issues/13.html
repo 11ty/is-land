@@ -17,6 +17,13 @@ title: Islands
 	</details-utils>
 </is-land> -->
 
+<p>Note that if `chocolate-web-component.js` is not loaded, any `&lt;chocolate-web-component&gt;` elements outside of `&lt;is-land&gt;` will be initialized when the file is loaded. Note also that the Declarative Shadow DOM polyfill will not be applied outside of `&lt;is-land&gt;`.</p>
+
+<chocolate-web-component class="demo-component">
+	<template shadowroot="open">Chocolate shadow root</template>
+	Chocolate web component
+</chocolate-web-component>
+
 <is-land on:interaction import="/lib/chocolate-web-component.js">
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
