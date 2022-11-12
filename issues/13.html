@@ -17,15 +17,10 @@ title: Islands
 	</details-utils>
 </is-land> -->
 
-<is-land ssr on:interaction import="/lib/details-utils.js">
+<is-land on:interaction import="/lib/chocolate-web-component.js">
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
-	<details-utils close-click-outside>
-		<details open>
-			<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
-			<p>Note that interacting with content inside of the menu works without closing the menu.</p>
-		</details>
-	</details-utils>
+	<chocolate-web-component class="demo-component" ssr>Vanilla web component</chocolate-web-component>
 </is-land>
 
 <!-- <is-land on:idle import="/lib/details-utils.js">
@@ -76,15 +71,10 @@ title: Islands
 <br>
 <br>
 
-<is-land ssr on:visible import="/lib/details-utils.js">
+<is-land on:visible import="/lib/chocolate-web-component.js">
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
-	<details-utils close-click-outside>
-		<details open>
-			<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
-			<p>Note that interacting with content inside of the menu works without closing the menu.</p>
-		</details>
-	</details-utils>
+	<chocolate-web-component class="demo-component" ssr>Vanilla web component</chocolate-web-component>
 </is-land>
 
 <!-- <is-land on:visible>
