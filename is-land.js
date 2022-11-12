@@ -17,8 +17,10 @@ class Island extends HTMLElement {
       if(!shadowroot) {
         // polyfill
         let tmpl = node.querySelector(":scope > template[shadowroot]");
-        shadowroot = node.attachShadow({ mode: "open" });
-        shadowroot.appendChild(tmpl.content.cloneNode(true));
+        if(tmpl) {
+          shadowroot = node.attachShadow({ mode: "open" });
+          shadowroot.appendChild(tmpl.content.cloneNode(true));
+        }
       }
       // cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
       if(shadowroot) {
