@@ -35,6 +35,7 @@ Integrations in the wild:
 * [Slinkity](https://twitter.com/slinkitydotdev/status/1544322804774064133)
 * [SvelteKit](https://twitter.com/geoffrich_/status/1576932300960342018)
 * [Bridgetown](https://twitter.com/jaredcwhite/status/1585433466770173953)
+* [Lit](https://twitter.com/techytacos/status/1590248099297259520)
 
 ## Installation
 
