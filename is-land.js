@@ -12,6 +12,13 @@ class Island extends HTMLElement {
         cloned.setAttribute(attr, node.getAttribute(attr));
       }
 
+      // declarative shadow dom
+      // cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
+      let shadowroot = node.shadowRoot;
+      if(shadowroot) {
+        cloned.attachShadow({ mode: shadowroot.mode }).append(...[].map.call(shadowroot.childNodes, c => c.cloneNode(true)));
+      }
+
       let children = Array.from(node.childNodes);
       for(let child of children) {
         cloned.append(child); // Keep the *same* child nodes, clicking on a details->summary child should keep the state of that child
