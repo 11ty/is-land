@@ -12,7 +12,7 @@ class Island extends HTMLElement {
   };
 
   static fallback = {
-    ":scope :not(:defined):not([defer-hydration])": (readyPromise, node, prefix) => {
+    ":not(:defined):not([defer-hydration])": (readyPromise, node, prefix) => {
       // remove from document to prevent web component init
       let cloned = document.createElement(prefix + node.localName);
       for(let attr of node.getAttributeNames()) {
@@ -145,7 +145,7 @@ class Island extends HTMLElement {
   }
 
   getTemplates() {
-    return this.querySelectorAll(`:scope template[${Island.attr.template}]`);
+    return this.querySelectorAll(`template[${Island.attr.template}]`);
   }
 
   replaceTemplates(templates) {
@@ -224,7 +224,7 @@ class Island extends HTMLElement {
     this.setAttribute(Island.attr.ready, "");
 
     // Remove [defer-hydration]
-    this.querySelectorAll(`:scope [${Island.attr.defer}]`).forEach(node => node.removeAttribute(Island.attr.defer));
+    this.querySelectorAll(`[${Island.attr.defer}]`).forEach(node => node.removeAttribute(Island.attr.defer));
   }
 }
 
