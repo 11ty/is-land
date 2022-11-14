@@ -1,0 +1,62 @@
+---
+layout: layout.html
+title: Islands
+---
+<h1><a href="/">is-land</a></h1>
+
+<p>Related to <a href="/issues/13">the test case for GitHub issue #13</a>.</p>
+
+<p><code>defer-hydration</code> solves the problem of <code>&lt;chocolate-web-component&gt;</code> elements outside of <code>is-land</code>s hydrating when <code>chocolate-web-component.js</code> is loaded.</p>
+
+<chocolate-web-component defer-hydration class="demo-component">
+	<template shadowroot="open">Chocolate shadow root</template>
+	Chocolate web component
+</chocolate-web-component>
+
+<script src="/lib/chocolate-web-component.js" type="module"></script>
+
+<is-land on:interaction import="/lib/chocolate-web-component.js">
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+	<p>Using <code>defer-hydration</code>.</p>
+	
+	<chocolate-web-component defer-hydration class="demo-component">
+		<template shadowroot="open">Chocolate shadow root</template>
+		Chocolate web component
+	</chocolate-web-component>
+</is-land>
+
+<is-land on:interaction import="/lib/chocolate-web-component.js">
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+	<p>Using <code>defer-hydration</code>.</p>
+
+	<chocolate-web-component defer-hydration class="demo-component">
+		<template shadowroot="open">Chocolate shadow root</template>
+		Chocolate web component
+	</chocolate-web-component>
+</is-land>
+
+<!-- <is-land on:interaction import="/lib/chocolate-web-component.js">
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+
+	<chocolate-web-component class="demo-component">
+		<template shadowroot="open">Chocolate shadow root</template>
+		Chocolate web component
+	</chocolate-web-component>
+</is-land>
+
+<div style="display: block; height: 90vh"></div>
+
+<is-land on:visible import="/lib/chocolate-web-component.js">
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+
+	<chocolate-web-component class="demo-component">
+		<template shadowroot="open">Chocolate shadow root</template>
+		Chocolate web component
+	</chocolate-web-component>
+</is-land> -->
+
+<!-- <is-land on:visible>
+	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
+
+	<some-other-custom-element>Some other custom element</some-other-custom-element>
+</is-land> -->

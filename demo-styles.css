@@ -51,10 +51,9 @@ is-land[ready] {
   background-color: rgba(112, 110, 233, 0.2);
   outline: 2px solid rgb(97, 82, 173);
 }
-.test-c-finish:defined {
-  color: blue;
-  font-weight: bold;
-}
+/* .test-c-finish:defined {
+  font-style: italic;
+} */
 
 /* List logos */
 .examples {

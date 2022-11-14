@@ -6,18 +6,9 @@ title: Islands
 
 <p>For <a href="https://github.com/11ty/is-land/issues/13">GitHub issue #13</a>.</p>
 
-<!-- <is-land import="/lib/details-utils.js">
-	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
-	<p>This island will load without fallback because it’s eager (no loading conditions).</p>
-	<details-utils close-click-outside>
-		<details open>
-			<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
-			<p>Note that interacting with content inside of the menu works without closing the menu.</p>
-		</details>
-	</details-utils>
-</is-land> -->
+<p>Note that the Declarative Shadow DOM polyfill will not be applied outside of `&lt;is-land&gt;`.</p>
 
-<p>Note that if `chocolate-web-component.js` is not loaded, any `&lt;chocolate-web-component&gt;` elements outside of `&lt;is-land&gt;` will be initialized when the file is loaded. Note also that the Declarative Shadow DOM polyfill will not be applied outside of `&lt;is-land&gt;`.</p>
+<p>Note that if <code>chocolate-web-component.js</code> is not available on page load, any <code>&lt;chocolate-web-component&gt;</code> elements outside of <code>&lt;is-land&gt;</code> will be initialized when the file is loaded. This is better solved by implementing <a href="/demo-defer-hydration/"><code>defer-hydration</code> in your component code</a>.</p>
 
 <chocolate-web-component class="demo-component">
 	<template shadowroot="open">Chocolate shadow root</template>
@@ -33,53 +24,7 @@ title: Islands
 	</chocolate-web-component>
 </is-land>
 
-<!-- <is-land on:idle import="/lib/details-utils.js">
-	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
-
-	<details-utils close-click-outside>
-		<details open>
-			<summary>Toggle Menu (Default open: click outside to close after island initializes)</summary>
-			<p>Note that interacting with content inside of the menu works without closing the menu.</p>
-		</details>
-	</details-utils>
-</is-land> -->
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+<div style="display: block; height: 90vh"></div>
 
 <is-land on:visible import="/lib/chocolate-web-component.js">
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>

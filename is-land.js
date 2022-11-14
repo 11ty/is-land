@@ -2,10 +2,17 @@ const islandOnceCache = new Map();
 
 class Island extends HTMLElement {
   static tagName = "is-land";
-  static prefix = "is-land--"
+  static prefix = "is-land--";
+  static attr = {
+    autoInitType: "autoinit",
+    import: "import",
+    template: "data-island",
+    ready: "ready",
+    defer: "defer-hydration",
+  };
 
   static fallback = {
-    ":scope:not([skip-fallback]) :not(:defined)": (readyPromise, node, prefix) => {
+    ":scope :not(:defined):not([defer-hydration])": (readyPromise, node, prefix) => {
       // remove from document to prevent web component init
       let cloned = document.createElement(prefix + node.localName);
       for(let attr of node.getAttributeNames()) {
@@ -22,6 +29,7 @@ class Island extends HTMLElement {
           shadowroot.appendChild(tmpl.content.cloneNode(true));
         }
       }
+
       // cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
       if(shadowroot) {
         cloned.attachShadow({ mode: shadowroot.mode }).append(...shadowroot.childNodes);
@@ -63,17 +71,9 @@ class Island extends HTMLElement {
   constructor() {
     super();
 
-    this.attrs = {
-      autoInitType: "autoinit",
-      import: "import",
-      template: "data-island",
-      ready: "ready",
-    };
-
     // Internal promises
-    this.ready = new Promise((resolve, reject) => {
+    this.ready = new Promise(resolve => {
       this.readyResolve = resolve;
-      this.readyReject = reject;
     });
   }
 
@@ -145,7 +145,7 @@ class Island extends HTMLElement {
   }
 
   getTemplates() {
-    return this.querySelectorAll(`:scope template[${this.attrs.template}]`);
+    return this.querySelectorAll(`:scope template[${Island.attr.template}]`);
   }
 
   replaceTemplates(templates) {
@@ -156,7 +156,7 @@ class Island extends HTMLElement {
         continue;
       }
 
-      let value = node.getAttribute(this.attrs.template);
+      let value = node.getAttribute(Island.attr.template);
       // get rid of the rest of the content on the island
       if(value === "replace") {
         let children = Array.from(this.childNodes);
@@ -202,7 +202,7 @@ class Island extends HTMLElement {
 
     let mod;
     // [dependency="my-component-code.js"]
-    let importScript = this.getAttribute(this.attrs.import);
+    let importScript = this.getAttribute(Island.attr.import);
     if(importScript) {
       // we could resolve import maps here manually but you’d still have to use the full URL in your script’s import anyway
       mod = await import(importScript);
@@ -210,7 +210,7 @@ class Island extends HTMLElement {
 
     if(mod) {
       // Use `import=""` for when import maps are available e.g. `import="petite-vue"`
-      let fn = Island.autoinit[this.getAttribute(this.attrs.autoInitType) || importScript];
+      let fn = Island.autoinit[this.getAttribute(Island.attr.autoInitType) || importScript];
 
       if(fn) {
         await fn.call(this, mod);
@@ -218,10 +218,13 @@ class Island extends HTMLElement {
     }
 
     this.readyResolve({
-      import: mod
+      // import: mod
     });
 
-    this.setAttribute(this.attrs.ready, "");
+    this.setAttribute(Island.attr.ready, "");
+
+    // Remove [defer-hydration]
+    this.querySelectorAll(`:scope [${Island.attr.defer}]`).forEach(node => node.removeAttribute(Island.attr.defer));
   }
 }
 
