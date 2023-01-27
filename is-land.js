@@ -361,6 +361,9 @@ if("customElements" in window) {
   window.Island = Island;
 }
 
-export const component = Island;
+export {
+  Island,
+  Island as component, // Backwards compat only: recommend `Island` export
+};
 
-export const ready = Island.ready;
+export const ready = Island.ready; // Backwards compat only: recommend `Island` export
