@@ -1,5 +1,3 @@
-const islandOnceCache = new Map();
-
 class Island extends HTMLElement {
   static tagName = "is-land";
   static prefix = "is-land--";
@@ -10,6 +8,8 @@ class Island extends HTMLElement {
     ready: "ready",
     defer: "defer-hydration",
   };
+
+  static onceCache = new Map();
 
   static fallback = {
     ":not(:defined):not([defer-hydration])": (readyPromise, node, prefix) => {
@@ -23,7 +23,7 @@ class Island extends HTMLElement {
       let shadowroot = node.shadowRoot;
       if(!shadowroot) {
         // polyfill
-        let tmpl = node.querySelector(":scope > template[shadowroot]");
+        let tmpl = node.querySelector(":scope > template:is([shadowrootmode], [shadowroot])");
         if(tmpl) {
           shadowroot = node.attachShadow({ mode: "open" });
           shadowroot.appendChild(tmpl.content.cloneNode(true));
@@ -168,12 +168,12 @@ class Island extends HTMLElement {
       } else {
         let html = node.innerHTML;
         if(value === "once" && html) {
-          if(islandOnceCache.has(html)) {
+          if(Island.onceCache.has(html)) {
             node.remove();
             return;
           }
 
-          islandOnceCache.set(html, true);
+          Island.onceCache.set(html, true);
         }
 
         node.replaceWith(node.content);
@@ -217,9 +217,7 @@ class Island extends HTMLElement {
       }
     }
 
-    this.readyResolve({
-      // import: mod
-    });
+    this.readyResolve();
 
     this.setAttribute(Island.attr.ready, "");
 
@@ -271,9 +269,9 @@ class Conditions {
     });
   }
 
-  // TODO make sure this runs after all of the conditions have finished, otherwise it will
-  // finish way before the other lazy loaded promises and will be the same as a noop when
-  // on:interaction or on:visible finishes much later
+  // This isn’t very useful with other conditions as periods of idle may
+  // happen before other conditions are satisfied. Would be more useful if waited
+  // for all other conditions to finish.
   static idle() {
     let onload = new Promise(resolve => {
       if(document.readyState !== "complete") {

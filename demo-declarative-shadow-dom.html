@@ -6,22 +6,35 @@ title: Islands
 
 <p>For <a href="https://github.com/11ty/is-land/issues/13">GitHub issue #13</a>.</p>
 
-<p>As of time of writing, Firefox and Safari do not support Declarative Shadow DOM. This component does include a small (4 LoC) polyfill but it is *not* applied to elements outside of <code>&lt;is-land&gt;</code>.</p>
+<p>As of time of writing, Firefox and Safari do not support Declarative Shadow DOM. This component does include a small (4 LoC) polyfill but it is scoped <strong>exclusively</strong> to elements inside of <code>&lt;is-land&gt;</code>.</p>
 
 <p>Note that if <code>chocolate-web-component.js</code> is not available on page load, any <code>&lt;chocolate-web-component&gt;</code> elements outside of <code>&lt;is-land&gt;</code> will be initialized when the file is loaded. This is better solved by implementing <a href="/demo-defer-hydration/"><code>defer-hydration</code> in your component code</a>.</p>
 
 <script src="/lib/chocolate-web-component.js" type="module"></script>
 
-<chocolate-web-component class="demo-component">
+<p>Declarative shadow DOM polyfill is not applied to elements outside of an <code>&lt;is-land&gt;</code></p>
+
+<!-- <chocolate-web-component class="demo-component">
 	<template shadowroot="open">Chocolate shadow root</template>
 	Chocolate web component
 </chocolate-web-component>
+
+<chocolate-web-component class="demo-component">
+	<template shadowroot="open" shadowrootmode="open">Chocolate shadow root</template>
+	Chocolate web component
+</chocolate-web-component> -->
+
+<chocolate-web-component class="demo-component">
+	<template shadowroot="open" shadowrootmode="open">Chocolate shadow root</template>
+	Chocolate web component
+</chocolate-web-component>
+
 
 <is-land on:interaction>
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
 	<chocolate-web-component class="demo-component">
-		<template shadowroot="open">Chocolate shadow root</template>
+		<template shadowroot="open" shadowrootmode="open">Chocolate shadow root</template>
 		Chocolate web component
 	</chocolate-web-component>
 </is-land>
@@ -32,7 +45,7 @@ title: Islands
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
 	<chocolate-web-component class="demo-component">
-		<template shadowroot="open">Chocolate shadow root</template>
+		<template shadowroot="open" shadowrootmode="open">Chocolate shadow root</template>
 		Chocolate web component
 	</chocolate-web-component>
 </is-land>
@@ -41,7 +54,7 @@ title: Islands
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
 	<chocolate-web-component class="demo-component">
-		<template shadowroot="open">Chocolate shadow root</template>
+		<template shadowroot="open" shadowrootmode="open">Chocolate shadow root</template>
 		Chocolate web component
 	</chocolate-web-component>
 </is-land>
@@ -50,7 +63,7 @@ title: Islands
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
 	<chocolate-web-component class="demo-component">
-		<template shadowroot="open">Chocolate shadow root</template>
+		<template shadowroot="open" shadowrootmode="open">Chocolate shadow root</template>
 		Chocolate web component
 	</chocolate-web-component>
 </is-land>
