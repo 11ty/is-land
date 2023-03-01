@@ -364,4 +364,5 @@ export {
   Island as component, // Backwards compat only: recommend `Island` export
 };
 
+// TODO remove in 4.0
 export const ready = Island.ready; // Backwards compat only: recommend `Island` export
