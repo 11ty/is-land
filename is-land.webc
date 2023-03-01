@@ -1,0 +1,2 @@
+<script src="./is-land.js"></script>
+<slot></slot>
