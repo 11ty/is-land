@@ -51,20 +51,20 @@ class Island extends HTMLElement {
   };
 
   static autoinit = {
-    "petite-vue": function(library) {
-      library.createApp().mount(this);
+    "petite-vue": function(lib) {
+      lib.createApp().mount(this);
     },
-    "vue": function(library) {
-      library.createApp().mount(this);
+    "vue": function(lib) {
+      lib.createApp().mount(this);
     },
-    "svelte": function(mod) {
-      new mod.default({ target: this });
+    "svelte": function(lib) {
+      new lib.default({ target: this });
     },
-    "svelte-ssr": function(mod) {
-      new mod.default({ target: this, hydrate: true });
+    "svelte-ssr": function(lib) {
+      new lib.default({ target: this, hydrate: true });
     },
-    "preact": function(mod) {
-      mod.default(this);
+    "preact": function(lib) {
+      lib.default(this);
     }
   }
 
