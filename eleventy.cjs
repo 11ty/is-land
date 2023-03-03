@@ -6,11 +6,11 @@ const EleventyIslandMarkdownPlugin = require("./11ty/MarkdownPlugin.cjs");
 module.exports = function(eleventyConfig) {
   eleventyConfig.setQuietMode(true);
   eleventyConfig.addPassthroughCopy("lib/**/*.{css,png,svg,js}");
-  eleventyConfig.addPassthroughCopy("*.{css,js}");
+  eleventyConfig.addPassthroughCopy("demo/**/*.css");
+  eleventyConfig.addPassthroughCopy("is-land.js");
 
   eleventyConfig.setServerOptions({
     domdiff: false,
-    // enabled: false, // incompatible with the import maps example https://github.com/11ty/eleventy-dev-server/issues/31
   });
 
   eleventyConfig.ignores.add("README.md");
@@ -25,6 +25,9 @@ module.exports = function(eleventyConfig) {
   });
 
   return {
+    dir: {
+      input: "demo",
+    },
     htmlTemplateEngine: "liquid",
     markdownTemplateEngine: "liquid",
   }
