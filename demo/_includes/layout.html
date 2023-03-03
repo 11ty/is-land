@@ -7,10 +7,6 @@
 		<title>{{ title }}</title>
 		<link rel="stylesheet" href="/demo-styles.css">
 
-{% if showImagePlugin %}
-		{% include "plugin-img.html" %}
-{% endif %}
-
 {% if showImportMaps %}
 		<script type="importmap">
 		{
@@ -28,10 +24,23 @@
 		</style>
 {% endif %}
 
+
+{% if showImagePlugin %}
+		<!-- experimental: fallback extension (probably don’t use this) -->
+		<script type="module" src="/is-land-image.js"></script>
+{% endif %}
+
+		<!-- Script tag method: -->
+		<!--
 		<script type="module" src="/is-land.js"></script>
-		<!-- <script type="module">
+		<script type="module" src="/is-land-autoinit.js"></script>
+		-->
+
+		<!-- Import method: -->
+		<script type="module">
 		import { Island } from "/is-land.js";
-		</script> -->
+		import "/is-land-autoinit.js";
+		</script>
 
 		<!--
 		You can directly import dependencies (for eager loading)

@@ -5,6 +5,12 @@ showImagePlugin: true
 ---
 <h1><a href="/">is-land</a> for image loading</h1>
 
+<style>
+img[is-land--img-skeleton] {
+	background-color: #eee;
+}
+</style>
+
 <h4>Experimental: pass in a CSS selector to progressively enhance other elements (<code>fallback</code>)</h4>
 
 <p>This example uses <code>on:interaction</code>. You will need to interact with the island for the images to load. Note the aspect ratio before/after is preserved via the width/height attributes on the img.</p>

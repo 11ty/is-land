@@ -6,8 +6,8 @@ const EleventyIslandMarkdownPlugin = require("./11ty/MarkdownPlugin.cjs");
 module.exports = function(eleventyConfig) {
   eleventyConfig.setQuietMode(true);
   eleventyConfig.addPassthroughCopy("lib/**/*.{css,png,svg,js}");
-  eleventyConfig.addPassthroughCopy("demo/**/*.css");
-  eleventyConfig.addPassthroughCopy("is-land.js");
+  eleventyConfig.addPassthroughCopy("demo/**/*.{css,js}");
+  eleventyConfig.addPassthroughCopy("*.js");
 
   eleventyConfig.setServerOptions({
     domdiff: false,
