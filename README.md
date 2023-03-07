@@ -151,7 +151,7 @@ is-land[ready] {
 
 ### Framework Support
 
-[Demos and source in the HTML](https://is-land.11ty.dev/) are available for each framework listed here.
+[Demos and source in the HTML](https://is-land.11ty.dev/) are available for each framework listed here. These examples require the `is-land-autoinit.js` JavaScript file (in addition to `is-land.js`).
 
 #### `autoinit`
 
