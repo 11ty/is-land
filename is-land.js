@@ -11,7 +11,7 @@ class Island extends HTMLElement {
   static onReady = new Map();
 
   static fallback = {
-    ":not(:defined):not([defer-hydration])": (readyPromise, node, prefix) => {
+    ":not(is-land,:defined,[defer-hydration])": (readyPromise, node, prefix) => {
       // remove from document to prevent web component init
       let cloned = document.createElement(prefix + node.localName);
       for(let attr of node.getAttributeNames()) {
@@ -58,7 +58,7 @@ class Island extends HTMLElement {
     });
   }
 
-  // <is-land> parent nodes (that *have* island conditions)
+  // any parents of `el` that are <is-land> (with conditions)
   static getParents(el, stopAt = false) {
     let nodes = [];
     while(el) {
@@ -100,8 +100,7 @@ class Island extends HTMLElement {
 
       // with thanks to https://gist.github.com/cowboy/938767
       for(let node of components) {
-        // connected nodes that are not islands
-        if(!node.isConnected || node.localName === Island.tagName) {
+        if(!node.isConnected) {
           continue;
         }
 
