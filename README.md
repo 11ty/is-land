@@ -59,6 +59,8 @@ import "/is-land.js";
 </script>
 ```
 
+The framework `autoinit` examples shown below now require a separate `is-land-autoinit.js` file too.
+
 ## Usage
 
 ```html
