@@ -76,13 +76,14 @@ class Island extends HTMLElement {
     return nodes;
   }
 
-  static async ready(el) {
-    let parents = Island.getParents(el);
+  static async ready(el, parents) {
+    if(!parents) {
+      parents = Island.getParents(el);
+    }
     if(parents.length === 0) {
       return;
     }
-
-    let imports = await Promise.all(parents.filter(el => el.localName === Island.tagName).map(el => el.wait()));
+    let imports = await Promise.all(parents.map(p => p.wait()));
     // return innermost module import
     if(imports.length) {
       return imports[0];
@@ -90,7 +91,7 @@ class Island extends HTMLElement {
   }
 
   forceFallback() {
-    if(window.Island && window.Island.fallback) {
+    if(window.Island) {
       Object.assign(Island.fallback, window.Island.fallback);
     }
 
@@ -104,8 +105,12 @@ class Island extends HTMLElement {
           continue;
         }
 
-        let p = Island.ready(node);
-        Island.fallback[selector](p, node, Island.prefix);
+        let parents = Island.getParents(node);
+        // must be in a leaf island (not nested deep)
+        if(parents.length === 1) {
+          let p = Island.ready(node, parents);
+          Island.fallback[selector](p, node, Island.prefix);
+        }
       }
     }
   }
