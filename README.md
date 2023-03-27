@@ -18,17 +18,17 @@ Features:
 
 Examples for:
 
-* [Web Components](./index.html)
-* [Web Components using Declarative Shadow DOM](./demo-declarative-shadow-dom.html) _(New in v3.0.0)_
-* [Svelte](./demo-svelte.html) (and SSR)
-* [Vue (and petite-vue)](./demo-vue.html) (and SSR)
-* [Preact](./demo-preact.html) (and SSR)
-* [Lit](./demo-lit.html) (and SSR)
-* [Alpine.js](./demo-alpine.html)
-* [Embedded in Markdown](./demo-markdown.md)
-* [`defer-hydration` Component Attribute Support](./demo-defer-hydration.html) _(New in v3.0.0)_ ([Read more about `defer-hydration` at zachleat.com](https://www.zachleat.com/web/defer-hydration/))
-* _Experimental:_ [Image Loading](./demo-image-loading.html)
-* _Experimental:_ [Using import maps to simplify import URLs](./demo-importmaps.html). This is for-future-reference when [browser support broadens](https://caniuse.com/import-maps).
+* [Web Components](./demo/index.html)
+* [Web Components using Declarative Shadow DOM](./demo/demo-declarative-shadow-dom.html) _(New in v3.0.0)_
+* [Svelte](./demo/demo-svelte.html) (and SSR)
+* [Vue (and petite-vue)](./demo/demo-vue.html) (and SSR)
+* [Preact](./demo/demo-preact.html) (and SSR)
+* [Lit](./demo/demo-lit.html) (and SSR)
+* [Alpine.js](./demo/demo-alpine.html)
+* [Embedded in Markdown](./demo/demo-markdown.md)
+* [`defer-hydration` Component Attribute Support](./demo/demo-defer-hydration.html) _(New in v3.0.0)_ ([Read more about `defer-hydration` at zachleat.com](https://www.zachleat.com/web/defer-hydration/))
+* _Experimental:_ [Image Loading](./demo/demo-image-loading.html)
+* _Experimental:_ [Using import maps to simplify import URLs](./demo/demo-importmaps.html). This is for-future-reference when [browser support broadens](https://caniuse.com/import-maps).
 
 Integrations in the wild:
 
