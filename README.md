@@ -47,19 +47,25 @@ npm install @11ty/is-land
 
 Add `is-land.js` to your primary bundle. It can be deferred and/or loaded asynchronously.
 
+When using the `autoinit` and/or `import` attributes to lazy load assets, `is-land-autoinit.js` is also required.
+
 When using with web components it must be the first custom element defined (via `customElements.define`) on the page. Choose your style:
 
 ```html
 <script type="module" src="/is-land.js"></script>
+
+<!-- Optional, needed for lazy loading -->
+<script type="module" src="/is-land-autoinit.js"></script>
 ```
 
 ```html
 <script type="module">
-import "/is-land.js";
+  import "/is-land.js";
+
+  // Optional, needed for lazy loading
+  import "/is-land-autoinit.js";
 </script>
 ```
-
-The framework `autoinit` examples shown below now require a separate `is-land-autoinit.js` file too.
 
 ## Usage
 
@@ -145,19 +151,32 @@ You can also use the `ready` attribute for styling, added to the `<is-land>` whe
 
 ```html
 <style>
-is-land[ready] {
-  background-color: lightgreen;
-}
+  is-land[ready] {
+    background-color: lightgreen;
+  }
 </style>
 ```
 
-### Framework Support
+### Lazy Asset Loading
 
-[Demos and source in the HTML](https://is-land.11ty.dev/) are available for each framework listed here. These examples require the `is-land-autoinit.js` JavaScript file (in addition to `is-land.js`).
+The following examples require `is-land-autoinit.js` to be sourced in addition to `is-land.js`:
 
-#### `autoinit`
+```html
+<script type="module" src="/is-land.js"></script>
+<script type="module" src="/is-land-autoinit.js"></script>
+```
 
-Use the `autoinit` and `import` attributes together to import a third party library (or component code). `autoinit` can be one of `petite-vue`, `vue`, `preact`, or `svelte`. It is recommended to use a self-hosted framework library (future Eleventy integrations will automate this for you).
+Use the `import` attribute to load a third party library or component code on initialization:
+
+```html
+<is-land on:visible import="./lib/vanilla-web-component.js">
+  <vanilla-web-component>
+    Put your pre-JS fallback content in your web component.
+  </vanilla-web-component>
+</is-land>
+```
+
+The `autoinit` attribute is used to initialize a third party framework. It can be one of `petite-vue`, `vue`, `preact`, `svelte`, or `svelte-ssr`. It is recommended to use a self-hosted framework library (future Eleventy integrations will automate this for you).
 
 ```html
 <is-land on:visible autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ name: 'post-JS' }">
@@ -169,6 +188,8 @@ Use the `autoinit` and `import` attributes together to import a third party libr
   Hello from <span v-html="name">pre-JS</span>
 </is-land>
 ```
+
+[Demos and source in the HTML](https://is-land.11ty.dev/) are available for each framework listed here.
 
 #### Petite Vue
 
