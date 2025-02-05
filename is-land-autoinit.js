@@ -25,7 +25,7 @@ class IslandAutoinit {
 
 Island.onReady.set("import-autoinit", async function(Island) {
 	let mod;
-  // [dependency="my-component-code.js"]
+  // [import="my-component-code.js"]
   let importScript = this.getAttribute(IslandAutoinit.attr.import);
   if(importScript) {
     // we could resolve import maps here manually but you’d still have to use the full URL in your script’s import anyway
@@ -33,8 +33,11 @@ Island.onReady.set("import-autoinit", async function(Island) {
   }
 
   if(mod) {
-    // Use `import=""` for when import maps are available e.g. `import="petite-vue"`
-    let fn = IslandAutoinit.types[this.getAttribute(IslandAutoinit.attr.autoInitType) || importScript];
+		// [autoinit="petite-vue"][import="my-component-code.js"]
+		// [autoinit][import="petite-vue"]
+		let autoInitValue = this.getAttribute(IslandAutoinit.attr.autoInitType);
+    // `import=""` works with import maps e.g. `import="petite-vue"`
+    let fn = IslandAutoinit.types[autoInitValue || importScript];
     if(fn) {
       await fn.call(this, mod);
     }
