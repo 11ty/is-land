@@ -1,0 +1,57 @@
+---
+layout: layout.html
+title: SolidJS Islands
+---
+<h1><a href="/">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fsolidjs.com%2F/" alt="IndieWeb avatar for https://solidjs.com/" width="28" height="28" decoding="async" loading="lazy">SolidJS</h1>
+
+<h2>Scroll down</h2>
+
+<hr style="height: 100vh">
+
+<h2>Client-rendered SolidJS</h2>
+
+<p>Example from <a href="https://www.solidjs.com/guides/getting-started#buildless-options"><code>https://www.solidjs.com/guides/getting-started#buildless-options</code></a></p>
+
+<h2>Client-rendered SolidJS</h2>
+
+<p>You can use `import="./solid-component.js"` or `&lt;template data-island&gt; with &lt;script type="module"&gt;`:</p>
+
+<is-land on:visible import="./lib/solid/solid-component-client.js">
+	This is a solid component:
+	<solid-component-client class="demo-component" name="SolidJS">Fallback content!</solid-web-component>
+</is-land>
+
+<is-land on:visible id="solid-test">
+	This is a solid component: <solid-other-web-component class="demo-component" name="SolidJS">Fallback content!</solid-other-web-component>
+
+	<template data-island>
+		<script type="module">
+		import { createSignal } from "https://esm.sh/solid-js@1.8.16";
+		import html from "https://esm.sh/solid-js@1.8.16/html";
+		import { customElement } from "https://esm.sh/solid-element@1.8.0";
+
+		customElement('solid-other-web-component', { name: undefined },
+
+		  (props, { element }) => {
+			element.classList.add("test-c-finish");
+			const [count, setCount] = createSignal(0);
+			return html`
+		<style>
+		p { color: blue; margin: 0 }
+		</style>
+		<p>Hello, ${() => props.name || "Stranger"}!</p>
+		<div>
+		<button onclick=${() => setCount(count() + 1)} >Increment</button>
+		Counter: ${count}
+		</div>
+		`;
+		  });
+		</script>
+	</template>
+</is-land>
+
+
+<h2>Server-rendered SolidJS (SSR)</h2>
+<p>
+	Hitting error "does not provide an export named 'Aliases'" when trying to use SSR with this current setup. See <a href="https://github.com/solidjs/solid/issues/1984">https://github.com/solidjs/solid/issues/1984</a>
+</p>
