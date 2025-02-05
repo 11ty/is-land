@@ -17,7 +17,7 @@ class Island extends HTMLElement {
       for(let attr of node.getAttributeNames()) {
         cloned.setAttribute(attr, node.getAttribute(attr));
       }
-    
+
       // Declarative Shadow DOM (with polyfill)
       let shadowroot = node.shadowRoot;
       if(!shadowroot) {
@@ -28,16 +28,16 @@ class Island extends HTMLElement {
           shadowroot.appendChild(tmpl.content.cloneNode(true));
         }
       }
-    
+
       // Cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
       if(shadowroot) {
         cloned.attachShadow({ mode: shadowroot.mode }).append(...shadowroot.childNodes);
       }
-    
+
       // Keep *same* child nodes to preserve state of children (e.g. details->summary)
       cloned.append(...node.childNodes);
       node.replaceWith(cloned);
-    
+
       return readyPromise.then(() => {
         // Restore original children and shadow DOM
         if(cloned.shadowRoot) {
@@ -285,7 +285,8 @@ class Conditions {
       }
 
       for(let name of events) {
-        el.addEventListener(name, resolveFn, { once: true });
+        // passive events must not call e.preventDefault()
+        el.addEventListener(name, resolveFn, { once: true, passive: true });
       }
     });
   }
