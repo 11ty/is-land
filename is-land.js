@@ -11,7 +11,7 @@ class Island extends HTMLElement {
   static onReady = new Map();
 
   static fallback = {
-    ":not(is-land,:defined,[defer-hydration])": (readyPromise, node, prefix) => {
+    ":not(is-land):not(:defined):not([defer-hydration])": (readyPromise, node, prefix) => {
       // remove from document to prevent web component init
       let cloned = document.createElement(prefix + node.localName);
       for(let attr of node.getAttributeNames()) {
@@ -21,7 +21,7 @@ class Island extends HTMLElement {
       // Declarative Shadow DOM (with polyfill)
       let shadowroot = node.shadowRoot;
       if(!shadowroot) {
-        let tmpl = node.querySelector(":scope > template:is([shadowrootmode], [shadowroot])");
+        let tmpl = node.querySelector(":scope > template[shadowrootmode], :scope > template[shadowroot]");
         if(tmpl) {
           let mode = tmpl.getAttribute("shadowrootmode") || tmpl.getAttribute("shadowroot") || "closed";
           shadowroot = node.attachShadow({ mode }); // default is closed
