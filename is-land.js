@@ -1,6 +1,23 @@
+const win = window;
+const doc = win.document;
+const nav = win.navigator;
+
+function resolvers() {
+  if("withResolvers" in Promise) {
+    return Promise.withResolvers();
+  }
+
+  let promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return {promise, resolve, reject}
+}
+
 class Island extends HTMLElement {
   static tagName = "is-land";
   static prefix = "is-land--";
+
   static attr = {
     template: "data-island",
     ready: "ready",
@@ -10,10 +27,31 @@ class Island extends HTMLElement {
   static onceCache = new Map();
   static onReady = new Map();
 
+  static ctm() {
+    // spread Chrome 46 Firefox 16 Safari 8
+    // computed property name Chrome 47 Firefox 34 Safari 8
+    // isConnected Chrome 51 Firefox 49 Safari 10
+    // replaceWith Chrome 54 Firefox 49 Safari 10
+    // once Chrome 55 Firefox 50 Safari 10
+    return "replaceWith" in doc.createElement("div");
+  }
+
+  static define() {
+    if(!("customElements" in win)) {
+      return;
+    }
+
+    win.customElements.define(this.tagName, this);
+    win.Island = this;
+  }
+
   static fallback = {
-    ":not(is-land):not(:defined):not([defer-hydration])": (readyPromise, node, prefix) => {
-      // remove from document to prevent web component init
-      let cloned = document.createElement(prefix + node.localName);
+    // computed property name Chrome 47 Firefox 34 Safari 8
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#browser_compatibility
+    [`:not(${this.tagName}):not(:defined):not([${this.attr.defer}])`]: (readyPromise, node, prefix) => {
+      // remove to prevent web component init
+      let cloned = doc.createElement(prefix + node.localName);
+
       for(let attr of node.getAttributeNames()) {
         cloned.setAttribute(attr, node.getAttribute(attr));
       }
@@ -22,6 +60,8 @@ class Island extends HTMLElement {
       let shadowroot = node.shadowRoot;
       if(!shadowroot) {
         let tmpl = node.querySelector(":scope > template[shadowrootmode], :scope > template[shadowroot]");
+        // (optional) shadowroot Chrome 90–110
+        // (optional) shadowrootmode Chrome 111 Firefox 123 Safari 16.4
         if(tmpl) {
           let mode = tmpl.getAttribute("shadowrootmode") || tmpl.getAttribute("shadowroot") || "closed";
           shadowroot = node.attachShadow({ mode }); // default is closed
@@ -35,7 +75,9 @@ class Island extends HTMLElement {
       }
 
       // Keep *same* child nodes to preserve state of children (e.g. details->summary)
+      // spread Chrome 46 Firefox 16 Safari 8
       cloned.append(...node.childNodes);
+      // replaceWith Chrome 54 Firefox 49 Safari 10
       node.replaceWith(cloned);
 
       return readyPromise.then(() => {
@@ -62,7 +104,7 @@ class Island extends HTMLElement {
   static getParents(el, stopAt = false) {
     let nodes = [];
     while(el) {
-      if(el.matches && el.matches(Island.tagName)) {
+      if(el.matches && el.matches(this.tagName)) {
         if(stopAt && el === stopAt) {
           break;
         }
@@ -78,7 +120,7 @@ class Island extends HTMLElement {
 
   static async ready(el, parents) {
     if(!parents) {
-      parents = Island.getParents(el);
+      parents = this.getParents(el);
     }
     if(parents.length === 0) {
       return;
@@ -91,16 +133,17 @@ class Island extends HTMLElement {
   }
 
   forceFallback() {
-    if(window.Island) {
-      Object.assign(Island.fallback, window.Island.fallback);
+    if(win.Island) {
+      Object.assign(Island.fallback, win.Island.fallback);
     }
 
     for(let selector in Island.fallback) {
-      // Reverse here as a cheap way to get the deepest nodes first
+      // Reverse for deepest nodes first
       let components = Array.from(this.querySelectorAll(selector)).reverse();
 
       // with thanks to https://gist.github.com/cowboy/938767
       for(let node of components) {
+        // isConnected Chrome 51 Firefox 49 Safari 10
         if(!node.isConnected) {
           continue;
         }
@@ -120,7 +163,11 @@ class Island extends HTMLElement {
   }
 
   async connectedCallback() {
-    // Only use fallback content with loading conditions
+    if(!Island.ctm()) {
+      return;
+    }
+
+    // Only use fallback content when loading conditions in play
     if(Conditions.hasConditions(this)) {
       // Keep fallback content without initializing the components
       this.forceFallback();
@@ -193,7 +240,6 @@ class Island extends HTMLElement {
 
     this.setAttribute(Island.attr.ready, "");
 
-    // Remove [defer-hydration]
     this.querySelectorAll(`[${Island.attr.defer}]`).forEach(node => node.removeAttribute(Island.attr.defer));
   }
 }
@@ -202,6 +248,7 @@ class Conditions {
   static map = {
     visible: Conditions.visible,
     idle: Conditions.idle,
+    load: Conditions.pageLoad,
     interaction: Conditions.interaction,
     media: Conditions.media,
     "save-data": Conditions.saveData,
@@ -223,12 +270,10 @@ class Conditions {
   }
 
   static visible(noop, el) {
-    if(!('IntersectionObserver' in window)) {
-      // runs immediately
-      return;
-    }
+    let {promise, resolve} = resolvers();
 
-    return new Promise(resolve => {
+    // (optional) IntersectionObserver Chrome 58 Firefox 55 Safari 12.1
+    if("IntersectionObserver" in win) {
       let observer = new IntersectionObserver(entries => {
         let [entry] = entries;
         if(entry.isIntersecting) {
@@ -238,102 +283,106 @@ class Conditions {
       });
 
       observer.observe(el);
-    });
-  }
-
-  // Warning: on:idle is not very useful with other conditions as it may resolve long before.
-  static idle() {
-    let onload = new Promise(resolve => {
-      if(document.readyState !== "complete") {
-        window.addEventListener("load", () => resolve(), { once: true });
-      } else {
-        resolve();
-      }
-    });
-
-    if(!("requestIdleCallback" in window)) {
-      // run immediately
-      return onload;
+    } else {
+      resolve();
     }
 
-    // both idle and onload
+    return promise;
+  }
+
+  static pageLoad() {
+    let { promise, resolve } = resolvers();
+
+    if(doc.readyState === "complete") {
+      resolve();
+    } else {
+      // once Chrome 55 Firefox 50 Safari 10
+      win.addEventListener("load", () => resolve(), { once: true });
+    }
+
+    return promise;
+  }
+
+  // TODO fix this to resolve *last* when used with other conditions
+  static idle() {
+    let { promise, resolve } = resolvers();
+
+    if("requestIdleCallback" in win) {
+      requestIdleCallback(() => resolve());
+    } else {
+      resolve();
+    }
+
     return Promise.all([
-      new Promise(resolve => {
-        requestIdleCallback(() => {
-          resolve();
-        });
-      }),
-      onload,
+      this.load(), // idle *after* load
+      promise,
     ]);
   }
 
   static interaction(eventOverrides, el) {
     let events = ["click", "touchstart"];
+
     // event overrides e.g. on:interaction="mouseenter"
     if(eventOverrides) {
       events = (eventOverrides || "").split(",").map(entry => entry.trim());
     }
 
-    return new Promise(resolve => {
-      function resolveFn(e) {
-        resolve();
+    let {promise, resolve} = resolvers();
 
-        // cleanup the other event handlers
-        for(let name of events) {
-          el.removeEventListener(name, resolveFn);
-        }
-      }
+    function resolveFn(e) {
+      resolve();
 
+      // cleanup the other event handlers
       for(let name of events) {
-        // passive events must not call e.preventDefault()
-        el.addEventListener(name, resolveFn, { once: true, passive: true });
+        el.removeEventListener(name, resolveFn);
       }
-    });
+    }
+
+    for(let name of events) {
+      // once Chrome 55 Firefox 50 Safari 10
+      // (optional) passive Chrome 51 Firefox 49 Safari 10
+      el.addEventListener(name, resolveFn, { once: true, passive: true });
+    }
+
+    return promise;
   }
 
   static media(query) {
+    let {promise, resolve} = resolvers();
+
     let mm = {
       matches: true
     };
 
-    if(query && ("matchMedia" in window)) {
-      mm = window.matchMedia(query);
+    if(query && ("matchMedia" in win)) {
+      mm = win.matchMedia(query);
     }
 
     if(mm.matches) {
-      return;
-    }
-
-    return new Promise(resolve => {
+      resolve();
+    } else {
       mm.addListener(e => {
         if(e.matches) {
           resolve();
         }
       });
-    });
+    }
+
+    return promise;
   }
 
   static saveData(expects) {
-    // return early if API does not exist
-    if(!("connection" in navigator) || navigator.connection.saveData === (expects !== "false")) {
-      return;
+    let {promise, resolve} = resolvers();
+
+    // (optional) saveData Chrome 65
+    if(!("connection" in nav) || nav.connection.saveData === (expects !== "false")) {
+      resolve();
     }
 
-    // dangly promise
-    return new Promise(() => {});
+    return promise;
   }
 }
 
-// Should this auto define? Folks can redefine later using { component } export
-if("customElements" in window) {
-  window.customElements.define(Island.tagName, Island);
-  window.Island = Island;
-}
+Island.define();
 
-export {
-  Island,
-  Island as component, // Backwards compat only: recommend `Island` export
-};
-
-// TODO remove in 4.0
-export const ready = Island.ready; // Backwards compat only: recommend `Island` export
+export { Island };
