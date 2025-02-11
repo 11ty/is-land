@@ -44,50 +44,23 @@ class Island extends HTMLElement {
     }
 
     win.customElements.define(this.tagName, this);
-    win.Island = this;
   }
 
   static fallback = {
     // Support: computed property name Chrome 47 Firefox 34 Safari 8
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#browser_compatibility
-    [`:not(${this.tagName}):not(:defined):not([${this.attr.defer}])`]: (readyPromise, node, prefix) => {
-      // remove to prevent web component init
-      let cloned = doc.createElement(prefix + node.localName);
+    [`:not(:defined):not(${this.tagName}):not([${this.attr.defer}])`]: (readyPromise, node, prefix) => {
 
-      for(let attr of node.getAttributeNames()) {
-        cloned.setAttribute(attr, node.getAttribute(attr));
-      }
-
-      // Declarative Shadow DOM (with polyfill)
-      let shadowroot = node.shadowRoot;
-      if(!shadowroot) {
-        let tmpl = node.querySelector(":scope > template[shadowrootmode], :scope > template[shadowroot]");
-        // Support: (optional) shadowroot Chrome 90–110
-        // Support: (optional) shadowrootmode Chrome 111 Firefox 123 Safari 16.4
-        if(tmpl) {
-          let mode = tmpl.getAttribute("shadowrootmode") || tmpl.getAttribute("shadowroot") || "closed";
-          shadowroot = node.attachShadow({ mode }); // default is closed
-          shadowroot.appendChild(tmpl.content.cloneNode(true));
-        }
-      }
-
-      // Cheers https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
-      if(shadowroot) {
-        cloned.attachShadow({ mode: shadowroot.mode }).append(...shadowroot.childNodes);
-      }
-
-      // Keep *same* child nodes to preserve state of children (e.g. details->summary)
-      // Support: spread Chrome 46 Firefox 16 Safari 8
-      cloned.append(...node.childNodes);
-      // Support: replaceWith Chrome 54 Firefox 49 Safari 10
-      node.replaceWith(cloned);
+      let cloned = Island.renameNode(node, prefix + node.localName);
 
       return readyPromise.then(() => {
         // Restore original children and shadow DOM
         if(cloned.shadowRoot) {
           node.shadowRoot.append(...cloned.shadowRoot.childNodes);
         }
+
         node.append(...cloned.childNodes);
+
         cloned.replaceWith(node);
       });
     }
@@ -100,6 +73,42 @@ class Island extends HTMLElement {
     this.ready = new Promise(resolve => {
       this.readyResolve = resolve;
     });
+  }
+
+  static renameNode(node, name) {
+    // rename (localName is readonly) to prevent custom element init
+    let cloned = doc.createElement(name);
+
+    for(let attr of node.getAttributeNames()) {
+      cloned.setAttribute(attr, node.getAttribute(attr));
+    }
+
+    // Declarative Shadow DOM (with polyfill)
+    let shadowroot = node.shadowRoot;
+    if(!shadowroot) {
+      let tmpl = node.querySelector(":scope > template[shadowrootmode], :scope > template[shadowroot]");
+      // Support: (optional) shadowroot Chrome 90–110
+      // Support: (optional) shadowrootmode Chrome 111 Firefox 123 Safari 16.4
+      if(tmpl) {
+        let mode = tmpl.getAttribute("shadowrootmode") || tmpl.getAttribute("shadowroot") || "closed";
+        shadowroot = node.attachShadow({ mode }); // default is closed
+        shadowroot.appendChild(tmpl.content.cloneNode(true));
+      }
+    }
+
+    // Cheers https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
+    if(shadowroot) {
+      cloned.attachShadow({ mode: shadowroot.mode }).append(...shadowroot.childNodes);
+    }
+
+    // Keep *same* child nodes to preserve state of children (e.g. details->summary)
+    // Support: spread Chrome 46 Firefox 16 Safari 8
+    cloned.append(...node.childNodes);
+
+    // Support: replaceWith Chrome 54 Firefox 49 Safari 10
+    node.replaceWith(cloned);
+
+    return cloned;
   }
 
   // any parents of `el` that are <is-land> (with conditions)
@@ -169,14 +178,10 @@ class Island extends HTMLElement {
     }
   }
 
-  renameFallback() {
-    if(win.Island) {
-      Object.assign(Island.fallback, win.Island.fallback);
-    }
-
-    for(let selector in Island.fallback) {
+  static init(node) {
+    for(let selector in this.fallback) {
       // Reverse for deepest nodes first
-      let components = Array.from(this.querySelectorAll(selector)).reverse();
+      let components = Array.from(node.querySelectorAll(selector)).reverse();
 
       // with thanks to https://gist.github.com/cowboy/938767
       for(let node of components) {
@@ -185,11 +190,11 @@ class Island extends HTMLElement {
           continue;
         }
 
-        let parents = Island.getParents(node);
+        let parents = this.getParents(node);
         // must be in a leaf island (not nested deep)
         if(parents.length === 1) {
-          let p = Island.ready(node, parents);
-          Island.fallback[selector](p, node, Island.prefix);
+          let p = this.ready(node, parents);
+          this.fallback[selector](p, node, this.prefix);
         }
       }
     }
@@ -207,7 +212,7 @@ class Island extends HTMLElement {
     // Only use fallback content when loading conditions in play
     if(Conditions.hasConditions(this)) {
       // Keep fallback content without initializing the components
-      this.renameFallback();
+      Island.init(this);
     }
 
     await this.hydrate();
@@ -406,6 +411,11 @@ class Conditions {
     return promise;
   }
 }
+
+if(win.Island) {
+  Object.assign(Island.fallback, win.Island.fallback);
+}
+win.Island = Island;
 
 Island.define();
 
