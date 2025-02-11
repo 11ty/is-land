@@ -3,10 +3,8 @@ const doc = win.document;
 const nav = win.navigator;
 
 function resolvers() {
-  if("withResolvers" in Promise) {
-    return Promise.withResolvers();
-  }
-
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
+  let resolve, reject;
   let promise = new Promise((res, rej) => {
     resolve = res;
     reject = rej;
@@ -16,7 +14,7 @@ function resolvers() {
 
 class Island extends HTMLElement {
   static tagName = "is-land";
-  static prefix = "is-land--";
+  static prefix = `${this.tagName}--`;
 
   static attr = {
     template: "data-island",
@@ -24,26 +22,21 @@ class Island extends HTMLElement {
     defer: "defer-hydration",
   };
 
-  static onceCache = new Map();
   static onReady = new Map();
+  static _onceCache = new Map();
 
   static ctm() {
     // Browser Support:
-    // spread Chrome 46 Firefox 16 Safari 8
-    // computed property name Chrome 47 Firefox 34 Safari 8
-    // NodeList forEach Chrome 51 Firefox 50* Safari 10
-    // isConnected Chrome 51 Firefox 49 Safari 10
     // replaceWith Chrome 54 Firefox 49 Safari 10
-    // once Chrome 55* Firefox 50* Safari 10
+    // NodeList forEach Chrome 51 Firefox 50** Safari 10
+    // once Chrome 55** Firefox 50** Safari 10
     return "replaceWith" in doc.createElement("div");
   }
 
   static define() {
-    if(!("customElements" in win)) {
-      return;
+    if("customElements" in win) {
+      win.customElements.define(this.tagName, this);
     }
-
-    win.customElements.define(this.tagName, this);
   }
 
   static fallback = {
@@ -69,10 +62,7 @@ class Island extends HTMLElement {
   constructor() {
     super();
 
-    // Internal promises
-    this.ready = new Promise(resolve => {
-      this.readyResolve = resolve;
-    });
+    this._ready = resolvers();
   }
 
   static renameNode(node, name) {
@@ -165,12 +155,12 @@ class Island extends HTMLElement {
       } else {
         let html = tmpl.innerHTML;
         if(value === "once" && html) {
-          if(this.onceCache.has(html)) {
+          if(this._onceCache.has(html)) {
             tmpl.remove();
             return;
           }
 
-          this.onceCache.set(html, true);
+          this._onceCache.set(html, true);
         }
 
         tmpl.replaceWith(tmpl.content);
@@ -201,7 +191,7 @@ class Island extends HTMLElement {
   }
 
   wait() {
-    return this.ready;
+    return this._ready.promise;
   }
 
   async connectedCallback() {
@@ -236,7 +226,7 @@ class Island extends HTMLElement {
       await fn.call(this, Island);
     }
 
-    this.readyResolve();
+    this._ready.resolve();
 
     let { ready, defer } = Island.attr;
     this.setAttribute(ready, "");
