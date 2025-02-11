@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<link rel="stylesheet" href="demo-stress-test-styles.css">
+		<script type="module" src="/is-land.js"></script>
+		<!-- <script type="module" src="https://esm.sh/@11ty/is-land@4.0.0/is-land.js"></script> -->
+		<script type="module">
+		customElements.define("test-element", class extends HTMLElement {
+			connectedCallback() {
+				console.log( "<test-element> connectedCallback" );
+			}
+		});
+		</script>
+	</head>
+	<body>
+{% comment %}Liquid.js was having trouble with such a large loop!{% endcomment %}
+{% for i in (1..1000) %}
+	<is-land on:visible on:media="(max-width: 800px)" class="island">
+		<is-land on:visible on:media="(min-width: 1200px)" class="island">
+			<is-land on:visible class="island">
+				<test-element>Nested ×3 #{{i}}</test-element>
+			</is-land>
+		</is-land>
+	</is-land>
+{% endfor %}
+	</body>
+</html>

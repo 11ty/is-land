@@ -1,3 +1,5 @@
+//! <is-land> v5.0.0
+
 const win = window;
 const doc = win.document;
 const nav = win.navigator;
@@ -28,9 +30,10 @@ class Island extends HTMLElement {
   static ctm() {
     // Browser Support:
     // replaceWith Chrome 54 Firefox 49 Safari 10
+    // Object.entries Chrome 54 Firefox 47 Safari 10.1
     // NodeList forEach Chrome 51 Firefox 50** Safari 10
     // once Chrome 55** Firefox 50** Safari 10
-    return "replaceWith" in doc.createElement("div");
+    return "entries" in Object && "replaceWith" in doc.createElement("div");
   }
 
   static define() {
@@ -74,21 +77,21 @@ class Island extends HTMLElement {
     }
 
     // Declarative Shadow DOM (with polyfill)
-    let shadowroot = node.shadowRoot;
-    if(!shadowroot) {
+    let sr = node.shadowRoot;
+    if(!sr) {
       let tmpl = node.querySelector(":scope > template[shadowrootmode], :scope > template[shadowroot]");
       // Support: (optional) shadowroot Chrome 90–110
       // Support: (optional) shadowrootmode Chrome 111 Firefox 123 Safari 16.4
       if(tmpl) {
         let mode = tmpl.getAttribute("shadowrootmode") || tmpl.getAttribute("shadowroot") || "closed";
-        shadowroot = node.attachShadow({ mode }); // default is closed
-        shadowroot.appendChild(tmpl.content.cloneNode(true));
+        sr = node.attachShadow({ mode }); // default is closed
+        sr.appendChild(tmpl.content.cloneNode(true));
       }
     }
 
-    // Cheers https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
-    if(shadowroot) {
-      cloned.attachShadow({ mode: shadowroot.mode }).append(...shadowroot.childNodes);
+    if(sr) {
+      // Cheers https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
+      cloned.attachShadow({ mode: sr.mode }).append(...sr.childNodes);
     }
 
     // Keep *same* child nodes to preserve state of children (e.g. details->summary)
@@ -101,11 +104,13 @@ class Island extends HTMLElement {
     return cloned;
   }
 
-  // any parents of `el` that are <is-land> (with conditions)
+  // any parents of `el` that are <is-land> with on: conditions
   static getParents(el, stopAt = false) {
     let nodes = [];
-    while(el) {
-      if(el.matches && el.matches(this.tagName)) {
+    while(el = el.parentNode) {
+      if(!el || el === doc.body) {
+          break;
+      } else if(el.matches && el.matches(this.tagName)) { // Support: matches Chrome 33 Firefox 34 Safari 8
         if(stopAt && el === stopAt) {
           break;
         }
@@ -114,53 +119,38 @@ class Island extends HTMLElement {
           nodes.push(el);
         }
       }
-      el = el.parentNode;
     }
     return nodes;
   }
 
-  static async ready(el, parents) {
-    if(!parents) {
-      parents = this.getParents(el);
-    }
-    if(parents.length === 0) {
-      return;
-    }
-    let imports = await Promise.all(parents.map(p => p.wait()));
-    // return innermost module import
-    if(imports.length) {
-      return imports[0];
-    }
-  }
+  replaceTemplates() {
+    let templates = this.querySelectorAll(`template[${Island.attr.template}]`);
 
-  static replaceTemplates(node) {
-    let templates = node.querySelectorAll(`template[${Island.attr.template}]`);
-
-    // replace <template> with the live content
+    // replace <template> with template content
     for(let tmpl of templates) {
       // if the template is nested inside another child <is-land> inside, skip
-      if(Island.getParents(tmpl, node).length > 0) {
+      if(Island.getParents(tmpl, this).length > 0) {
         continue;
       }
 
       let value = tmpl.getAttribute(Island.attr.template);
       // get rid of the rest of the content on the island
       if(value === "replace") {
-        let children = Array.from(node.childNodes);
+        let children = Array.from(this.childNodes);
         for(let child of children) {
-          node.removeChild(child);
+          this.removeChild(child);
         }
-        node.appendChild(tmpl.content);
+        this.appendChild(tmpl.content);
         break;
       } else {
         let html = tmpl.innerHTML;
         if(value === "once" && html) {
-          if(this._onceCache.has(html)) {
+          if(Island._onceCache.has(html)) {
             tmpl.remove();
             return;
           }
 
-          this._onceCache.set(html, true);
+          Island._onceCache.set(html, true);
         }
 
         tmpl.replaceWith(tmpl.content);
@@ -168,10 +158,19 @@ class Island extends HTMLElement {
     }
   }
 
-  static init(node) {
-    for(let selector in this.fallback) {
+  // all islands ready
+  static async ready(el, parents) {
+    if(!parents) {
+      parents = Island.getParents(el);
+    }
+    return Promise.all(parents.map(p => p.wait()));
+  }
+
+  replaceFallbackContent() {
+    // Support: Object.entries Chrome 54 Firefox 47 Safari 10.1
+    for(let [selector, fn] of Object.entries(Island.fallback)) {
       // Reverse for deepest nodes first
-      let components = Array.from(node.querySelectorAll(selector)).reverse();
+      let components = Array.from(this.querySelectorAll(selector)).reverse();
 
       // with thanks to https://gist.github.com/cowboy/938767
       for(let node of components) {
@@ -180,11 +179,11 @@ class Island extends HTMLElement {
           continue;
         }
 
-        let parents = this.getParents(node);
-        // must be in a leaf island (not nested deep)
-        if(parents.length === 1) {
-          let p = this.ready(node, parents);
-          this.fallback[selector](p, node, this.prefix);
+        let parents = Island.getParents(node);
+        // only fallback if this is the closest island parent.
+        if(parents[0] === this) {
+          let ready = Island.ready(node, parents);
+          fn(ready, node, Island.prefix);
         }
       }
     }
@@ -202,7 +201,7 @@ class Island extends HTMLElement {
     // Only use fallback content when loading conditions in play
     if(Conditions.hasConditions(this)) {
       // Keep fallback content without initializing the components
-      Island.init(this);
+      this.replaceFallbackContent();
     }
 
     await this.hydrate();
@@ -210,17 +209,19 @@ class Island extends HTMLElement {
 
   async hydrate() {
     let conditions = [];
-    if(this.parentNode) {
-      // wait for all parents before hydrating
-      conditions.push(Island.ready(this.parentNode));
-    }
+
+    // TODO can we get rid of this?
+    // if(this.parentNode) {
+    //   // wait for all parents before hydrating
+    //   conditions.push(Island.ready(this.parentNode));
+    // }
 
     conditions.push(...Conditions.getConditions(this));
 
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
-    Island.replaceTemplates(this);
+    this.replaceTemplates();
 
     for(let fn of Island.onReady.values()) {
       await fn.call(this, Island);

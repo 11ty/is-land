@@ -5,32 +5,12 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<title></title>
-		<style>
-			body {
-				display: grid;
-				grid-template-columns: repeat( auto-fill, minmax(10em, 1fr) );
-				grid-gap: 1em;
-				overflow-y: scroll;
-				padding: .5em;
-			}
-			.island {
-				font-family: monospace;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				min-height: 4em;
-				border: 2px solid rgba(60, 60, 60, .6);
-			}
-			is-land[ready] {
-				background-color: lightgreen;
-				border-color: darkgreen;
-			}
-		</style>
+		<link rel="stylesheet" href="demo-stress-test-styles.css">
 		<script type="module" src="/is-land.js"></script>
 		<script type="module">
-		customElements.define("test-custom-element", class extends HTMLElement {
+		customElements.define("test-element", class extends HTMLElement {
 			connectedCallback() {
-				console.log( "<test-custom-element> connectedCallback" );
+				console.log( "<test-element> connectedCallback" );
 			}
 		});
 		</script>
@@ -39,27 +19,27 @@
 {% comment %}Liquid.js was having trouble with such a large loop!{% endcomment %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<test-custom-element>&lt;is-land&gt; #{{i}}</test-custom-element>
+		<test-element>&lt;test-element&gt; #{{i}}</test-element>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<test-custom-element>&lt;is-land&gt; #{{i | plus: 2000}}</test-custom-element>
+		<test-element>&lt;test-element&gt; #{{i | plus: 2000}}</test-element>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<test-custom-element>&lt;is-land&gt; #{{i | plus: 4000}}</test-custom-element>
+		<test-element>&lt;test-element&gt; #{{i | plus: 4000}}</test-element>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<test-custom-element>&lt;is-land&gt; #{{i | plus: 6000}}</test-custom-element>
+		<test-element>&lt;test-element&gt; #{{i | plus: 6000}}</test-element>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<test-custom-element>&lt;is-land&gt; #{{i | plus: 8000}}</test-custom-element>
+		<test-element>&lt;test-element&gt; #{{i | plus: 8000}}</test-element>
 	</is-land>
 {% endfor %}
 	</body>

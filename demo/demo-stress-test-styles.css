@@ -1,0 +1,24 @@
+body {
+	display: grid;
+	grid-template-columns: repeat( auto-fill, minmax(10em, 1fr) );
+	grid-gap: 1em;
+	overflow-y: scroll;
+	padding: .5em;
+}
+.island {
+	font-family: monospace;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 4em;
+	padding: .5em;
+	border: .35em solid rgba(60, 60, 60, .4);
+}
+is-land[ready] {
+	background-color: rgba(144,238,144,.6);
+	border-color: darkgreen;
+}
+test-element:defined {
+	background-color: lightgreen;
+	font-weight: bold;
+}
