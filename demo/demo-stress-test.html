@@ -28,9 +28,9 @@
 		</style>
 		<script type="module" src="/is-land.js"></script>
 		<script type="module">
-		customElements.define("slide-scroller", class extends HTMLElement {
+		customElements.define("test-custom-element", class extends HTMLElement {
 			connectedCallback() {
-				console.log( "<slide-scroller> connectedCallback" );
+				console.log( "<test-custom-element> connectedCallback" );
 			}
 		});
 		</script>
@@ -39,27 +39,27 @@
 {% comment %}Liquid.js was having trouble with such a large loop!{% endcomment %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<slide-scroller>&lt;is-land&gt; #{{i}}</slide-scroller>
+		<test-custom-element>&lt;is-land&gt; #{{i}}</test-custom-element>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<slide-scroller>&lt;is-land&gt; #{{i | plus: 2000}}</slide-scroller>
+		<test-custom-element>&lt;is-land&gt; #{{i | plus: 2000}}</test-custom-element>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<slide-scroller>&lt;is-land&gt; #{{i | plus: 4000}}</slide-scroller>
+		<test-custom-element>&lt;is-land&gt; #{{i | plus: 4000}}</test-custom-element>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<slide-scroller>&lt;is-land&gt; #{{i | plus: 6000}}</slide-scroller>
+		<test-custom-element>&lt;is-land&gt; #{{i | plus: 6000}}</test-custom-element>
 	</is-land>
 {% endfor %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
-		<slide-scroller>&lt;is-land&gt; #{{i | plus: 8000}}</slide-scroller>
+		<test-custom-element>&lt;is-land&gt; #{{i | plus: 8000}}</test-custom-element>
 	</is-land>
 {% endfor %}
 	</body>

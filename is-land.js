@@ -11,7 +11,7 @@ function resolvers() {
     resolve = res;
     reject = rej;
   });
-  return {promise, resolve, reject}
+  return {promise, resolve, reject};
 }
 
 class Island extends HTMLElement {
@@ -28,11 +28,13 @@ class Island extends HTMLElement {
   static onReady = new Map();
 
   static ctm() {
+    // Browser Support:
     // spread Chrome 46 Firefox 16 Safari 8
     // computed property name Chrome 47 Firefox 34 Safari 8
+    // NodeList forEach Chrome 51 Firefox 50* Safari 10
     // isConnected Chrome 51 Firefox 49 Safari 10
     // replaceWith Chrome 54 Firefox 49 Safari 10
-    // once Chrome 55 Firefox 50 Safari 10
+    // once Chrome 55* Firefox 50* Safari 10
     return "replaceWith" in doc.createElement("div");
   }
 
@@ -46,7 +48,7 @@ class Island extends HTMLElement {
   }
 
   static fallback = {
-    // computed property name Chrome 47 Firefox 34 Safari 8
+    // Support: computed property name Chrome 47 Firefox 34 Safari 8
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#browser_compatibility
     [`:not(${this.tagName}):not(:defined):not([${this.attr.defer}])`]: (readyPromise, node, prefix) => {
       // remove to prevent web component init
@@ -60,8 +62,8 @@ class Island extends HTMLElement {
       let shadowroot = node.shadowRoot;
       if(!shadowroot) {
         let tmpl = node.querySelector(":scope > template[shadowrootmode], :scope > template[shadowroot]");
-        // (optional) shadowroot Chrome 90–110
-        // (optional) shadowrootmode Chrome 111 Firefox 123 Safari 16.4
+        // Support: (optional) shadowroot Chrome 90–110
+        // Support: (optional) shadowrootmode Chrome 111 Firefox 123 Safari 16.4
         if(tmpl) {
           let mode = tmpl.getAttribute("shadowrootmode") || tmpl.getAttribute("shadowroot") || "closed";
           shadowroot = node.attachShadow({ mode }); // default is closed
@@ -69,15 +71,15 @@ class Island extends HTMLElement {
         }
       }
 
-      // Cheers to https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
+      // Cheers https://gist.github.com/developit/45c85e9be01e8c3f1a0ec073d600d01e
       if(shadowroot) {
         cloned.attachShadow({ mode: shadowroot.mode }).append(...shadowroot.childNodes);
       }
 
       // Keep *same* child nodes to preserve state of children (e.g. details->summary)
-      // spread Chrome 46 Firefox 16 Safari 8
+      // Support: spread Chrome 46 Firefox 16 Safari 8
       cloned.append(...node.childNodes);
-      // replaceWith Chrome 54 Firefox 49 Safari 10
+      // Support: replaceWith Chrome 54 Firefox 49 Safari 10
       node.replaceWith(cloned);
 
       return readyPromise.then(() => {
@@ -132,7 +134,7 @@ class Island extends HTMLElement {
     }
   }
 
-  forceFallback() {
+  renameFallback() {
     if(win.Island) {
       Object.assign(Island.fallback, win.Island.fallback);
     }
@@ -143,7 +145,7 @@ class Island extends HTMLElement {
 
       // with thanks to https://gist.github.com/cowboy/938767
       for(let node of components) {
-        // isConnected Chrome 51 Firefox 49 Safari 10
+        // Support: isConnected Chrome 51 Firefox 49 Safari 10
         if(!node.isConnected) {
           continue;
         }
@@ -170,7 +172,7 @@ class Island extends HTMLElement {
     // Only use fallback content when loading conditions in play
     if(Conditions.hasConditions(this)) {
       // Keep fallback content without initializing the components
-      this.forceFallback();
+      this.renameFallback();
     }
 
     await this.hydrate();
@@ -220,12 +222,7 @@ class Island extends HTMLElement {
       conditions.push(Island.ready(this.parentNode));
     }
 
-    let attrs = Conditions.getConditions(this);
-    for(let condition in attrs) {
-      if(Conditions.map[condition]) {
-        conditions.push(Conditions.map[condition](attrs[condition], this));
-      }
-    }
+    conditions.push(...Conditions.getConditions(this));
 
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
@@ -240,39 +237,50 @@ class Island extends HTMLElement {
 
     this.setAttribute(Island.attr.ready, "");
 
-    this.querySelectorAll(`[${Island.attr.defer}]`).forEach(node => node.removeAttribute(Island.attr.defer));
+    // Support: NodeList forEach Chrome 51 Firefox 50 Safari 10
+    let d = Island.attr.defer;
+    this.querySelectorAll(`[${d}]`).forEach(n => n.removeAttribute(d));
   }
 }
 
 class Conditions {
+  static _media = {}; // cache
+
   static map = {
-    visible: Conditions.visible,
-    idle: Conditions.idle,
-    load: Conditions.pageLoad,
-    interaction: Conditions.interaction,
-    media: Conditions.media,
-    "save-data": Conditions.saveData,
+    "on:visible": Conditions.visible,
+    "on:idle": Conditions.idle,
+    "on:load": Conditions.pageLoad,
+    "on:interaction": Conditions.interaction,
+    "on:media": Conditions.media,
+    "on:save-data": Conditions.saveData,
   };
 
   static hasConditions(node) {
-    return Object.keys(Conditions.getConditions(node)).length > 0;
+    for(let attr of Object.keys(Conditions.map)) {
+      if(node.hasAttribute(attr)) {
+        return true;
+      }
+    }
+    return false;
   }
 
+  // Support: Default param values Chrome 49 Firefox 15 Safari 10
   static getConditions(node) {
-    let map = {};
-    for(let key of Object.keys(Conditions.map)) {
-      if(node.hasAttribute(`on:${key}`)) {
-        map[key] = node.getAttribute(`on:${key}`);
+    let v = [];
+    for(let attr of Object.keys(Conditions.map)) {
+      if(node.hasAttribute(attr)) {
+        let attrValue = node.getAttribute(attr);
+        v.push(Conditions.map[attr](attrValue, node));
       }
     }
 
-    return map;
+    return v;
   }
 
   static visible(noop, el) {
     let {promise, resolve} = resolvers();
 
-    // (optional) IntersectionObserver Chrome 58 Firefox 55 Safari 12.1
+    // Support: (optional) IntersectionObserver Chrome 58 Firefox 55 Safari 12.1
     if("IntersectionObserver" in win) {
       let observer = new IntersectionObserver(entries => {
         let [entry] = entries;
@@ -290,21 +298,33 @@ class Conditions {
     return promise;
   }
 
+  // Global (not element dependent)
   static pageLoad() {
+    if(Conditions._cacheLoad) {
+      return Conditions._cacheLoad;
+    }
+
     let { promise, resolve } = resolvers();
 
     if(doc.readyState === "complete") {
       resolve();
     } else {
-      // once Chrome 55 Firefox 50 Safari 10
+      // Support: once Chrome 55 Firefox 50 Safari 10
       win.addEventListener("load", () => resolve(), { once: true });
     }
+
+    Conditions._cacheLoad = promise;
 
     return promise;
   }
 
+  // Global (not element dependent)
   // TODO fix this to resolve *last* when used with other conditions
   static idle() {
+    if(Conditions._cacheIdle) {
+      return Conditions._cacheIdle;
+    }
+
     let { promise, resolve } = resolvers();
 
     if("requestIdleCallback" in win) {
@@ -313,19 +333,18 @@ class Conditions {
       resolve();
     }
 
-    return Promise.all([
-      this.load(), // idle *after* load
+    Conditions._cacheIdle = Promise.all([
+      Conditions.pageLoad(), // idle *after* load
       promise,
     ]);
+
+    return Conditions._cacheIdle;
   }
 
   static interaction(eventOverrides, el) {
-    let events = ["click", "touchstart"];
-
     // event overrides e.g. on:interaction="mouseenter"
-    if(eventOverrides) {
-      events = (eventOverrides || "").split(",").map(entry => entry.trim());
-    }
+    let eventsStr = eventOverrides || "click,touchstart";
+    let events = eventsStr.split(",").map(entry => entry.trim());
 
     let {promise, resolve} = resolvers();
 
@@ -339,15 +358,20 @@ class Conditions {
     }
 
     for(let name of events) {
-      // once Chrome 55 Firefox 50 Safari 10
-      // (optional) passive Chrome 51 Firefox 49 Safari 10
+      // Support: once Chrome 55 Firefox 50 Safari 10
+      // Support: (optional) passive Chrome 51 Firefox 49 Safari 10
       el.addEventListener(name, resolveFn, { once: true, passive: true });
     }
 
     return promise;
   }
 
+  // Global (viewport, not element dependent)
   static media(query) {
+    if(Conditions._media[query]) {
+      return Conditions._media[query];
+    }
+
     let {promise, resolve} = resolvers();
 
     let mm = {
@@ -368,13 +392,16 @@ class Conditions {
       });
     }
 
+    Conditions._media[query] = promise;
+
     return promise;
   }
 
+  // Immediate
   static saveData(expects) {
     let {promise, resolve} = resolvers();
 
-    // (optional) saveData Chrome 65
+    // Support: (optional) saveData Chrome 65
     if(!("connection" in nav) || nav.connection.saveData === (expects !== "false")) {
       resolve();
     }

@@ -34,7 +34,7 @@ Island.onReady.set("import-autoinit", async function(Island) {
 
   if(mod) {
 		// [autoinit="petite-vue"][import="my-component-code.js"]
-		// [autoinit][import="petite-vue"]
+		// [autoinit][import="petite-vue"] (where petite-vue has an import map mapping)
 		let autoInitValue = this.getAttribute(IslandAutoinit.attr.autoInitType);
     // `import=""` works with import maps e.g. `import="petite-vue"`
     let fn = IslandAutoinit.types[autoInitValue || importScript];
