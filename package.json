@@ -5,6 +5,7 @@
   "type": "module",
   "main": "is-land.js",
   "scripts": {
+    "compress": "terser is-land.js -o dist/is-land.min.js --compress --mangle --module --ecma 2016 && brotli-size dist/is-land.min.js",
     "start": "npx @11ty/eleventy --config=eleventy.cjs --serve",
     "build": "npx @11ty/eleventy --config=eleventy.cjs"
   },
@@ -30,12 +31,14 @@
   },
   "homepage": "https://github.com/11ty/is-land#readme",
   "devDependencies": {
-    "@11ty/eleventy": "^2.0.0",
-    "esm-import-transformer": "^1.0.1",
+    "@11ty/eleventy": "^3.0.0",
+    "brotli-size-cli": "^1.0.0",
+    "esm-import-transformer": "^3.0.2",
     "htm": "^3.1.1",
-    "preact": "^10.11.3",
-    "preact-render-to-string": "^5.2.6",
-    "svelte": "^3.55.1",
-    "vue": "^3.2.45"
+    "preact": "^10.25.4",
+    "preact-render-to-string": "^6.5.13",
+    "svelte": "^5.19.10",
+    "terser": "^5.38.1",
+    "vue": "^3.5.13"
   }
 }

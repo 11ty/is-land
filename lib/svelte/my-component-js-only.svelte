@@ -1,12 +1,10 @@
 <script>
-  // using export to allow overrides via props
-  export let name = 'world';
+let {} = $props();
+let count = $state(0);
 
-  let count = 0;
-
-  function handleClick() {
-    count += 1;
-  }
+function onclick() {
+  count += 1;
+}
 </script>
 
 <style>
@@ -15,6 +13,6 @@
 
 <h1>Hello {name}</h1>
 
-<button on:click={handleClick}>
+<button {onclick}>
 	Clicked {count} {count === 1 ? 'time' : 'times'}
 </button>

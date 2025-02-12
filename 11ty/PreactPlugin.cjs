@@ -8,15 +8,14 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("preact", async (filename) => {
     let content = fs.readFileSync(filename, "utf8");
     let target = new FileTarget(filename);
-    target.write(content, {
+    await target.write(content, {
       imports: {
         // For this demo I’m using unpkg for the Preact library
         "htm/preact": "https://unpkg.com/htm/preact/index.mjs?module"
       }
     });
-
-    let appDefinition = await import(path.join("../", filename));
-    let output = render(appDefinition.default());
+    let { default: appDefinition } = await import(path.join("../", filename));
+    let output = render(appDefinition());
 
     return {
       html: output,

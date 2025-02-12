@@ -11,11 +11,21 @@ class IslandAutoinit {
 		"vue": function(lib) {
 			lib.createApp().mount(this);
 		},
-		"svelte": function(lib) {
-			new lib.default({ target: this });
+		"svelte": async function(lib) {
+			// requires an Import map!
+			const { mount } = await import("svelte");
+			mount(lib.default, {
+				target: this,
+				props: {},
+			});
 		},
-		"svelte-ssr": function(lib) {
-			new lib.default({ target: this, hydrate: true });
+		"svelte-ssr": async function(lib) {
+			// requires an Import map!
+			const { hydrate } = await import("svelte");
+			hydrate(lib.default, {
+				target: this,
+				props: {},
+			})
 		},
 		"preact": function(lib) {
 			lib.default(this);

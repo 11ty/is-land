@@ -8,11 +8,24 @@
 		<link rel="stylesheet" href="/demo-styles.css">
 
 {% if showImportMaps %}
+		<!-- via https://generator.jspm.io/ -->
 		<script type="importmap">
 		{
 			"imports": {
 				"petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js",
-				"vue": "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js"
+				"vue": "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js",
+				"svelte": "https://unpkg.com/svelte@5.19.10/src/index-client.js",
+				"svelte/internal/client": "https://unpkg.com/svelte@5.19.10/src/internal/client/index.js",
+				"svelte/internal/flags/legacy": "https://unpkg.com/svelte@5.19.10/src/internal/flags/legacy.js"
+			},
+			"scopes": {
+				"https://unpkg.com/": {
+					"clsx": "https://unpkg.com/clsx@2.1.1/dist/clsx.mjs",
+					"esm-env": "https://unpkg.com/esm-env@1.2.2/index.js",
+					"esm-env/browser": "https://unpkg.com/esm-env@1.2.2/true.js",
+					"esm-env/development": "https://unpkg.com/esm-env@1.2.2/false.js",
+					"esm-env/node": "https://unpkg.com/esm-env@1.2.2/false.js"
+				}
 			}
 		}
 		</script>

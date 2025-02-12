@@ -158,10 +158,10 @@ class Island extends HTMLElement {
     }
   }
 
-  // all islands ready
-  static async ready(el, parents) {
-    if(!parents) {
-      parents = Island.getParents(el);
+  // resolves when all parent islands of node are ready
+  static async ready(node, parents) {
+    if(!Array.isArray(parents)) {
+      parents = Island.getParents(node);
     }
     return Promise.all(parents.map(p => p.wait()));
   }
@@ -182,6 +182,7 @@ class Island extends HTMLElement {
         let parents = Island.getParents(node);
         // only fallback if this is the closest island parent.
         if(parents[0] === this) {
+          // wait for all parent islands
           let ready = Island.ready(node, parents);
           fn(ready, node, Island.prefix);
         }

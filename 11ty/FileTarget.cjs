@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const { ImportTransformer } = require("esm-import-transformer");
 
 // Writes the isomorphic component JS file to the output directory
 class FileTarget {
@@ -17,25 +16,28 @@ class FileTarget {
   getFilename() {
     return this.parsed.name + this.suffix + ".js";
   }
-  
+
   getImportUrl() {
     return "/" + path.join(this.parsed.dir, this.getFilename());
   }
-  
+
   getOutputFile() {
     // TODO change _site to work with any output dir
     return path.join("./_site", this.parsed.dir, this.getFilename());
   }
 
-  augmentContent(content, importMap) {
-    let transformer = new ImportTransformer();
-    let code = transformer.transform(content, importMap);
+  async augmentContent(content, importMap) {
+    const { ImportTransformer } = await import("esm-import-transformer");
+
+    let transformer = new ImportTransformer(content);
+    let code = transformer.transformWithImportMap(importMap);
     return code;
   }
 
-  write(content, importMap) {
+  async write(content, importMap, options = {}) {
+
     if(importMap) {
-      content = this.augmentContent(content, importMap);
+      content = await this.augmentContent(content, importMap);
     }
 
     let outputFile = this.getOutputFile();
@@ -43,6 +45,7 @@ class FileTarget {
     fs.mkdirSync(dir, {recursive: true});
 
     // TODO this writes every time it’s referenced
+    console.log( "Writing", outputFile );
     fs.writeFileSync(outputFile, content, "utf8");
   }
 }
