@@ -17,14 +17,25 @@
 		</script>
 	</head>
 	<body>
+		<ol>
+			<li>Viewports smaller than 800px width will initialize the outer island.</li>
+			<li>After #1 is satisfied, viewports larger than 1200px will initialize the second inner island.</li>
+			<li>After #1 and #2 are satisfied, a click will initialize the third inner island.</li>
+		</ol>
 {% comment %}Liquid.js was having trouble with such a large loop!{% endcomment %}
-{% for i in (1..1000) %}
+{% for i in (1..500) %}
 	<is-land on:visible on:media="(max-width: 800px)" class="island">
+		<div>&lt;800px</div>
 		<is-land on:visible on:media="(min-width: 1200px)" class="island">
-			<is-land on:visible class="island">
-				<test-element>Nested ×3 #{{i}}</test-element>
+			<div>&gt;1200px</div>
+			<is-land on:visible on:interaction class="island">
+				<button>click</button>
+				<test-element>&lt;test-element&gt;</test-element>
 			</is-land>
 		</is-land>
+	</is-land>
+	<is-land on:visible on:media="(min-width: 1200px)" class="island">
+		<test-element>&gt;1200px</test-element>
 	</is-land>
 {% endfor %}
 	</body>

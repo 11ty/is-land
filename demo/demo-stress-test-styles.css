@@ -5,17 +5,20 @@ body {
 	overflow-y: scroll;
 	padding: .5em;
 }
+button {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
 .island {
 	font-family: monospace;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	display: block;
 	min-height: 4em;
 	padding: .5em;
 	border: .35em solid rgba(60, 60, 60, .4);
 }
 is-land:not([ready]) {
-	content-visibility: hidden;
+	/* content-visibility: hidden; */
 }
 is-land[ready] {
 	background-color: rgba(144,238,144,.6);

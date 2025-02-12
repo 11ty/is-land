@@ -211,11 +211,11 @@ class Island extends HTMLElement {
   async hydrate() {
     let conditions = [];
 
-    // TODO can we get rid of this?
-    // if(this.parentNode) {
-    //   // wait for all parents before hydrating
-    //   conditions.push(Island.ready(this.parentNode));
-    // }
+    let parents = Island.getParents(this);
+    if(parents.length) {
+      // wait for nearest is-land parent
+      conditions.push(parents[0].wait());
+    }
 
     conditions.push(...Conditions.getConditions(this));
 

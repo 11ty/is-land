@@ -12,6 +12,11 @@ p:first-child {
 body {
   padding-bottom: 20vh;
 }
+button {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
 
 /* Demo styles */
 is-land,
