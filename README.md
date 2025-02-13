@@ -4,31 +4,34 @@ A new performance-focused way to add interactive client-side components to your 
 
 Or, more technically: a framework independent partial hydration islands architecture implementation.
 
-* View the [demos](https://is-land.11ty.dev/)
-* Check out the [initial screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188) and [the follow up screencast with more framework examples](https://www.youtube.com/watch?v=V9hWgVV_5mg).
-* [Learn more about Islands Architecture](https://jasonformat.com/islands-architecture/)
+- View the [demos](https://is-land.11ty.dev/)
+- Check out the [initial screencast on Eleventy’s YouTube channel](https://youtu.be/YYJpFdEaAuc?t=188) and [the follow up screencast with more framework examples](https://www.youtube.com/watch?v=V9hWgVV_5mg).
+- [Learn more about Islands Architecture](https://jasonformat.com/islands-architecture/)
 
 Features:
 
-* Easy to add to existing components
-* Zero dependencies
-* Not tightly coupled to a server framework or site generator tool.
-* Small footprint (1.79 kB compressed)
-* Server-rendered (SSR) component examples available for SSR-friendly frameworks (Lit, Svelte, Vue, Preact are provided)
+- Easy to add to existing components
+- Zero dependencies
+- Not tightly coupled to a server framework or site generator tool.
+- Small footprint (1.79 kB compressed)
+- Server-rendered (SSR) component examples available for SSR-friendly frameworks (Lit, Svelte, Vue, Preact are provided)
 
 Examples for:
 
-* [Web Components](./demo/index.html)
-* [Web Components using Declarative Shadow DOM](./demo/demo-declarative-shadow-dom.html) _(New in v3.0.0)_
-* [Svelte](./demo/demo-svelte.html) (and SSR)
-* [Vue (and petite-vue)](./demo/demo-vue.html) (and SSR)
-* [Preact](./demo/demo-preact.html) (and SSR)
-* [Lit](./demo/demo-lit.html) (and SSR)
-* [Alpine.js](./demo/demo-alpine.html)
-* [Embedded in Markdown](./demo/demo-markdown.md)
-* [`defer-hydration` Component Attribute Support](./demo/demo-defer-hydration.html) _(New in v3.0.0)_ ([Read more about `defer-hydration` at zachleat.com](https://www.zachleat.com/web/defer-hydration/))
-* _Experimental:_ [Image Loading](./demo/demo-image-loading.html)
-* _Experimental:_ [Using import maps to simplify import URLs](./demo/demo-importmaps.html). This is for-future-reference when [browser support broadens](https://caniuse.com/import-maps).
+- [Web Components](https://is-land.11ty.dev/)
+- [Web Components using Declarative Shadow DOM](https://is-land.11ty.dev/demo-declarative-shadow-dom) _(New in v3.0.0)_
+- [Svelte](https://is-land.11ty.dev/demo-svelte) (and SSR)
+- [Vue (and petite-vue)](https://is-land.11ty.dev/demo-vue) (and SSR)
+- [Preact](https://is-land.11ty.dev/demo-preact) (and SSR)
+- [Lit](https://is-land.11ty.dev/demo-lit) (and SSR)
+- [Alpine.js](https://is-land.11ty.dev/demo-alpine)
+- [Embedded in Markdown](https://is-land.11ty.dev/demo-markdown.md)
+- [`defer-hydration` Component Attribute Support](https://is-land.11ty.dev/demo-defer-hydration) _(New in v3)_ ([Read more about `defer-hydration` at zachleat.com](https://www.zachleat.com/web/defer-hydration/))
+- [Using import maps to simplify import URLs](https://is-land.11ty.dev/demo-importmaps).
+- [Changing the `on:` attribute prefix](https://is-land.11ty.dev/demo-attribute-prefix)
+- _Experimental:_ [Image Loading](https://is-land.11ty.dev/demo-image-loading)
+- [Stress test of 10000 islands](https://is-land.11ty.dev/demo-stress-test)
+- [Nested test case](https://is-land.11ty.dev/demo-stress-test-nest)
 
 Integrations in the wild:
 
