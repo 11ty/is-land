@@ -187,7 +187,7 @@ class Island extends HTMLElement {
   async beforeReady() {
     // e.g. [type="vue"] (where vue has an import map entry)
     // [autoinit] has been renamed to [type], backwards compat kept
-    let type = this.getAttribute(Island.attr.type) || this.getAttribute("autoinit");
+    let type = this.getAttribute(Island.attr.type);
     if(!type && this.getAttribute(Island.attr.import)) {
       type = "default";
     }
