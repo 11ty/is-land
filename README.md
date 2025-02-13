@@ -41,6 +41,8 @@ Integrations in the wild:
 
 ## Installation
 
+Available on [npm at `@11ty/is-land`](https://www.npmjs.com/package/@11ty/is-land).
+
 ```
 npm install @11ty/is-land
 ```
