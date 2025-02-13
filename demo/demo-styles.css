@@ -13,9 +13,9 @@ body {
   padding-bottom: 20vh;
 }
 button {
-  font-family: inherit;
   font-size: inherit;
-  font-weight: inherit;
+  font-family: system-ui;
+  font-weight: 400;
 }
 
 /* Demo styles */
@@ -40,11 +40,6 @@ is-land[on\:idle][ready] {
   gap: .25em;
   align-items: center;
 }
-is-land span {
-  display: inline-flex;
-  width: 2em;
-  margin: 0 .25em;
-}
 
 /* Demo loading states */
 is-land[ready] {
@@ -53,12 +48,15 @@ is-land[ready] {
   outline: 2px solid rgb(85, 173, 82);
 }
 .test-c-finish {
-  background-color: rgba(112, 110, 233, 0.2);
+  background-color: rgba(112, 110, 233, 0.1);
   outline: 2px solid rgb(97, 82, 173);
 }
-/* .test-c-finish:defined {
-  font-style: italic;
-} */
+
+vanilla-web-component:not([defer-hydration]):defined,
+chocolate-web-component:not([defer-hydration]):defined {
+  font-family: system-ui;
+  font-weight: 500;
+}
 
 /* List logos */
 .examples {

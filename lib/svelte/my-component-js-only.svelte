@@ -1,5 +1,4 @@
 <script>
-let {} = $props();
 let count = $state(0);
 
 function onclick() {

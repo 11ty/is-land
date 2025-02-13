@@ -12,7 +12,7 @@ title: Preact Islands
 
 <p>Example from <a href="https://preactjs.com/guide/v10/getting-started#no-build-tools-route"><code>https://preactjs.com/guide/v10/getting-started#no-build-tools-route</code></a></p>
 
-<is-land on:visible autoinit="preact" import="/lib/preact/preact-component-js-only.js"></is-land>
+<is-land on:visible type="preact" import="/lib/preact/preact-component-js-only.js"></is-land>
 
 <is-land on:visible>
 	<div id="preact-app"></div>
@@ -56,6 +56,12 @@ title: Preact Islands
 </div>
 
 <h3>With Hydration</h3>
+
+<p>Auto-init</p>
+
+<is-land on:visible type="preact-ssr" import="{{ componentHydration.clientJsUrl }}">{{ componentHydration.html }}</is-land>
+
+<p>Manual init</p>
 
 <is-land on:visible>
 	<div id="preact-app-ssr">{{ componentHydration.html }}</div>

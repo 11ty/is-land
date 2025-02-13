@@ -12,11 +12,15 @@
 		<script type="importmap">
 		{
 			"imports": {
-				"petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js",
-				"vue": "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js",
 				"svelte": "https://unpkg.com/svelte@5.19.10/src/index-client.js",
 				"svelte/internal/client": "https://unpkg.com/svelte@5.19.10/src/internal/client/index.js",
-				"svelte/internal/flags/legacy": "https://unpkg.com/svelte@5.19.10/src/internal/flags/legacy.js"
+				"svelte/internal/flags/legacy": "https://unpkg.com/svelte@5.19.10/src/internal/flags/legacy.js",
+
+				"lit": "https://unpkg.com/lit@3.2.1/index.js",
+
+				"solid-element": "https://unpkg.com/solid-element@1.9.1/dist/index.js",
+				"solid-js": "https://unpkg.com/solid-js@1.9.4/dist/solid.js",
+				"solid-js/html": "https://unpkg.com/solid-js@1.9.4/html/dist/html.js"
 			},
 			"scopes": {
 				"https://unpkg.com/": {
@@ -24,7 +28,15 @@
 					"esm-env": "https://unpkg.com/esm-env@1.2.2/index.js",
 					"esm-env/browser": "https://unpkg.com/esm-env@1.2.2/true.js",
 					"esm-env/development": "https://unpkg.com/esm-env@1.2.2/false.js",
-					"esm-env/node": "https://unpkg.com/esm-env@1.2.2/false.js"
+					"esm-env/node": "https://unpkg.com/esm-env@1.2.2/false.js",
+
+					"@lit/reactive-element": "https://unpkg.com/@lit/reactive-element@2.0.4/reactive-element.js",
+					"lit-element/lit-element.js": "https://unpkg.com/lit-element@4.1.1/lit-element.js",
+					"lit-html": "https://unpkg.com/lit-html@3.2.1/lit-html.js",
+					"lit-html/is-server.js": "https://unpkg.com/lit-html@3.2.1/is-server.js",
+
+					"component-register": "https://unpkg.com/component-register@0.8.7/dist/component-register.js",
+					"solid-js/web": "https://unpkg.com/solid-js@1.9.4/web/dist/web.js"
 				}
 			}
 		}
@@ -38,22 +50,19 @@
 {% endif %}
 
 
-{% if showImagePlugin %}
-		<!-- experimental: fallback extension (probably don’t use this) -->
-		<script type="module" src="/is-land-image.js"></script>
-{% endif %}
-
 		<!-- Script tag method: -->
 		<!--
 		<script type="module" src="/is-land.js"></script>
-		<script type="module" src="/is-land-autoinit.js"></script>
+
 		-->
 
 		<!-- Import method: -->
 		<script type="module">
 		import { Island } from "/is-land.js";
-		import "/is-land-autoinit.js";
 		</script>
+
+		<!-- Sample JavaScript framework init code -->
+		<script type="module" src="/lib/demo-inittype.js"></script>
 
 		<!--
 		You can directly import dependencies (for eager loading)

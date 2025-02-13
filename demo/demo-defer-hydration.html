@@ -9,7 +9,7 @@ title: Islands
 <p><code>defer-hydration</code> solves the problem of <code>&lt;chocolate-web-component&gt;</code> elements outside of <code>is-land</code>s hydrating when <code>chocolate-web-component.js</code> is loaded.</p>
 
 <chocolate-web-component defer-hydration class="demo-component">
-	<template shadowroot="open">Chocolate shadow root</template>
+	<template shadowrootmode="open">Chocolate shadow root</template>
 	Chocolate web component
 </chocolate-web-component>
 
@@ -18,9 +18,9 @@ title: Islands
 <is-land on:interaction import="/lib/chocolate-web-component.js">
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 	<p>Using <code>defer-hydration</code>.</p>
-	
+
 	<chocolate-web-component defer-hydration class="demo-component">
-		<template shadowroot="open">Chocolate shadow root</template>
+		<template shadowrootmode="open">Chocolate shadow root</template>
 		Chocolate web component
 	</chocolate-web-component>
 </is-land>
@@ -30,7 +30,7 @@ title: Islands
 	<p>Using <code>defer-hydration</code>.</p>
 
 	<chocolate-web-component defer-hydration class="demo-component">
-		<template shadowroot="open">Chocolate shadow root</template>
+		<template shadowrootmode="open">Chocolate shadow root</template>
 		Chocolate web component
 	</chocolate-web-component>
 </is-land>
@@ -39,7 +39,7 @@ title: Islands
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
 	<chocolate-web-component class="demo-component">
-		<template shadowroot="open">Chocolate shadow root</template>
+		<template shadowrootmode="open">Chocolate shadow root</template>
 		Chocolate web component
 	</chocolate-web-component>
 </is-land>
@@ -50,7 +50,7 @@ title: Islands
 	<button type="button" onclick="console.log('Click test')">Click test (log to console)</button>
 
 	<chocolate-web-component class="demo-component">
-		<template shadowroot="open">Chocolate shadow root</template>
+		<template shadowrootmode="open">Chocolate shadow root</template>
 		Chocolate web component
 	</chocolate-web-component>
 </is-land> -->

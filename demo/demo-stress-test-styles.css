@@ -6,9 +6,9 @@ body {
 	padding: .5em;
 }
 button {
-  font-family: inherit;
   font-size: inherit;
-  font-weight: inherit;
+  font-family: system-ui;
+  font-weight: 400;
 }
 .island {
 	font-family: monospace;

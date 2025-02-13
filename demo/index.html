@@ -21,20 +21,10 @@ title: Islands
 	<li>Zero dependencies</li>
 	<li>Small footprint</li>
 	<li>Not tightly coupled to a server framework or site generator tool.</li>
-	<li>Server-rendering (SSR) component examples available for SSR-friendly frameworks (Lit, Svelte, Vue, and Preact are provided)</li>
+	<li>Server-rendering (SSR) component examples available for SSR-friendly frameworks (Svelte, Vue, and Preact are provided)</li>
 </ul>
 
-<p>Integrations in the wild:</p>
-
-<ul>
-	<li><a href="https://is-land.11ty.dev/">Eleventy</a></li>
-	<li><a href="https://demo-webc-image-compare.netlify.app">WebC</a></li>
-	<li><a href="https://twitter.com/slinkitydotdev/status/1544322804774064133">Slinkity</a></li>
-	<li><a href="https://twitter.com/geoffrich_/status/1576932300960342018">SvelteKit</a></li>
-	<li><a href="https://twitter.com/jaredcwhite/status/1585433466770173953">Bridgetown</a></li>
-	<li><a href="https://twitter.com/techytacos/status/1590248099297259520">Lit</a></li>
-	<!-- <li><a href="https://techhub.social/@develwithoutacause/109332565955255126">Angular</a> (-ish?)</li> -->
-</ul>
+<p>Integrations in the wild: <a href="https://is-land.11ty.dev/">Eleventy</a>, <a href="https://demo-webc-image-compare.netlify.app">WebC</a>, <a href="https://twitter.com/slinkitydotdev/status/1544322804774064133">Slinkity</a>, <a href="https://twitter.com/geoffrich_/status/1576932300960342018">SvelteKit</a>, <a href="https://twitter.com/jaredcwhite/status/1585433466770173953">Bridgetown</a>, <a href="https://twitter.com/techytacos/status/1590248099297259520">Lit</a><!-- <a href="https://techhub.social/@develwithoutacause/109332565955255126">Angular</a> (-ish?) --></p>
 
 <p>Examples:</p>
 <ul class="examples">
@@ -49,8 +39,9 @@ title: Islands
 	<li><a href="demo-markdown.html">Embedded in <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fwww.markdownguide.org%2F/" alt="IndieWeb avatar for https://www.markdownguide.org/" width="28" height="28" decoding="async" loading="lazy">Markdown</a></li>
 	<li><a href="demo-defer-hydration.html"><code>defer-hydration</code> Component Attribute Support</a> <em>(New in v3.0.0)</em> <a href="https://www.zachleat.com/web/defer-hydration/">Read more about `defer-hydration` at zachleat.com</a></li>
 	<li><em>Experimental:</em> <a href="demo-image-loading.html">Image Loading</a></li>
-	<li><em>Experimental:</em> <a href="demo-importmaps.html">Using import maps to simplify import URLs</a>. This is for-future-reference when <a href="https://caniuse.com/import-maps">browser support broadens</a>.</li>
 	<li><em>Test:</em> <a href="demo-stress-test.html">Stress test of 10000 islands</a></li>
+	<li><em>Test:</em> <a href="demo-stress-test-nest.html">Deeper nesting of islands</a></li>
+	<li><em>Test:</em> <a href="demo-attribute-prefix.html">Change the <code>on:</code> attribute prefix</a></li>
 </ul>
 
 <h2>Standalone</h2>
@@ -107,15 +98,10 @@ title: Islands
 <is-land on:visible>
 	<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 
-	Here’s a nested island:
+	Here’s a nested island (inherits on:visible from parent island):
 
-	<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
-		Petite Vue
-		<template data-island>
-			<button @click="count++">⬆️</button>
-			<button @click="count--">⬇️</button>
-			<span v-html="count">0</span>
-		</template>
+	<is-land>
+		<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 	</is-land>
 </is-land>
 
@@ -158,28 +144,14 @@ title: Islands
 <p>Note here that we used one parent island to group both of these components, and interacting with either initializes the whole group.</p>
 
 <is-land on:interaction>
-	<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
-		Petite Vue
-		<template data-island>
-			<button @click="count++">⬆️</button>
-			<button @click="count--">⬇️</button>
-			<span v-html="count">0</span>
-		</template>
-	</is-land>
+	<button>Click to activate</button>
 
 	<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 </is-land>
 
 <p>Use <code>on:interaction="mouseenter,focusin"</code> to override the events.</p>
 <is-land on:interaction="mouseenter,focusin">
-	<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
-		Petite Vue
-		<template data-island>
-			<button @click="count++">⬆️</button>
-			<button @click="count--">⬇️</button>
-			<span v-html="count">0</span>
-		</template>
-	</is-land>
+	<button>focus/mouseenter activate</button>
 
 	<vanilla-web-component class="demo-component">Vanilla web component</vanilla-web-component>
 </is-land>
@@ -257,15 +229,6 @@ title: Islands
 		These are nested in a &lt;template&gt;:
 
 		<vanilla-web-component class="demo-component">Vanilla web component (JS is required for fallback)</vanilla-web-component>
-
-		<is-land autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ count: 0 }">
-			Petite Vue (JS is required for fallback):
-			<template data-island>
-				<button @click="count++">⬆️</button>
-				<button @click="count--">⬇️</button>
-				<span v-html="count">0</span>
-			</template>
-		</is-land>
 	</template>
 </is-land>
 
@@ -298,7 +261,7 @@ title: Islands
 	</form>
 
 	<p>This content is pre-JS. This is where your loading spinner goes 😈</p>
-	
+
 	<template data-island="replace">
 		<vanilla-web-component class="demo-component">Vanilla web component (requires JS)</vanilla-web-component>
 	</template>

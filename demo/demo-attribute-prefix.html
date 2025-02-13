@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<link rel="stylesheet" href="demo-stress-test-styles.css">
+		<script type="module">
+		window.Island = {
+			// manual: true, // requires Island.define() to be called later
+			attributePrefix: "when-"
+		};
+		</script>
+		<script type="module" src="/is-land.js"></script>
+		<script type="module">
+		// Island.define();
+
+		customElements.define("test-element", class extends HTMLElement {
+			connectedCallback() {
+				console.log( "<test-element> connectedCallback" );
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<is-land when-visible when-media="(width < 800px)" class="island">
+			<test-element>&lt;test-element&gt;</test-element>
+		</is-land>
+	</body>
+</html>

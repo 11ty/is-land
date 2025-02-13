@@ -16,16 +16,22 @@ function resolvers() {
 
 class Island extends HTMLElement {
   static tagName = "is-land";
-  static prefix = `${this.tagName}--`;
+
+  static opts = {
+    tagPrefix: `${this.tagName}--`,
+    attributePrefix: "on:",
+    manual: false, // whether to automatic define custom element
+  };
 
   static attr = {
     template: "data-island",
     ready: "ready",
     defer: "defer-hydration",
+    type: "type",
+    import: "import",
   };
 
-  static onReady = new Map();
-  static _onceCache = new Map();
+  static _once = new Map();
 
   static ctm() {
     // Browser Support:
@@ -36,17 +42,26 @@ class Island extends HTMLElement {
     return "entries" in Object && "replaceWith" in doc.createElement("div");
   }
 
-  static define() {
-    if("customElements" in win) {
+  static define(isManual = false) {
+    if("customElements" in win && !isManual && Island.ctm()) {
       win.customElements.define(this.tagName, this);
     }
+  }
+
+  static _initTypes = {
+    default: async(target) => {
+      await import(target.getAttribute(Island.attr.import));
+    }
+  };
+
+  static addInitType(name, fn) {
+    this._initTypes[name] = fn;
   }
 
   static fallback = {
     // Support: computed property name Chrome 47 Firefox 34 Safari 8
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#browser_compatibility
     [`:not(:defined):not(${this.tagName}):not([${this.attr.defer}])`]: (readyPromise, node, prefix) => {
-
       let cloned = Island.renameNode(node, prefix + node.localName);
 
       return readyPromise.then(() => {
@@ -62,10 +77,21 @@ class Island extends HTMLElement {
     }
   }
 
+  static addFallback(selector, fn) {
+    this.fallback[selector] = fn;
+
+    // Support: NodeList forEach Chrome 51 Firefox 50 Safari 10
+    // Use :defined to inherit ctm()
+    doc.querySelectorAll(`${this.tagName}:defined`).forEach(node => {
+      node.replaceFallbackContent();
+    })
+  }
+
   constructor() {
     super();
 
     this._ready = resolvers();
+    this._fallbacks = {};
   }
 
   static renameNode(node, name) {
@@ -115,7 +141,7 @@ class Island extends HTMLElement {
           break;
         }
 
-        if(Conditions.hasConditions(el)) {
+        if(Conditions.hasConditions(el, Island.opts.attributePrefix)) {
           nodes.push(el);
         }
       }
@@ -145,16 +171,30 @@ class Island extends HTMLElement {
       } else {
         let html = tmpl.innerHTML;
         if(value === "once" && html) {
-          if(Island._onceCache.has(html)) {
+          if(Island._once.has(html)) {
             tmpl.remove();
             return;
           }
 
-          Island._onceCache.set(html, true);
+          Island._once.set(html, true);
         }
 
         tmpl.replaceWith(tmpl.content);
       }
+    }
+  }
+
+  async beforeReady() {
+    // e.g. [type="vue"] (where vue has an import map entry)
+    // [autoinit] has been renamed to [type], backwards compat kept
+    let type = this.getAttribute(Island.attr.type) || this.getAttribute("autoinit");
+    if(!type && this.getAttribute(Island.attr.import)) {
+      type = "default";
+    }
+
+    let fn = Island._initTypes[type];
+    if(fn) {
+      await fn(this);
     }
   }
 
@@ -169,6 +209,10 @@ class Island extends HTMLElement {
   replaceFallbackContent() {
     // Support: Object.entries Chrome 54 Firefox 47 Safari 10.1
     for(let [selector, fn] of Object.entries(Island.fallback)) {
+      if(this._fallbacks[selector]) {
+        continue;
+      }
+
       // Reverse for deepest nodes first
       let components = Array.from(this.querySelectorAll(selector)).reverse();
 
@@ -184,9 +228,11 @@ class Island extends HTMLElement {
         if(parents[0] === this) {
           // wait for all parent islands
           let ready = Island.ready(node, parents);
-          fn(ready, node, Island.prefix);
+          fn(ready, node, Island.opts.tagPrefix);
         }
       }
+
+      this._fallbacks[selector] = true;
     }
   }
 
@@ -195,12 +241,8 @@ class Island extends HTMLElement {
   }
 
   async connectedCallback() {
-    if(!Island.ctm()) {
-      return;
-    }
-
     // Only use fallback content when loading conditions in play
-    if(Conditions.hasConditions(this)) {
+    if(Conditions.hasConditions(this, Island.opts.attributePrefix)) {
       // Keep fallback content without initializing the components
       this.replaceFallbackContent();
     }
@@ -217,16 +259,13 @@ class Island extends HTMLElement {
       conditions.push(parents[0].wait());
     }
 
-    conditions.push(...Conditions.getConditions(this));
+    conditions.push(...Conditions.getConditions(this, Island.opts.attributePrefix));
 
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
     this.replaceTemplates();
-
-    for(let fn of Island.onReady.values()) {
-      await fn.call(this, Island);
-    }
+    await this.beforeReady();
 
     this._ready.resolve();
 
@@ -240,17 +279,23 @@ class Island extends HTMLElement {
 class Conditions {
   static _media = {}; // cache
 
+  // Attributes (prefixed with Island.opts.attributePrefix) => Callbacks
   static map = {
-    "on:visible": Conditions.visible,
-    "on:idle": Conditions.idle,
-    "on:load": Conditions.pageLoad,
-    "on:interaction": Conditions.interaction,
-    "on:media": Conditions.media,
-    "on:save-data": Conditions.saveData,
+    "visible": Conditions.visible,
+    "idle": Conditions.idle,
+    "load": Conditions.pageLoad,
+    "interaction": Conditions.interaction,
+    "media": Conditions.media,
+    "save-data": Conditions.saveData,
   };
 
-  static hasConditions(node) {
-    for(let attr of Object.keys(Conditions.map)) {
+  // Support: Default param values Chrome 49 Firefox 15 Safari 10
+  static getMap(prefix = "") {
+    return Object.keys(Conditions.map).map(attr => prefix + attr);
+  }
+
+  static hasConditions(node, prefix) {
+    for(let attr of Conditions.getMap(prefix)) {
       if(node.hasAttribute(attr)) {
         return true;
       }
@@ -258,13 +303,13 @@ class Conditions {
     return false;
   }
 
-  // Support: Default param values Chrome 49 Firefox 15 Safari 10
-  static getConditions(node) {
+  static getConditions(node, prefix) {
     let v = [];
-    for(let attr of Object.keys(Conditions.map)) {
-      if(node.hasAttribute(attr)) {
-        let attrValue = node.getAttribute(attr);
-        v.push(Conditions.map[attr](attrValue, node));
+    for(let unprefixedAttr of Conditions.getMap()) {
+      let prefixedAttr = prefix + unprefixedAttr;
+      if(node.hasAttribute(prefixedAttr)) {
+        let attrValue = node.getAttribute(prefixedAttr);
+        v.push(Conditions.map[unprefixedAttr](attrValue, node));
       }
     }
 
@@ -404,11 +449,13 @@ class Conditions {
   }
 }
 
+// Advanced configuration
 if(win.Island) {
-  Object.assign(Island.fallback, win.Island.fallback);
+  Object.assign(Island.opts, win.Island);
 }
-win.Island = Island;
 
-Island.define();
+Island.define(Island.opts.manual);
+
+win.Island = Island;
 
 export { Island };

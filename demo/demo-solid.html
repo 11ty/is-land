@@ -1,8 +1,11 @@
 ---
 layout: layout.html
 title: SolidJS Islands
+showImportMaps: true
 ---
 <h1><a href="/">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fsolidjs.com%2F/" alt="IndieWeb avatar for https://solidjs.com/" width="28" height="28" decoding="async" loading="lazy">SolidJS</h1>
+
+{% include "import-map-warning.liquid" %}
 
 <h2>Scroll down</h2>
 
@@ -26,9 +29,9 @@ title: SolidJS Islands
 
 	<template data-island>
 		<script type="module">
-		import { createSignal } from "https://esm.sh/solid-js@1.9.4";
-		import html from "https://esm.sh/solid-js@1.9.4/html";
-		import { customElement } from "https://esm.sh/solid-element@1.9.1";
+		import { createSignal } from "solid-js";
+		import html from "solid-js/html";
+		import { customElement } from "solid-element";
 
 		customElement('solid-other-web-component', { name: undefined },
 

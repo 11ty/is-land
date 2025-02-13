@@ -1,0 +1,15 @@
+<p>These demos <strong>require import map support</strong>. Your browser does <b id="supports-importmap">⚠️ not</b> support import maps!</p>
+
+<style>
+#supports-importmap {
+	display: inline-flex;
+	background: #ffc;
+	padding: 0 .25em;
+	line-height: 1;
+}
+</style>
+<script type="module">
+if(HTMLScriptElement?.supports("importmap")) {
+	document.getElementById("supports-importmap").style.display = "none";
+}
+</script>

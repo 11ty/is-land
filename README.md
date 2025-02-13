@@ -45,19 +45,13 @@ Integrations in the wild:
 npm install @11ty/is-land
 ```
 
-Add `is-land.js` to your primary bundle. It can be deferred and/or loaded asynchronously.
-
-When using with web components it must be the first custom element defined (via `customElements.define`) on the page. Choose your style:
-
 ```html
 <script type="module" src="/is-land.js"></script>
 ```
 
-```html
-<script type="module">
-  import "/is-land.js";
-</script>
-```
+Add `is-land.js` to your primary bundle.
+
+It can be deferred and/or loaded asynchronously. When using with web components it must be loaded before any other custom elements (via `customElements.define`) on the page. Choose your style:
 
 ## Usage
 
@@ -65,20 +59,21 @@ When using with web components it must be the first custom element defined (via 
 <is-land>This is an island.</is-land>
 ```
 
-Add any number of loading conditions to this tag to control how and when the island is initialized. You can mix and match:
+Add any number of loading conditions to this tag to control how and when the island is initialized. You can mix and match. _All_ conditions be satisfied to initialize.
 
 * `on:visible`
+* `on:load` (new in v5)
 * `on:idle`
 * `on:interaction` (defaults to `touchstart,click`)
   * Change events with `on:interaction="mouseenter,focusin"`
 * `on:media`
-  * Viewport size: `on:media="(min-width: 64em)"`
+  * When Viewport size matches: `on:media="(min-width: 64em)"`
   * Reduced motion:
-    * Opt-in with `on:media="(prefers-reduced-motion)"`
-    * Opt-out with `on:media="(prefers-reduced-motion: no-preference)"`
+    * When user prefers reduced motion `on:media="(prefers-reduced-motion)"`
+    * When user has no preference on motion `on:media="(prefers-reduced-motion: no-preference)"`
 * Save Data ([read about Save Data on MDN](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation/saveData))
-  * Opt-in with `on:save-data`
-  * Opt-out with `on:save-data="false"`
+  * When Save Data is active `on:save-data`
+  * When Save Data is inactive `on:save-data="false"`
 
 
 ```html
@@ -143,132 +138,132 @@ You can also use the `ready` attribute for styling, added to the `<is-land>` whe
 
 ```html
 <style>
-  is-land[ready] {
-    background-color: lightgreen;
-  }
+is-land[ready] {
+  background-color: lightgreen;
+}
 </style>
 ```
 
 ### Framework Component Support
 
-The following examples require `is-land-autoinit.js` to be loaded (in addition to `is-land.js`):
+- `type`: initialize a framework initialization type, registered by you. Examples included for: `alpine`, `petite-vue`, `vue`, `vue-ssr`, `preact`, `preact-ssr`, `svelte`, or `svelte-ssr`.
 
-```html
-<script type="module" src="/is-land.js"></script>
-<script type="module" src="/is-land-autoinit.js"></script>
-```
-
-Available attributes (with `is-land-autoinit.js`):
-
-- `import`: load a third party library or component code file during initialization.
-- `autoinit`: initialize a framework type, one of: `petite-vue`, `vue`, `preact`, `svelte`, or `svelte-ssr`.
-
-```html
-<is-land on:visible autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ name: 'post-JS' }">
-  Hello from <span v-html="name">pre-JS</span>
-</is-land>
-
-<!-- when import maps support is better, this simplifies with an entry for petite-vue in your import map -->
-<is-land on:visible import="petite-vue" v-scope="{ name: 'post-JS' }">
-  Hello from <span v-html="name">pre-JS</span>
-</is-land>
-```
-
-[Demos and source in the HTML](https://is-land.11ty.dev/) are available for each framework listed here.
+[Demos, examples, and source code](https://is-land.11ty.dev/) are available for each framework listed here.
 
 #### Petite Vue
 
-* Small library (8K)
+* [Examples](./demo/demo-vue.html)
+* Small library (~9K)
 * Rendering modes: Client
-* Progressive-enhancement friendly (full control of fallback content)
-* Support for `autoinit`
+* Progressive-enhancement friendly (control fallback content)
 
 ```html
-<is-land on:visible autoinit="petite-vue" import="https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js" v-scope="{ name: 'post-JS' }">
-  Hello from <span v-html="name">pre-JS</span>
+<script type="module">
+// Define once for any number of Petite Vue islands.
+Island.addInitType("petite-vue", async (target) => {
+	const { createApp } = await import("https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js");
+	createApp().mount(target);
+});
+</script>
+<is-land on:visible type="petite-vue" v-scope="{ name: 'Vue' }">
+  Hello from <span v-html="name">HTML</span>
 </is-land>
 ```
 
 #### Vue
 
-* Larger library (51 kB)
-* Rendering modes: Client-only, Server-only, Server + Client (Hydration)
-* Support for `autoinit`
+* [Examples](./demo/demo-vue.html)
+* Larger library (~73 kB)
+* Rendering modes: Client (shown), Server, Server + Client (Hydration)
 
 ```html
-<is-land on:visible>
-  <div id="vue-app">
-    Hello from <span v-html="name">pre-JS</span>
-  </div>
-
-  <template data-island>
-    <script type="module">
-    import { createApp } from "https://unpkg.com/vue@3.2.36/dist/vue.esm-browser.prod.js";
-
-    createApp({
-      data: () => ({ name: "post-JS" })
-    }).mount("#vue-app")
-    </script>
-  </template>
+<script type="module">
+// Define once for any number of Vue islands.
+Island.addInitType("vue", async (target) => {
+	const { createApp } = await import("https://unpkg.com/vue@3.5.13/dist/vue.esm-browser.js");
+	createApp({
+		data: () => (target.dataset), // use <is-land data-> attributes as component data
+	}).mount(target);
+});
+</script>
+<is-land on:visible type="vue" data-name="Vue">
+	Hello from <span v-text="name"></span>
 </is-land>
 ```
 
 #### Svelte
 
-* Smaller library (12 kB)
-* Rendering modes: Client-only, Server-only, Server + Client (Hydration)
-  * Requires a compiler for both client and server modes (tighter server coupling)
-* Support for `autoinit`
-
-This example uses [an Eleventy/Svelte integration](./11ty/SveltePlugin.cjs) to compile a Svelte component.
+* [Examples](./demo/demo-svelte.html) (using Import Maps)
+* Medium-sized library
+* Rendering modes: Client, Server, Server + Client (Hydration)
+* Requires a compiler for client mode (uncommon)
 
 ```html
-{% assign component = "./lib/svelte/my-component.svelte" | svelte %}
-<is-land on:visible autoinit="svelte" import="{{ component.clientJsUrl }}"></is-land>
+<script type="module">
+// Define once for any number of Svelte islands.
+Island.addInitType("svelte", async (target) => {
+	// requires an Import map and svelte is lazy loaded when island is ready
+	const { mount } = await import("svelte");
+	const component = await import(target.getAttribute("import"));
+
+	mount(component.default, {
+		target: target,
+		props: {},
+	});
+});
+</script>
+<!-- This example uses an Eleventy `svelte` Universal Filter (see SveltePlugin.cjs) -->
+{% assign component = "./lib/svelte/my-component-js-only.svelte" | svelte %}
+<is-land on:visible type="svelte" import="{{ component.clientJsUrl }}"></is-land>
 ```
 
 <details>
-  <summary>Example component code <code>./lib/svelte/my-component.svelte:</code></summary>
+  <summary>Show sample Import Map</summary>
 
 ```html
-<script>
-  // using export to allow overrides via props
-  export let name = 'world';
-
-  let count = 0;
-
-  function handleClick() {
-    count += 1;
-  }
+<!-- importmap from https://generator.jspm.io/ -->
+<script type="importmap">
+{
+	"imports": {
+		"svelte": "https://unpkg.com/svelte@5.19.10/src/index-client.js",
+		"svelte/internal/client": "https://unpkg.com/svelte@5.19.10/src/internal/client/index.js",
+		"svelte/internal/flags/legacy": "https://unpkg.com/svelte@5.19.10/src/internal/flags/legacy.js"
+	},
+	"scopes": {
+		"https://unpkg.com/": {
+			"clsx": "https://unpkg.com/clsx@2.1.1/dist/clsx.mjs",
+			"esm-env": "https://unpkg.com/esm-env@1.2.2/index.js",
+			"esm-env/browser": "https://unpkg.com/esm-env@1.2.2/true.js",
+			"esm-env/development": "https://unpkg.com/esm-env@1.2.2/false.js",
+			"esm-env/node": "https://unpkg.com/esm-env@1.2.2/false.js"
+		}
+	}
+}
 </script>
-
-<style>
-  h1 { color: red }
-</style>
-
-<h1>Hello {name}</h1>
-
-<button on:click={handleClick}>
-  Clicked {count} {count === 1 ? 'time' : 'times'}
-</button>
 ```
 
 </details>
 
 #### Preact
 
-* Very small library (~5 kB)
-* Rendering modes: Client-only, Server-only, Server + Client (Hydration)
-* Support for `autoinit`
-
-This example uses [`htm` instead of JSX](https://github.com/developit/htm).
+* [Examples](./demo/demo-preact.html)
+* Small library (~9 kB)
+* Rendering modes: Client (shown), Server, Server + Client (Hydration)
+* No compiler needed when using [`htm`](https://github.com/developit/htm) rather than JSX.
 
 ```html
-<is-land on:visible autoinit="preact" import="/lib/preact/preact-component.js"></is-land>
+<script type="module">
+// Define once for any number of Preact islands.
+Island.addInitType("preact", async (target) => {
+	const component = await import(target.getAttribute("import"));
+	component.default(target);
+});
+</script>
+<is-land on:visible type="preact" import="preact-component.js"></is-land>
 ```
 
 <details>
-  <summary>Example component code <code>./lib/preact/preact-component.js</code>:</summary>
+  <summary>Example component code for <code>preact-component.js</code>:</summary>
 
 ```js
 import { html, render } from 'https://unpkg.com/htm/preact/index.mjs?module'
@@ -286,22 +281,44 @@ export default function(el) {
 
 #### Lit
 
-* Small library (~7 kB)
-* Rendering modes: Client-only, Server + Client (Hydration)
-  * Note: Server-only is not supported: it requires Declarative Shadow DOM support to work without JS.
-* No support for `autoinit`
+* [Examples](./demo/demo-lit.html) (using Import Maps)
+* Small library (~10 kB)
+* Rendering modes: Client, Server, Server + Client (Hydration)
 
 ```html
-<is-land on:visible import="./lib/lit/lit-component.js">
+<is-land on:visible import="lit-component.js">
   <lit-component name="Post-JS">Pre-JS Content</lit-web-component>
 </is-land>
 ```
 
 <details>
-  <summary>Example component code <code>./lib/lit/lit-component.js</code>:</summary>
+  <summary>Show sample Import Map</summary>
+
+```html
+<!-- importmap from https://generator.jspm.io/ -->
+<script type="importmap">
+{
+	"imports": {
+		"lit": "https://unpkg.com/lit@3.2.1/index.js"
+	},
+	"scopes": {
+		"https://unpkg.com/": {
+			"@lit/reactive-element": "https://unpkg.com/@lit/reactive-element@2.0.4/reactive-element.js",
+			"lit-element/lit-element.js": "https://unpkg.com/lit-element@4.1.1/lit-element.js",
+			"lit-html": "https://unpkg.com/lit-html@3.2.1/lit-html.js",
+			"lit-html/is-server.js": "https://unpkg.com/lit-html@3.2.1/is-server.js"
+		}
+	}
+}
+</script>
+```
+</details>
+
+<details>
+  <summary>Example component code <code>lit-component.js</code>:</summary>
 
 ```js
-import {html, css, LitElement} from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
+import {html, css, LitElement} from "lit";
 
 customElements.define('lit-component', class extends LitElement {
   static properties = {
@@ -318,16 +335,44 @@ customElements.define('lit-component', class extends LitElement {
 
 #### Alpine.js
 
-* Smaller library (15 kB)
-* Rendering modes: Client-only
-* No `autoinit` but it is not needed (functionality included for-free by Alpine.js)
+* [Examples](./demo/demo-alpine.html)
+* Smaller library (~20 kB)
+* Rendering modes: Client
+* Progressive-enhancement friendly (control fallback content)
 
 ```html
-<is-land on:visible import="https://unpkg.com/alpinejs">
-  <div x-data="{ count: 0 }">
-    Hello from Alpine.js!
+<script type="module">
+// Define once for any number of Alpine islands.
+Island.addInitType("alpine", async (target) => {
+	await import("https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js");
+});
 
-    <button @click="count++">⬆️</button> <button @click="count--">⬇️</button> <span x-text="count"></span>
+// Workaround for Alpine global mount
+Island.addFallback("[x-data]", (readyPromise, node) => {
+  if(node.hasAttribute("x-ignore")) {
+    return;
+  }
+
+  node.setAttribute("x-ignore", "");
+
+  return readyPromise.then(() => {
+    node.removeAttribute("x-ignore");
+
+    if(Alpine) {
+      Alpine.nextTick(() => Alpine.initTree(node));
+    }
+  });
+});
+</script>
+<is-land on:visible type="alpine">
+  <div x-data="{ name: 'Alpine.js' }">
+    Hello from <span x-text="name">HTML</span>!
   </div>
 </is-land>
 ```
+
+#### Solid.js
+
+* [Examples](./demo/demo-solid.html) (using Import Maps)
+* Medium library (~40 kB)
+* Rendering modes: Client

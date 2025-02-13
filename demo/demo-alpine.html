@@ -1,6 +1,7 @@
 ---
 layout: layout.html
 title: Alpine.js Islands
+showImportMaps: true
 ---
 <h1><a href="/">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Falpinejs.dev%2F/" alt="IndieWeb avatar for https://alpinejs.dev/" width="28" height="28" decoding="async" loading="lazy"> Alpine.js</h1>
 
@@ -12,7 +13,17 @@ title: Alpine.js Islands
 
 <h3>Client-rendered Alpine.js</h3>
 
-<is-land on:visible import="https://unpkg.com/alpinejs">
+<div x-data="{ name: 'Alpine.js' }">
+	Hello from <span x-text="name">HTML</span>! (No &lt;is-land&gt;)
+</div>
+
+<is-land on:visible on:media="(width < 600px)" type="alpine">
+  <div x-data="{ name: 'Alpine.js' }">
+    Hello from <span x-text="name">HTML</span>! (Viewport &lt; 600px)
+  </div>
+</is-land>
+
+<is-land on:visible type="alpine">
 	<div x-data="{ count: 0 }">
 		Hello from Alpine.js!
 
@@ -20,9 +31,20 @@ title: Alpine.js Islands
 	</div>
 </is-land>
 
+<h3>Client-rendered Alpine.js using &lt;template&gt; (with fallback)</h3>
+
+<is-land on:visible on:media="(width < 600px)" type="alpine">
+  Hello from HTML! (Viewport &lt; 600px, &lt;template&gt;)
+  <template data-island="replace">
+    <div x-data="{ name: 'Alpine.js' }">
+      Hello from <span x-text="name">HTML</span>! (Viewport &lt; 600px, &lt;template&gt;)
+    </div>
+  </template>
+</is-land>
+
 <h3>Client-rendered Alpine.js using &lt;template&gt; (no fallback)</h3>
 
-<is-land on:visible import="https://unpkg.com/alpinejs">
+<is-land on:visible type="alpine">
 	<template data-island>
 		<div x-data="{ count: 0 }">
 			Hello from Alpine.js!
