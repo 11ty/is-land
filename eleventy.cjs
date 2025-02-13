@@ -8,6 +8,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("lib/**/*.{css,png,svg,js}");
   eleventyConfig.addPassthroughCopy("demo/**/*.{css,js}");
   eleventyConfig.addPassthroughCopy("*.js");
+  eleventyConfig.addPassthroughCopy("dist/*.js");
 
   eleventyConfig.setServerOptions({
     domdiff: false,

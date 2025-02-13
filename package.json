@@ -6,6 +6,7 @@
   "main": "is-land.js",
   "scripts": {
     "compress": "terser is-land.js -o dist/is-land.min.js --compress --mangle --module --ecma 2016 && brotli-size dist/is-land.min.js",
+    "prepublishOnly": "npm run compress",
     "start": "npx @11ty/eleventy --config=eleventy.cjs --serve",
     "build": "npx @11ty/eleventy --config=eleventy.cjs"
   },
