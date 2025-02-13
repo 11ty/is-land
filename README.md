@@ -150,7 +150,7 @@ is-land[ready] {
 
 #### Petite Vue
 
-* [Examples](./demo/demo-vue.html)
+* [Examples](https://is-land.11ty.dev/demo-vue)
 * Small library (~9K)
 * Rendering modes: Client
 * Progressive-enhancement friendly (control fallback content)
@@ -170,7 +170,7 @@ Island.addInitType("petite-vue", async (target) => {
 
 #### Vue
 
-* [Examples](./demo/demo-vue.html)
+* [Examples](https://is-land.11ty.dev/demo-vue)
 * Larger library (~73 kB)
 * Rendering modes: Client (shown), Server, Server + Client (Hydration)
 
@@ -191,7 +191,7 @@ Island.addInitType("vue", async (target) => {
 
 #### Svelte
 
-* [Examples](./demo/demo-svelte.html) (using Import Maps)
+* [Examples](https://is-land.11ty.dev/demo-svelte) (using Import Maps)
 * Medium-sized library
 * Rendering modes: Client, Server, Server + Client (Hydration)
 * Requires a compiler for client mode (uncommon)
@@ -244,7 +244,7 @@ Island.addInitType("svelte", async (target) => {
 
 #### Preact
 
-* [Examples](./demo/demo-preact.html)
+* [Examples](https://is-land.11ty.dev/demo-preact)
 * Small library (~9 kB)
 * Rendering modes: Client (shown), Server, Server + Client (Hydration)
 * No compiler needed when using [`htm`](https://github.com/developit/htm) rather than JSX.
@@ -279,7 +279,7 @@ export default function(el) {
 
 #### Lit
 
-* [Examples](./demo/demo-lit.html) (using Import Maps)
+* [Examples](https://is-land.11ty.dev/demo-lit) (using Import Maps)
 * Small library (~10 kB)
 * Rendering modes: Client, Server, Server + Client (Hydration)
 
@@ -333,7 +333,7 @@ customElements.define('lit-component', class extends LitElement {
 
 #### Alpine.js
 
-* [Examples](./demo/demo-alpine.html)
+* [Examples](https://is-land.11ty.dev/demo-alpine)
 * Smaller library (~20 kB)
 * Rendering modes: Client
 * Progressive-enhancement friendly (control fallback content)
@@ -371,6 +371,6 @@ Island.addFallback("[x-data]", (readyPromise, node) => {
 
 #### Solid.js
 
-* [Examples](./demo/demo-solid.html) (using Import Maps)
+* [Examples](https://is-land.11ty.dev/demo-solid) (using Import Maps)
 * Medium library (~40 kB)
 * Rendering modes: Client
