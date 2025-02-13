@@ -33,14 +33,7 @@ Examples for:
 - [Stress test of 10000 islands](https://is-land.11ty.dev/demo-stress-test)
 - [Nested test case](https://is-land.11ty.dev/demo-stress-test-nest)
 
-Integrations in the wild:
-
-* [Eleventy](https://is-land.11ty.dev/)
-* [WebC](https://demo-webc-image-compare.netlify.app)
-* [Slinkity](https://twitter.com/slinkitydotdev/status/1544322804774064133)
-* [SvelteKit](https://twitter.com/geoffrich_/status/1576932300960342018)
-* [Bridgetown](https://twitter.com/jaredcwhite/status/1585433466770173953)
-* [Lit](https://twitter.com/techytacos/status/1590248099297259520)
+Integrations in the wild: [Eleventy](https://is-land.11ty.dev/), [WebC](https://demo-webc-image-compare.netlify.app), [Slinkity](https://twitter.com/slinkitydotdev/status/1544322804774064133), [SvelteKit](https://twitter.com/geoffrich_/status/1576932300960342018), [Bridgetown](https://twitter.com/jaredcwhite/status/1585433466770173953), [Lit](https://twitter.com/techytacos/status/1590248099297259520)
 
 ## Installation
 
