@@ -188,11 +188,16 @@ class Island extends HTMLElement {
     // e.g. [type="vue"] (where vue has an import map entry)
     // [autoinit] has been renamed to [type], backwards compat kept
     let type = this.getAttribute(Island.attr.type);
-    if(!type && this.getAttribute(Island.attr.import)) {
-      type = "default";
+    let fn;
+    if(type) {
+      fn = Island._initTypes[type];
+      // if(!fn) {
+      //   throw new Error("Invalid type: " + type);
+      // }
+    } else if(this.getAttribute(Island.attr.import)) {
+      fn = Island._initTypes["default"]
     }
 
-    let fn = Island._initTypes[type];
     if(fn) {
       await fn(this);
     }
@@ -265,6 +270,7 @@ class Island extends HTMLElement {
     await Promise.all(conditions);
 
     this.replaceTemplates();
+
     await this.beforeReady();
 
     this._ready.resolve();
