@@ -17,10 +17,8 @@ button {
 	padding: .5em;
 	border: .35em solid rgba(60, 60, 60, .4);
 }
-is-land:not([ready]) {
-	/* content-visibility: hidden; */
-}
-is-land[ready] {
+is-land[ready],
+is-water[ready] {
 	background-color: rgba(144,238,144,.6);
 	border-color: darkgreen;
 }

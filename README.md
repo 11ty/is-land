@@ -28,10 +28,10 @@ Examples for:
 - [Embedded in Markdown](https://is-land.11ty.dev/demo-markdown.md)
 - [`defer-hydration` Component Attribute Support](https://is-land.11ty.dev/demo-defer-hydration) _(New in v3)_ ([Read more about `defer-hydration` at zachleat.com](https://www.zachleat.com/web/defer-hydration/))
 - [Using import maps to simplify import URLs](https://is-land.11ty.dev/demo-importmaps).
-- [Changing the `on:` attribute prefix](https://is-land.11ty.dev/demo-attribute-prefix)
+- [Renaming `<is-land>` tag name or the `on:` attribute prefix](https://is-land.11ty.dev/demo-rename)
 - _Experimental:_ [Image Loading](https://is-land.11ty.dev/demo-image-loading)
 - [Stress test of 10000 islands](https://is-land.11ty.dev/demo-stress-test)
-- [Nested test case](https://is-land.11ty.dev/demo-stress-test-nest)
+- [Complex nested `is-land` test](https://is-land.11ty.dev/demo-stress-test-nest)
 
 Integrations in the wild: [Eleventy](https://is-land.11ty.dev/), [WebC](https://demo-webc-image-compare.netlify.app), [Slinkity](https://twitter.com/slinkitydotdev/status/1544322804774064133), [SvelteKit](https://twitter.com/geoffrich_/status/1576932300960342018), [Bridgetown](https://twitter.com/jaredcwhite/status/1585433466770173953), [Lit](https://twitter.com/techytacos/status/1590248099297259520)
 

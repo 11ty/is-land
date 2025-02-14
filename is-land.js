@@ -16,12 +16,7 @@ function resolvers() {
 
 class Island extends HTMLElement {
   static tagName = "is-land";
-
-  static opts = {
-    tagPrefix: `${this.tagName}--`,
-    attributePrefix: "on:",
-    manual: false, // whether to automatic define custom element
-  };
+  static attributePrefix = "on:";
 
   static attr = {
     template: "data-island",
@@ -35,15 +30,19 @@ class Island extends HTMLElement {
 
   static ctm() {
     // Browser Support:
-    // replaceWith Chrome 54 Firefox 49 Safari 10
-    // Object.entries Chrome 54 Firefox 47 Safari 10.1
-    // NodeList forEach Chrome 51 Firefox 50** Safari 10
-    // once Chrome 55** Firefox 50** Safari 10
-    return "entries" in Object && "replaceWith" in doc.createElement("div");
+    // customElements Chrome 54 Firefox 63 Safari 10.1
+    // once Chrome 55 Firefox 50 Safari 10
+    // globalThis Chrome 71 Safari 12.1 Firefox 65
+    // (extended browser support on top of ESM and Custom Elements)
+    return "customElements" in win && typeof globalThis !== "undefined";
   }
 
-  static define(isManual = false) {
-    if("customElements" in win && !isManual && Island.ctm()) {
+  static define(tagName) {
+    if(tagName) {
+      this.tagName = tagName;
+    }
+    // Support: customElements Chrome 54 Firefox 63 Safari 10.1
+    if(this.ctm()) {
       win.customElements.define(this.tagName, this);
     }
   }
@@ -85,6 +84,10 @@ class Island extends HTMLElement {
     doc.querySelectorAll(`${this.tagName}:defined`).forEach(node => {
       node.replaceFallbackContent();
     })
+  }
+
+  get tagPrefix() {
+    return `${Island.tagName}--`
   }
 
   constructor() {
@@ -141,7 +144,7 @@ class Island extends HTMLElement {
           break;
         }
 
-        if(Conditions.hasConditions(el, Island.opts.attributePrefix)) {
+        if(Conditions.hasConditions(el, Island.attributePrefix)) {
           nodes.push(el);
         }
       }
@@ -233,7 +236,7 @@ class Island extends HTMLElement {
         if(parents[0] === this) {
           // wait for all parent islands
           let ready = Island.ready(node, parents);
-          fn(ready, node, Island.opts.tagPrefix);
+          fn(ready, node, this.tagPrefix);
         }
       }
 
@@ -247,7 +250,7 @@ class Island extends HTMLElement {
 
   async connectedCallback() {
     // Only use fallback content when loading conditions in play
-    if(Conditions.hasConditions(this, Island.opts.attributePrefix)) {
+    if(Conditions.hasConditions(this, Island.attributePrefix)) {
       // Keep fallback content without initializing the components
       this.replaceFallbackContent();
     }
@@ -264,7 +267,7 @@ class Island extends HTMLElement {
       conditions.push(parents[0].wait());
     }
 
-    conditions.push(...Conditions.getConditions(this, Island.opts.attributePrefix));
+    conditions.push(...Conditions.getConditions(this, Island.attributePrefix));
 
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
@@ -285,7 +288,7 @@ class Island extends HTMLElement {
 class Conditions {
   static _media = {}; // cache
 
-  // Attributes (prefixed with Island.opts.attributePrefix) => Callbacks
+  // Attributes (prefixed with Island.attributePrefix) => Callbacks
   static map = {
     "visible": Conditions.visible,
     "idle": Conditions.idle,
@@ -455,12 +458,9 @@ class Conditions {
   }
 }
 
-// Advanced configuration
-if(win.Island) {
-  Object.assign(Island.opts, win.Island);
+if(!(new URL(import.meta.url)).searchParams.has("nodefine")) {
+  Island.define();
 }
-
-Island.define(Island.opts.manual);
 
 win.Island = Island;
 
