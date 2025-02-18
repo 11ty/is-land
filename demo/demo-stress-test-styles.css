@@ -18,7 +18,9 @@ button {
 	border: .35em solid rgba(60, 60, 60, .4);
 }
 is-land[ready],
-is-water[ready] {
+/* Renamed demo tag names */
+is-water[ready],
+is-gas[ready] {
 	background-color: rgba(144,238,144,.6);
 	border-color: darkgreen;
 }

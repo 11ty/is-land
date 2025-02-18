@@ -1,5 +1,4 @@
-//! <is-land> v5.0.0
-
+//! <is-land>
 const win = window;
 const doc = win.document;
 const nav = win.navigator;
@@ -15,7 +14,6 @@ function resolvers() {
 }
 
 class Island extends HTMLElement {
-  static tagName = "is-land";
   static attributePrefix = "on:";
 
   static attr = {
@@ -26,6 +24,7 @@ class Island extends HTMLElement {
     import: "import",
   };
 
+  static _tagNames = new Set();
   static _once = new Map();
 
   static ctm() {
@@ -34,16 +33,14 @@ class Island extends HTMLElement {
     // once Chrome 55 Firefox 50 Safari 10
     // globalThis Chrome 71 Firefox 65 Safari 12.1
     // (extended browser support on top of ESM and Custom Elements)
-    return "customElements" in win && typeof globalThis !== "undefined";
+    return typeof globalThis !== "undefined";
   }
 
-  static define(tagName) {
-    if(tagName) {
-      this.tagName = tagName;
-    }
-    // Support: customElements Chrome 54 Firefox 63 Safari 10.1
-    if(this.ctm()) {
-      win.customElements.define(this.tagName, this);
+  static define(registry = win.customElements) {
+    let tagName = "is-land";
+    if(this.ctm() && !registry.get(tagName)) {
+      // Support: customElements Chrome 54 Firefox 63 Safari 10.1
+      registry.define(tagName, this);
     }
   }
 
@@ -57,44 +54,40 @@ class Island extends HTMLElement {
     this._initTypes[name] = fn;
   }
 
-  static fallback = {
-    // Support: computed property name Chrome 47 Firefox 34 Safari 8
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#browser_compatibility
-    [`:not(:defined):not(${this.tagName}):not([${this.attr.defer}])`]: (readyPromise, node, prefix) => {
-      let cloned = Island.renameNode(node, prefix + node.localName);
+  static _fallback = {};
 
-      return readyPromise.then(() => {
-        // Restore original children and shadow DOM
-        if(cloned.shadowRoot) {
-          node.shadowRoot.append(...cloned.shadowRoot.childNodes);
-        }
+  static addFallback(selector, fn) {
+    this._fallback[selector] = fn;
 
-        node.append(...cloned.childNodes);
-
-        cloned.replaceWith(node);
+    // Support: NodeList forEach Chrome 51 Firefox 50 Safari 10
+    // Use :defined to inherit ctm()
+    let tags = Array.from(this._tagNames);
+    if(tags.length) {
+      doc.querySelectorAll(tags.map(t => `${t}:defined`).join(",")).forEach(node => {
+        node.replaceFallbackContent();
       });
     }
   }
 
-  static addFallback(selector, fn) {
-    this.fallback[selector] = fn;
+  getFallback() {
+    return Object.assign({
+      // Support: computed property name Chrome 47 Firefox 34 Safari 8
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#browser_compatibility
+      [`:not(:defined):not(${this.localName}):not([${Island.attr.defer}])`]: (readyPromise, node, prefix) => {
+        let cloned = Island.renameNode(node, prefix + node.localName);
 
-    // Support: NodeList forEach Chrome 51 Firefox 50 Safari 10
-    // Use :defined to inherit ctm()
-    doc.querySelectorAll(`${this.tagName}:defined`).forEach(node => {
-      node.replaceFallbackContent();
-    })
-  }
+        return readyPromise.then(() => {
+          // Restore original children and shadow DOM
+          if(cloned.shadowRoot) {
+            node.shadowRoot.append(...cloned.shadowRoot.childNodes);
+          }
 
-  get tagPrefix() {
-    return `${Island.tagName}--`
-  }
+          node.append(...cloned.childNodes);
 
-  constructor() {
-    super();
-
-    this._ready = resolvers();
-    this._fallbacks = {};
+          cloned.replaceWith(node);
+        });
+      }
+    }, Island._fallback);
   }
 
   static renameNode(node, name) {
@@ -133,13 +126,22 @@ class Island extends HTMLElement {
     return cloned;
   }
 
+  constructor() {
+    super();
+
+    this._ready = resolvers();
+    this._fallbackExec = {};
+
+    Island._tagNames.add(this.localName);
+  }
+
   // any parents of `el` that are <is-land> with on: conditions
-  static getParents(el, stopAt = false) {
+  getParents(el, stopAt = false) {
     let nodes = [];
     while(el = el.parentNode) {
       if(!el || el === doc.body) {
           break;
-      } else if(el.matches && el.matches(this.tagName)) { // Support: matches Chrome 33 Firefox 34 Safari 8
+      } else if(el.matches && el.matches(this.localName)) { // Support: matches Chrome 33 Firefox 34 Safari 8
         if(stopAt && el === stopAt) {
           break;
         }
@@ -158,7 +160,7 @@ class Island extends HTMLElement {
     // replace <template> with template content
     for(let tmpl of templates) {
       // if the template is nested inside another child <is-land> inside, skip
-      if(Island.getParents(tmpl, this).length > 0) {
+      if(this.getParents(tmpl, this).length > 0) {
         continue;
       }
 
@@ -188,14 +190,13 @@ class Island extends HTMLElement {
   }
 
   async beforeReady() {
-    // e.g. [type="vue"] (where vue has an import map entry)
-    // [autoinit] has been renamed to [type], backwards compat kept
+    // [type="vue"] (where vue has an import map entry) (previously [autoinit])
     let type = this.getAttribute(Island.attr.type);
     let fn;
     if(type) {
       fn = Island._initTypes[type];
       // if(!fn) {
-      //   throw new Error("Invalid type: " + type);
+      //   throw new Error("Invalid [type]: " + type);
       // }
     } else if(this.getAttribute(Island.attr.import)) {
       fn = Island._initTypes["default"]
@@ -207,17 +208,19 @@ class Island extends HTMLElement {
   }
 
   // resolves when all parent islands of node are ready
-  static async ready(node, parents) {
+  async ready(node, parents) {
     if(!Array.isArray(parents)) {
-      parents = Island.getParents(node);
+      parents = this.getParents(node);
     }
     return Promise.all(parents.map(p => p.wait()));
   }
 
   replaceFallbackContent() {
+    let prefix = `${this.localName}--`;
+
     // Support: Object.entries Chrome 54 Firefox 47 Safari 10.1
-    for(let [selector, fn] of Object.entries(Island.fallback)) {
-      if(this._fallbacks[selector]) {
+    for(let [selector, fn] of Object.entries(this.getFallback())) {
+      if(this._fallbackExec[selector]) {
         continue;
       }
 
@@ -231,16 +234,16 @@ class Island extends HTMLElement {
           continue;
         }
 
-        let parents = Island.getParents(node);
+        let parents = this.getParents(node);
         // only fallback if this is the closest island parent.
         if(parents[0] === this) {
           // wait for all parent islands
-          let ready = Island.ready(node, parents);
-          fn(ready, node, this.tagPrefix);
+          let ready = this.ready(node, parents);
+          fn(ready, node, prefix);
         }
       }
 
-      this._fallbacks[selector] = true;
+      this._fallbackExec[selector] = true;
     }
   }
 
@@ -261,7 +264,7 @@ class Island extends HTMLElement {
   async hydrate() {
     let conditions = [];
 
-    let parents = Island.getParents(this);
+    let parents = this.getParents(this);
     if(parents.length) {
       // wait for nearest is-land parent
       conditions.push(parents[0].wait());

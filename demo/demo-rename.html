@@ -6,10 +6,16 @@
 		<meta name="description" content="">
 		<title></title>
 		<link rel="stylesheet" href="demo-stress-test-styles.css">
-		<script type="module" src="/is-land.js?nodefine"></script>
+		<!-- <script type="module" src="/is-land.js?nodefine"></script> -->
 		<script type="module">
+		import { Island } from "/is-land.js?nodefine";
 		Island.attributePrefix = "when-";
-		Island.define("is-water"); // rename to <is-water>
+
+		// Manual define
+		Island.define();
+
+		customElements.define("is-gas", class extends Island {});
+		customElements.define("is-water", class extends Island {});
 
 		customElements.define("test-element", class extends HTMLElement {
 			connectedCallback() {
@@ -19,8 +25,14 @@
 		</script>
 	</head>
 	<body>
+		<is-land when-visible when-media="(width < 800px)" class="island">
+			<test-element>&lt;is-land&gt; &lt;test-element&gt;</test-element>
+		</is-land>
 		<is-water when-visible when-media="(width < 800px)" class="island">
-			<test-element>&lt;test-element&gt;</test-element>
+			<test-element>&lt;is-water&gt; &lt;test-element&gt;</test-element>
 		</is-water>
+		<is-gas when-visible when-media="(width < 800px)" class="island">
+			<test-element>&lt;is-gas&gt; &lt;test-element&gt;</test-element>
+		</is-gas>
 	</body>
 </html>
