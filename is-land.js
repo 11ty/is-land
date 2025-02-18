@@ -32,7 +32,7 @@ class Island extends HTMLElement {
     // Browser Support:
     // customElements Chrome 54 Firefox 63 Safari 10.1
     // once Chrome 55 Firefox 50 Safari 10
-    // globalThis Chrome 71 Safari 12.1 Firefox 65
+    // globalThis Chrome 71 Firefox 65 Safari 12.1
     // (extended browser support on top of ESM and Custom Elements)
     return "customElements" in win && typeof globalThis !== "undefined";
   }
