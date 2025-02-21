@@ -25,7 +25,7 @@ Examples for:
 - [Preact](https://is-land.11ty.dev/demo-preact) (and SSR)
 - [Lit](https://is-land.11ty.dev/demo-lit) (and SSR)
 - [Alpine.js](https://is-land.11ty.dev/demo-alpine)
-- [Embedded in Markdown](https://is-land.11ty.dev/demo-markdown.md)
+- [Embedded in Markdown](https://is-land.11ty.dev/demo-markdown)
 - [`defer-hydration` Component Attribute Support](https://is-land.11ty.dev/demo-defer-hydration) _(New in v3)_ ([Read more about `defer-hydration` at zachleat.com](https://www.zachleat.com/web/defer-hydration/))
 - [Using import maps to simplify import URLs](https://is-land.11ty.dev/demo-importmaps).
 - [Renaming `<is-land>` tag name or the `on:` attribute prefix](https://is-land.11ty.dev/demo-rename)
