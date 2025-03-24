@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<script type="module" src="/is-land.js"></script>
+		<script type="module">
+		customElements.define("custom-1", class extends HTMLElement {
+			connectedCallback() {
+				console.log( "<custom-1> connectedCallback (should only fire once)" );
+			}
+		});
+		customElements.define("custom-2", class extends HTMLElement {
+			connectedCallback() {
+				console.log( "<custom-2> connectedCallback (should only fire once)" );
+			}
+		});
+		customElements.define("custom-3", class extends HTMLElement {
+			connectedCallback() {
+				console.log( "<custom-3> connectedCallback (should only fire once)" );
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<ul>
+			<li>Nodes should be renamed in this order: 3, 2, 1.</li>
+			<li>Nodes should be restored in this order: 1, 2, 3.</li>
+			<li>connectedCallbacks here should only fire once.</li>
+		</ul>
+		<is-land on:visible class="island">
+			<custom-1>
+				<custom-2>
+					<custom-3>Testing</custom-3>
+				</custom-2>
+			</custom-1>
+		</is-land>
+	</body>
+</html>

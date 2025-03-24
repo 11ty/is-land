@@ -73,10 +73,10 @@ class Island extends HTMLElement {
     return Object.assign({
       // Support: computed property name Chrome 47 Firefox 34 Safari 8
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#browser_compatibility
-      [`:not(:defined):not(${this.localName}):not([${Island.attr.defer}])`]: (readyPromise, node, prefix) => {
+      [`:not(:defined):not(${this.localName}):not([${Island.attr.defer}])`]: (node, prefix) => {
         let cloned = Island.renameNode(node, prefix + node.localName);
 
-        return readyPromise.then(() => {
+        return () => {
           // Restore original children and shadow DOM
           if(cloned.shadowRoot) {
             node.shadowRoot.append(...cloned.shadowRoot.childNodes);
@@ -85,7 +85,7 @@ class Island extends HTMLElement {
           node.append(...cloned.childNodes);
 
           cloned.replaceWith(node);
-        });
+        };
       }
     }, Island._fallback);
   }
@@ -224,8 +224,9 @@ class Island extends HTMLElement {
         continue;
       }
 
-      // Reverse for deepest nodes first
+      // Rename deepest nodes first
       let components = Array.from(this.querySelectorAll(selector)).reverse();
+      let nodes = [];
 
       // with thanks to https://gist.github.com/cowboy/938767
       for(let node of components) {
@@ -235,12 +236,18 @@ class Island extends HTMLElement {
         }
 
         let parents = this.getParents(node);
+
         // only fallback if this is the closest island parent.
         if(parents[0] === this) {
-          // wait for all parent islands
-          let ready = this.ready(node, parents);
-          fn(ready, node, prefix);
+          let returned = fn(node, prefix);
+          nodes.push({node, parents, returned});
         }
+      }
+
+      // Restore shallowest nodes first
+      for(let {node, parents, returned} of nodes.reverse()) {
+        // wait for parent islands
+        this.ready(node, parents).then(returned);
       }
 
       this._fallbackExec[selector] = true;

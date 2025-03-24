@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<title></title>
+		<link rel="stylesheet" href="demo-stress-test-styles.css">
+		<script type="module" src="/is-land.js"></script>
+		<script type="module">
+		Island.addInitType("wait-2s", async() => {
+			console.log( "Start waiting 2 seconds:" );
+			await new Promise(resolve => {
+				setTimeout(() => {
+					console.log( "Waited 2 seconds!" );
+					resolve();
+				}, 2000);
+			});
+		});
+
+		customElements.define("test-element", class extends HTMLElement {
+			connectedCallback() {
+				console.log( "<test-element> connectedCallback" );
+			}
+		});
+		</script>
+	</head>
+	<body>
+		<is-land on:load on:media="(width > 600px)" type="wait-2s" class="island">
+			<test-element>&lt;test-element&gt;</test-element>
+		</is-land>
+	</body>
+</html>

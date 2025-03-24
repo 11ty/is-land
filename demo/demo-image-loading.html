@@ -10,7 +10,7 @@ img[is-land--img-skeleton] {
 }
 </style>
 <script type="module">
-Island.addFallback("[data-island-img-skeleton]", function(readyPromise, node, prefix) {
+Island.addFallback("[data-island-img-skeleton]", function(node, prefix) {
 	let attr = prefix + "img-skeleton";
 	let template = node;
 	if(node.tagName === "NOSCRIPT") {
@@ -23,22 +23,21 @@ Island.addFallback("[data-island-img-skeleton]", function(readyPromise, node, pr
 	let templateContent = template.content;
 
 	let images = templateContent.querySelectorAll("img");
-	let promises = [];
 	for(let img of images) {
 		// remove
 		img.setAttribute(attr, img.getAttribute("src"));
 		img.setAttribute("src", `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>`);
-
-		promises.push(readyPromise.then(() => {
-			// restore
-			img.setAttribute("src", img.getAttribute(attr));
-			img.removeAttribute(attr);
-		}));
 	}
 
 	node.replaceWith(templateContent);
 
-	return Promise.all(promises);
+	return () => {
+		for(let img of images) {
+			// restore
+			img.setAttribute("src", img.getAttribute(attr));
+			img.removeAttribute(attr);
+		}
+	};
 });
 </script>
 

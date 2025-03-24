@@ -346,20 +346,20 @@ Island.addInitType("alpine", async (target) => {
 });
 
 // Workaround for Alpine global mount
-Island.addFallback("[x-data]", (readyPromise, node) => {
+Island.addFallback("[x-data]", (node) => {
   if(node.hasAttribute("x-ignore")) {
     return;
   }
 
   node.setAttribute("x-ignore", "");
 
-  return readyPromise.then(() => {
+  return () => {
     node.removeAttribute("x-ignore");
 
     if(Alpine) {
       Alpine.nextTick(() => Alpine.initTree(node));
     }
-  });
+  };
 });
 </script>
 <is-land on:visible type="alpine">
