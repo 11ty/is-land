@@ -443,7 +443,7 @@ class Conditions {
     if(mm.matches) {
       resolve();
     } else {
-      mm.addListener(e => {
+      mm.addEventListener('change', e => {
         if(e.matches) {
           resolve();
         }
