@@ -22,6 +22,7 @@ class Island extends HTMLElement {
     defer: "defer-hydration",
     type: "type",
     import: "import",
+    transitionName: "transition:name",
   };
 
   static _tagNames = new Set();
@@ -282,16 +283,31 @@ class Island extends HTMLElement {
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
-    this.replaceTemplates();
+    const transitionName = this.getAttribute(Island.attr.transitionName);
+    const supportsViewTransitions = "startViewTransition" in doc;
 
-    await this.beforeReady();
+    const performHydrationSteps = async () => {
+      if (supportsViewTransitions && transitionName) {
+        this.style.viewTransitionName = transitionName;
+      }
 
-    this._ready.resolve();
+      this.replaceTemplates();
 
-    let { ready, defer } = Island.attr;
-    this.setAttribute(ready, "");
-    // Support: NodeList forEach Chrome 51 Firefox 50 Safari 10
-    this.querySelectorAll(`[${defer}]`).forEach(n => n.removeAttribute(defer));
+      await this.beforeReady();
+
+      this._ready.resolve();
+
+      let { ready, defer } = Island.attr;
+      this.setAttribute(ready, "");
+      // Support: NodeList forEach Chrome 51 Firefox 50 Safari 10
+      this.querySelectorAll(`[${defer}]`).forEach(n => n.removeAttribute(defer));
+    }
+
+    if (supportsViewTransitions && transitionName) {
+      doc.startViewTransition(performHydrationSteps);
+    } else {
+      await performHydrationSteps();
+    }
   }
 }
 
