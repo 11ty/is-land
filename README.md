@@ -40,7 +40,7 @@ Integrations in the wild: [Eleventy](https://is-land.11ty.dev/), [WebC](https://
 Available on [npm at `@11ty/is-land`](https://www.npmjs.com/package/@11ty/is-land).
 
 ```
-npm install @11ty/is-land
+npm install @11ty/is-land@beta
 ```
 
 ```html
