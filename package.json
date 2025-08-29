@@ -32,14 +32,14 @@
   },
   "homepage": "https://github.com/11ty/is-land#readme",
   "devDependencies": {
-    "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy": "^3.1.2",
     "brotli-size-cli": "^1.0.0",
-    "esm-import-transformer": "^3.0.2",
+    "esm-import-transformer": "^3.0.5",
     "htm": "^3.1.1",
-    "preact": "^10.25.4",
-    "preact-render-to-string": "^6.5.13",
-    "svelte": "^5.19.10",
-    "terser": "^5.38.1",
-    "vue": "^3.5.13"
+    "preact": "^10.27.1",
+    "preact-render-to-string": "^6.6.1",
+    "svelte": "^5.38.6",
+    "terser": "^5.43.1",
+    "vue": "^3.5.20"
   }
 }
