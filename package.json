@@ -36,10 +36,10 @@
     "brotli-size-cli": "^1.0.0",
     "esm-import-transformer": "^3.0.5",
     "htm": "^3.1.1",
-    "preact": "^10.27.1",
-    "preact-render-to-string": "^6.6.1",
-    "svelte": "^5.38.6",
-    "terser": "^5.43.1",
-    "vue": "^3.5.20"
+    "preact": "^10.28.0",
+    "preact-render-to-string": "^6.6.3",
+    "svelte": "^5.45.3",
+    "terser": "^5.44.1",
+    "vue": "^3.5.25"
   }
 }
