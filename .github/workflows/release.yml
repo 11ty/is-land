@@ -17,7 +17,7 @@ jobs:
           node-version: "22"
           registry-url: 'https://registry.npmjs.org'
       - run: npm install -g npm@latest
-      # - run: npm ci
+      - run: npm ci
       # - run: npm test
       - if: ${{ github.event.release.tag_name != '' && env.NPM_PUBLISH_TAG != '' }}
         run: npm publish --provenance --access=public --tag=${{ env.NPM_PUBLISH_TAG }}
