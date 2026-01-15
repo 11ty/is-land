@@ -1,0 +1,52 @@
+---
+layout: layout.html
+title: Demo View Transitions
+---
+<h1><a href="/">is-land</a> triggers View Transition</h1>
+
+<is-land
+  on:interaction
+  transition:name="test"
+	<form>
+		<button type="button">Hydrate the island</button>
+	</form>
+
+	<p>This content is pre-JS. This is where your loading spinner goes 😈</p>
+
+	<template data-island="replace">
+		<vanilla-web-component class="demo-component">Vanilla web component (requires JS)</vanilla-web-component>
+	  <p>For view transitions to work you need a <a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API#browser_compatibility">compatible</a> browser</p>
+	</template>
+</is-land>
+
+<style>
+@keyframes fade-out-scale {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+::view-transition-old(test) {
+  animation: 0.4s ease-out forwards fade-out-scale;
+}
+
+::view-transition-new(test) {
+  animation: 0.4s ease-in forwards fade-in-scale;
+}
+</style>

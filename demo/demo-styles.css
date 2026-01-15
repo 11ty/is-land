@@ -68,3 +68,14 @@ chocolate-web-component:not([defer-hydration]):defined {
   height: 1.5em;
   vertical-align: text-bottom;
 }
+
+/* view transition mpa */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
