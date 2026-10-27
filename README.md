@@ -85,6 +85,19 @@ Add any number of loading conditions to this tag to control how and when the isl
 </is-land>
 ```
 
+### Programmatic API
+
+Each loading condition is also available as a promise-returning method on `Island`.
+
+```js
+await Island.onidle();
+await Island.onvisible(element);
+await Island.onload();
+await Island.oninteraction(element); // or Island.oninteraction(element, "mouseenter,focusin")
+await Island.onmedia("(min-width: 64em)");
+await Island.onsavedata(); // or Island.onsavedata("false")
+```
+
 ### Controlling Fallback Content
 
 #### Pre-JS

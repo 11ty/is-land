@@ -325,7 +325,7 @@ class Island extends HTMLElement {
 }
 
 class Conditions {
-  static _media = {}; // cache
+  static _cache = {};
 
   // Attributes (prefixed with Island.attributePrefix) => Callbacks
   static map = {
@@ -337,27 +337,22 @@ class Conditions {
     "save-data": Conditions.saveData,
   };
 
-  // Support: Default param values Chrome 49 Firefox 15 Safari 10
-  static getMap(prefix = "") {
-    return Object.keys(Conditions.map).map(attr => prefix + attr);
+  // Global (not element dependent) conditions share one promise per key
+  static cached(key, fn) {
+    let c = Conditions._cache;
+    return c[key] || (c[key] = fn());
   }
 
   static hasConditions(node, prefix) {
-    for(let attr of Conditions.getMap(prefix)) {
-      if(node.hasAttribute(attr)) {
-        return true;
-      }
-    }
-    return false;
+    return Object.keys(Conditions.map).some(attr => node.hasAttribute(prefix + attr));
   }
 
   static getConditions(node, prefix) {
     let v = [];
-    for(let unprefixedAttr of Conditions.getMap()) {
-      let prefixedAttr = prefix + unprefixedAttr;
+    for(let [attr, fn] of Object.entries(Conditions.map)) {
+      let prefixedAttr = prefix + attr;
       if(node.hasAttribute(prefixedAttr)) {
-        let attrValue = node.getAttribute(prefixedAttr);
-        v.push(Conditions.map[unprefixedAttr](attrValue, node));
+        v.push(fn(node.getAttribute(prefixedAttr), node));
       }
     }
 
@@ -387,45 +382,37 @@ class Conditions {
 
   // Global (not element dependent)
   static pageLoad() {
-    if(Conditions._cacheLoad) {
-      return Conditions._cacheLoad;
-    }
+    return Conditions.cached("load", () => {
+      let { promise, resolve } = resolvers();
 
-    let { promise, resolve } = resolvers();
+      if(doc.readyState === "complete") {
+        resolve();
+      } else {
+        // Support: once Chrome 55 Firefox 50 Safari 10
+        win.addEventListener("load", () => resolve(), { once: true });
+      }
 
-    if(doc.readyState === "complete") {
-      resolve();
-    } else {
-      // Support: once Chrome 55 Firefox 50 Safari 10
-      win.addEventListener("load", () => resolve(), { once: true });
-    }
-
-    Conditions._cacheLoad = promise;
-
-    return promise;
+      return promise;
+    });
   }
 
   // Global (not element dependent)
   // TODO fix this to resolve *last* when used with other conditions
   static idle() {
-    if(Conditions._cacheIdle) {
-      return Conditions._cacheIdle;
-    }
+    return Conditions.cached("idle", () => {
+      let { promise, resolve } = resolvers();
 
-    let { promise, resolve } = resolvers();
+      if("requestIdleCallback" in win) {
+        requestIdleCallback(() => resolve());
+      } else {
+        resolve();
+      }
 
-    if("requestIdleCallback" in win) {
-      requestIdleCallback(() => resolve());
-    } else {
-      resolve();
-    }
-
-    Conditions._cacheIdle = Promise.all([
-      Conditions.pageLoad(), // idle *after* load
-      promise,
-    ]);
-
-    return Conditions._cacheIdle;
+      return Promise.all([
+        Conditions.pageLoad(), // idle *after* load
+        promise,
+      ]);
+    });
   }
 
   static interaction(eventOverrides, el) {
@@ -455,33 +442,22 @@ class Conditions {
 
   // Global (viewport, not element dependent)
   static media(query) {
-    if(Conditions._media[query]) {
-      return Conditions._media[query];
-    }
+    return Conditions.cached("media:" + query, () => {
+      let { promise, resolve } = resolvers();
+      let mm;
 
-    let { promise, resolve } = resolvers();
+      if(!query || !("matchMedia" in win) || (mm = win.matchMedia(query)).matches) {
+        resolve();
+      } else {
+        mm.addListener(e => {
+          if(e.matches) {
+            resolve();
+          }
+        });
+      }
 
-    let mm = {
-      matches: true
-    };
-
-    if(query && ("matchMedia" in win)) {
-      mm = win.matchMedia(query);
-    }
-
-    if(mm.matches) {
-      resolve();
-    } else {
-      mm.addListener(e => {
-        if(e.matches) {
-          resolve();
-        }
-      });
-    }
-
-    Conditions._media[query] = promise;
-
-    return promise;
+      return promise;
+    });
   }
 
   // Immediate
@@ -495,6 +471,11 @@ class Conditions {
 
     return promise;
   }
+}
+
+// Programmatic loading conditions, e.g. `await Island.onvisible(el)` or `await Island.onmedia(query)`
+for(let [name, fn] of Object.entries(Conditions.map)) {
+  Island["on" + name.replace("-", "")] = (a, b) => a instanceof Node ? fn(b, a) : fn(a, b);
 }
 
 if(!(new URL(import.meta.url)).searchParams.has("nodefine")) {

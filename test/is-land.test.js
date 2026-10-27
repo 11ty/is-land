@@ -109,3 +109,23 @@ test("setSwapBehavior wraps the hydration DOM swap in a view transition", async 
     Island.setSwapBehavior(original);
   }
 });
+
+test("Programmatic API resolves loading conditions", async () => {
+  document.body.innerHTML = `<div id="target">Hi</div>`;
+  let el = document.querySelector("#target");
+
+  await Island.onload();
+  await Island.onidle();
+  await Island.onvisible(el);
+  await Island.onmedia("(min-width: 1px)");
+
+  let clicked = false;
+  let interaction = Island.oninteraction(el, "mouseenter").then(() => clicked = true);
+  el.dispatchEvent(new Event("click"));
+  await new Promise(r => setTimeout(r, 20));
+  expect(clicked).toBe(false);
+
+  el.dispatchEvent(new Event("mouseenter"));
+  await interaction;
+  expect(clicked).toBe(true);
+});
