@@ -54,6 +54,11 @@ class Island extends HTMLElement {
     this._initTypes[name] = fn;
   }
 
+  // Wraps the hydration DOM swap and must call `swap`, e.g. `(swap, island) => document.startViewTransition(swap)`
+  static setSwapBehavior(fn) {
+    this._swapFn = fn;
+  }
+
   static _fallback = {};
 
   static addFallback(selector, fn) {
@@ -277,6 +282,16 @@ class Island extends HTMLElement {
     await this.hydrate();
   }
 
+  swap() {
+    this.replaceTemplates();
+
+    // Restore renamed elements (shallowest first) before init types hydrate them
+    for(let restore of this._fallbackRestores.reverse()) {
+      restore();
+    }
+    this._fallbackRestores = [];
+  }
+
   async hydrate() {
     let conditions = [];
 
@@ -291,13 +306,12 @@ class Island extends HTMLElement {
     // Loading conditions must finish before dependencies are loaded
     await Promise.all(conditions);
 
-    this.replaceTemplates();
-
-    // Restore renamed elements (shallowest first) before init types hydrate them
-    for(let restore of this._fallbackRestores.reverse()) {
-      restore();
+    let fn = Island._swapFn;
+    if(fn) {
+      await new Promise(resolve => fn(() => resolve(this.swap()), this));
+    } else {
+      this.swap();
     }
-    this._fallbackRestores = [];
 
     await this.beforeReady();
 

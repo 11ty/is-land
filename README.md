@@ -142,6 +142,22 @@ is-land[ready] {
 </style>
 ```
 
+#### View Transitions
+
+Use `Island.setSwapBehavior` to wrap the template and fallback content swap in a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). Framework init types run after the swap and are not included.
+
+```js
+Island.setSwapBehavior((swap, island) => {
+  if(document.startViewTransition) {
+    document.startViewTransition(swap);
+  } else {
+    swap();
+  }
+});
+```
+
+Your callback must call `swap`, otherwise the island never hydrates. The `island` argument is the `<is-land>` element being hydrated.
+
 ### Framework Component Support
 
 - `type`: initialize a framework initialization type, registered by you. Examples included for: `alpine`, `petite-vue`, `vue`, `vue-ssr`, `preact`, `preact-ssr`, `svelte`, or `svelte-ssr`.

@@ -84,3 +84,28 @@ test("defer-hydration attributes are removed on hydration", async () => {
   await island.wait();
   expect(island.querySelector("x-baz[defer-hydration]")).toBeNull();
 });
+
+test("setSwapBehavior wraps the hydration DOM swap in a view transition", async () => {
+  let original = Island._swapFn;
+  let transition;
+  let received;
+  Island.setSwapBehavior((swap, island) => {
+    received = island;
+    transition = document.startViewTransition(swap);
+  });
+
+  try {
+    document.body.innerHTML = `<is-land on:interaction><p>Before</p><template data-island="replace"><p id="vt">After</p></template></is-land>`;
+    let island = document.querySelector("is-land");
+
+    island.dispatchEvent(new Event("click"));
+    await island.wait();
+
+    expect(received).toBe(island);
+    expect(island.querySelector("#vt")).not.toBeNull();
+    expect(island.textContent).not.toContain("Before");
+    await transition.finished;
+  } finally {
+    Island.setSwapBehavior(original);
+  }
+});
