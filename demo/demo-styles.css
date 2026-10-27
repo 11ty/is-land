@@ -10,7 +10,14 @@ p:first-child {
   margin-top: 0;
 }
 body {
+  margin: 0;
   padding-bottom: 20vh;
+  font-family: system-ui, sans-serif;
+}
+main {
+  max-width: 50em;
+  margin: 0 auto;
+  padding: 1em;
 }
 button {
   font-size: inherit;
