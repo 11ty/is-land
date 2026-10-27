@@ -21,6 +21,6 @@ jobs:
           package-manager-cache: false
       - run: npm ci
       - if: ${{ github.event.release.tag_name != '' && env.NPM_PUBLISH_TAG != '' }}
-        run: npm publish --provenance --access=public --tag=${{ env.NPM_PUBLISH_TAG }}
+        run: npm stage publish --provenance --access=public --tag=${{ env.NPM_PUBLISH_TAG }}
         env:
           NPM_PUBLISH_TAG: ${{ contains(github.event.release.tag_name, '-') && 'beta' || 'latest' }}
