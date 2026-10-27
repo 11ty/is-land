@@ -5,3 +5,5 @@ lib
 eleventy.cjs
 _site
 .*
+test
+vitest.config.js
