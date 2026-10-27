@@ -39,7 +39,7 @@
     "esm-import-transformer": "^3.0.5",
     "htm": "^3.1.1",
     "playwright": "^1.64.1",
-    "preact": "^10.29.8",
+    "preact": "^11.0.2",
     "preact-render-to-string": "^6.8.2",
     "svelte": "^5.57.3",
     "terser": "^5.51.2",
