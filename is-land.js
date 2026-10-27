@@ -22,6 +22,7 @@ class Island extends HTMLElement {
     defer: "defer-hydration",
     type: "type",
     import: "import",
+    importMount: "import-mount",
   };
 
   static _tagNames = new Set();
@@ -46,7 +47,14 @@ class Island extends HTMLElement {
 
   static _initTypes = {
     default: async(target) => {
-      await import(target.getAttribute(Island.attr.import));
+      let url = target.getAttribute(Island.attr.import);
+      let mod = await import(url);
+      if(target.hasAttribute(Island.attr.importMount)) {
+        if(typeof mod.default !== "function") {
+          throw new Error(`[${Island.attr.importMount}] expects a default export function: ${url}`);
+        }
+        await mod.default(target);
+      }
     }
   };
 

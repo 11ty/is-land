@@ -145,6 +145,21 @@ Embed a script inside the template to run custom JS when the island’s loading 
 </is-land>
 ```
 
+#### Import a module
+
+Use `import` to load a JavaScript module when the island’s loading conditions have been satisfied. Add `import-mount` to also call the module’s default export with the `<is-land>` element (after fallback content is restored and before `ready` is set, awaiting any returned promise).
+
+```html
+<is-land on:visible import="my-component.js" import-mount></is-land>
+```
+
+```js
+// my-component.js
+export default async function(island) {
+  // hydrate `island` here
+}
+```
+
 You can also use the `ready` attribute for styling, added to the `<is-land>` when the island has been hydrated.
 
 ```html

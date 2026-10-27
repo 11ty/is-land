@@ -1,4 +1,4 @@
-import { test, expect } from "vitest";
+import { test, expect, vi } from "vitest";
 import { Island } from "../is-land.js";
 
 test("Fallback elements are restored before init types run", async () => {
@@ -128,4 +128,61 @@ test("Programmatic API resolves loading conditions", async () => {
   el.dispatchEvent(new Event("mouseenter"));
   await interaction;
   expect(clicked).toBe(true);
+});
+
+const mountUrl = new URL("./fixtures/mount.js", import.meta.url).href;
+
+test("import-mount calls the default export with the island after swap and before ready", async () => {
+  window.__mountCalls = [];
+  window.__mountPromise = undefined;
+  document.body.innerHTML = `<is-land on:interaction import="${mountUrl}" import-mount><x-foo>Hi</x-foo></is-land>`;
+  let island = document.querySelector("is-land");
+  expect(island.querySelector("is-land--x-foo")).not.toBeNull();
+
+  island.dispatchEvent(new Event("click"));
+  await island.wait();
+
+  expect(window.__mountCalls).toHaveLength(1);
+  let [call] = window.__mountCalls;
+  expect(call.el).toBe(island);
+  expect(call.hasChild).toBe(true);
+  expect(call.ready).toBe(false);
+  expect(island.querySelector("is-land--x-foo")).toBeNull();
+});
+
+test("import-mount awaits a returned promise before ready", async () => {
+  let { promise, resolve } = Promise.withResolvers();
+  window.__mountCalls = [];
+  window.__mountPromise = promise;
+  document.body.innerHTML = `<is-land on:interaction import="${mountUrl}" import-mount></is-land>`;
+  let island = document.querySelector("is-land");
+
+  island.dispatchEvent(new Event("click"));
+  await vi.waitFor(() => expect(window.__mountCalls).toHaveLength(1));
+  await new Promise(r => setTimeout(r, 20));
+  expect(island.hasAttribute("ready")).toBe(false);
+
+  resolve();
+  await island.wait();
+  expect(island.hasAttribute("ready")).toBe(true);
+  window.__mountPromise = undefined;
+});
+
+test("import without import-mount does not call the default export", async () => {
+  window.__mountCalls = [];
+  document.body.innerHTML = `<is-land import="${mountUrl}"></is-land>`;
+  let island = document.querySelector("is-land");
+  await island.wait();
+
+  expect(island.hasAttribute("ready")).toBe(true);
+  expect(window.__mountCalls).toHaveLength(0);
+});
+
+test("import-mount throws with the module URL when the default export is not a function", async () => {
+  let url = new URL("./fixtures/mount-invalid.js", import.meta.url).href;
+  let el = document.createElement("div");
+  el.setAttribute("import", url);
+  el.setAttribute("import-mount", "");
+
+  await expect(Island._initTypes.default(el)).rejects.toThrow(url);
 });
