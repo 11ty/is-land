@@ -1,8 +1,19 @@
 body {
+	margin: 0;
+	font-family: system-ui, sans-serif;
+	overflow-y: scroll;
+}
+h1 {
+	max-width: 50em;
+	margin-inline: auto;
+	padding-inline: .5em;
+}
+#demo {
+	max-width: 50em;
+	margin: 0 auto;
 	display: grid;
 	grid-template-columns: repeat( auto-fill, minmax(10em, 1fr) );
 	grid-gap: 1em;
-	overflow-y: scroll;
 	padding: .5em;
 }
 button {

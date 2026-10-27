@@ -4,8 +4,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
-		<title></title>
+		<title>Stress Test</title>
 		<link rel="stylesheet" href="demo-stress-test-styles.css">
+		<style>
+		h1,
+		#demo {
+			max-width: none;
+		}
+		</style>
 		<script type="module" src="/is-land.js"></script>
 		<script type="module">
 		customElements.define("test-element", class extends HTMLElement {
@@ -16,6 +22,9 @@
 		</script>
 	</head>
 	<body>
+		{% include "demo-nav.html" %}
+		<h1><a href="/">is-land</a> Stress Test</h1>
+		<main id="demo">
 {% comment %}Liquid.js was having trouble with such a large loop!{% endcomment %}
 {% for i in (1..2000) %}
 	<is-land on:visible on:idle class="island">
@@ -42,5 +51,6 @@
 		<test-element>&lt;test-element&gt; #{{i | plus: 8000}}</test-element>
 	</is-land>
 {% endfor %}
+		</main>
 	</body>
 </html>

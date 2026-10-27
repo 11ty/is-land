@@ -14,7 +14,7 @@ body {
   padding-bottom: 20vh;
   font-family: system-ui, sans-serif;
 }
-main {
+#demo {
   max-width: 50em;
   margin: 0 auto;
   padding: 1em;

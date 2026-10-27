@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
-		<title></title>
+		<title>Renamed Islands</title>
 		<link rel="stylesheet" href="demo-stress-test-styles.css">
 		<!-- <script type="module" src="/is-land.js?nodefine"></script> -->
 		<script type="module">
@@ -25,6 +25,9 @@
 		</script>
 	</head>
 	<body>
+		{% include "demo-nav.html" %}
+		<h1><a href="/">is-land</a> Renamed Islands</h1>
+		<main id="demo">
 		<is-land when-visible when-media="(width < 800px)" class="island">
 			<test-element>&lt;is-land&gt; &lt;test-element&gt;</test-element>
 		</is-land>
@@ -34,5 +37,6 @@
 		<is-gas when-visible when-media="(width < 800px)" class="island">
 			<test-element>&lt;is-gas&gt; &lt;test-element&gt;</test-element>
 		</is-gas>
+		</main>
 	</body>
 </html>

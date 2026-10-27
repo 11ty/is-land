@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
-		<title></title>
+		<title>Nested Island Order</title>
 		<script type="module" src="/is-land.js"></script>
 		<script type="module">
 		customElements.define("custom-1", class extends HTMLElement {
@@ -25,6 +25,9 @@
 		</script>
 	</head>
 	<body>
+		{% include "demo-nav.html" %}
+		<h1><a href="/">is-land</a> Nested Island Order</h1>
+		<main id="demo">
 		<ul>
 			<li>Nodes should be renamed in this order: 3, 2, 1.</li>
 			<li>Nodes should be restored in this order: 1, 2, 3.</li>
@@ -37,5 +40,6 @@
 				</custom-2>
 			</custom-1>
 		</is-land>
+		</main>
 	</body>
 </html>

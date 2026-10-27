@@ -4,8 +4,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
-		<title></title>
+		<title>Nested Stress Test</title>
 		<link rel="stylesheet" href="demo-stress-test-styles.css">
+		<style>
+		h1,
+		#demo {
+			max-width: none;
+		}
+		</style>
 		<script type="module" src="/is-land.js"></script>
 		<!-- <script type="module" src="https://esm.sh/@11ty/is-land@4.0.0/is-land.js"></script> -->
 		<script type="module">
@@ -17,6 +23,9 @@
 		</script>
 	</head>
 	<body>
+		{% include "demo-nav.html" %}
+		<h1><a href="/">is-land</a> Nested Stress Test</h1>
+		<main id="demo">
 		<ol>
 			<li>Viewports smaller than 800px width will initialize the outer island.</li>
 			<li>After #1 is satisfied, viewports larger than 1200px will initialize the second inner island.</li>
@@ -38,5 +47,6 @@
 		<test-element>&gt;1200px</test-element>
 	</is-land>
 {% endfor %}
+		</main>
 	</body>
 </html>
