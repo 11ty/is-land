@@ -131,6 +131,7 @@ class Island extends HTMLElement {
 
     this._ready = resolvers();
     this._fallbackExec = {};
+    this._fallbackRestores = [];
 
     Island._tagNames.add(this.localName);
   }
@@ -239,7 +240,15 @@ class Island extends HTMLElement {
 
         // only fallback if this is the closest island parent.
         if(parents[0] === this) {
-          let returned = fn(node, prefix);
+          let restore = fn(node, prefix);
+          let done;
+          let returned = () => {
+            if(!done && restore) {
+              done = true;
+              restore();
+            }
+          };
+          this._fallbackRestores.push(returned);
           nodes.push({node, parents, returned});
         }
       }
@@ -283,6 +292,12 @@ class Island extends HTMLElement {
     await Promise.all(conditions);
 
     this.replaceTemplates();
+
+    // Restore renamed elements (shallowest first) before init types hydrate them
+    for(let restore of this._fallbackRestores.reverse()) {
+      restore();
+    }
+    this._fallbackRestores = [];
 
     await this.beforeReady();
 

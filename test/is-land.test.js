@@ -1,6 +1,24 @@
 import { test, expect } from "vitest";
 import { Island } from "../is-land.js";
 
+test("Fallback elements are restored before init types run", async () => {
+  let found;
+  let { promise, resolve } = Promise.withResolvers();
+  Island.addInitType("check", (target) => {
+    found = target.querySelector("x-foo") !== null;
+    resolve();
+  });
+
+  document.body.innerHTML = `<is-land on:interaction type="check"><x-foo>Hi</x-foo></is-land>`;
+  let island = document.querySelector("is-land");
+  expect(island.querySelector("is-land--x-foo")).not.toBeNull();
+
+  island.dispatchEvent(new Event("click"));
+  await promise;
+
+  expect(found).toBe(true);
+});
+
 test("Islands without conditions hydrate immediately", async () => {
   document.body.innerHTML = `<is-land></is-land>`;
   let island = document.querySelector("is-land");
