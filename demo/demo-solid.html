@@ -3,7 +3,7 @@ layout: layout.html
 title: SolidJS Islands
 showImportMaps: true
 ---
-<h1><a href="/">is-land</a> using <img src="https://v1.indieweb-avatar.11ty.dev/https%3A%2F%2Fsolidjs.com%2F/" alt="IndieWeb avatar for https://solidjs.com/" width="28" height="28" decoding="async" loading="lazy">SolidJS</h1>
+<h1><a href="/">is-land</a> using SolidJS</h1>
 
 {% include "import-map-warning.liquid" %}
 
@@ -55,6 +55,23 @@ showImportMaps: true
 
 
 <h2>Server-rendered SolidJS (SSR)</h2>
-<p>
-	Not yet supported. Related: <a href="https://github.com/solidjs/solid/issues/1984">https://github.com/solidjs/solid/issues/1984</a>
-</p>
+
+<p>SSR requires server-side integration, in this case provided by Eleventy compiling JSX with <code>babel-preset-solid</code>.</p>
+
+{% assign componentHtmlOnly = "./lib/solid/solid-component.jsx" | solid: "html-only" %}
+{% assign component = "./lib/solid/solid-component.jsx" | solid: "hydrated" %}
+
+<h3>No hydration, HTML only</h3>
+
+<p>Without hydration, the island is unnecessary.</p>
+
+<div class="demo-component">{{ componentHtmlOnly.html }}</div>
+
+<h3>With Hydration</h3>
+
+<!-- Solid’s hydration runtime must be on the page before any island hydrates -->
+{{ component.hydrationScript }}
+
+<is-land on:visible type="solid-ssr" import="{{ component.clientJsUrl }}" data-render-id="hydrated" class="demo-component">{{ component.html }}</is-land>
+
+<p>Related: <a href="https://github.com/solidjs/solid/issues/1984">https://github.com/solidjs/solid/issues/1984</a> <a href="https://github.com/11ty/is-land/issues/43">https://github.com/11ty/is-land/issues/43</a></p>

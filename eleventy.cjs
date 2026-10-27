@@ -1,6 +1,7 @@
 const EleventySveltePlugin = require("./11ty/SveltePlugin.cjs");
 const EleventyVuePlugin = require("./11ty/VuePlugin.cjs");
 const EleventyPreactPlugin = require("./11ty/PreactPlugin.cjs");
+const EleventySolidPlugin = require("./11ty/SolidPlugin.cjs");
 const EleventyIslandMarkdownPlugin = require("./11ty/MarkdownPlugin.cjs");
 
 module.exports = function(eleventyConfig) {
@@ -19,6 +20,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(EleventySveltePlugin);
   eleventyConfig.addPlugin(EleventyVuePlugin);
   eleventyConfig.addPlugin(EleventyPreactPlugin);
+  eleventyConfig.addPlugin(EleventySolidPlugin);
   eleventyConfig.addPlugin(EleventyIslandMarkdownPlugin);
 
   eleventyConfig.addGlobalData("permalink", () => {
