@@ -186,3 +186,53 @@ test("import-mount throws with the module URL when the default export is not a f
 
   await expect(Island._initTypes.default(el)).rejects.toThrow(url);
 });
+
+test("on:visible passes its value as rootMargin to the IntersectionObserver", async () => {
+  let Original = window.IntersectionObserver;
+  let options = [];
+  window.IntersectionObserver = class extends Original {
+    constructor(cb, opts) {
+      options.push(opts);
+      super(cb, opts);
+    }
+  };
+
+  try {
+    document.body.innerHTML = `<is-land on:visible="200px 0px"></is-land><is-land on:visible></is-land>`;
+    let [a, b] = document.querySelectorAll("is-land");
+    await Promise.all([a.wait(), b.wait()]);
+
+    expect(options).toEqual([{ rootMargin: "200px 0px" }, undefined]);
+  } finally {
+    window.IntersectionObserver = Original;
+  }
+});
+
+test("on:idle passes its value as timeout to requestIdleCallback", async () => {
+  let spy = vi.spyOn(window, "requestIdleCallback");
+
+  try {
+    document.body.innerHTML = `<is-land on:idle="1234"></is-land>`;
+    await document.querySelector("is-land").wait();
+
+    expect(spy).toHaveBeenCalledWith(expect.any(Function), { timeout: 1234 });
+  } finally {
+    spy.mockRestore();
+  }
+});
+
+test("on:idle with different timeouts on one page each get their own timeout", async () => {
+  let spy = vi.spyOn(window, "requestIdleCallback");
+
+  try {
+    document.body.innerHTML = `<is-land on:idle="1111"></is-land><is-land on:idle="2222"></is-land><is-land on:idle="nope"></is-land>`;
+    await Promise.all([...document.querySelectorAll("is-land")].map(el => el.wait()));
+
+    let timeouts = spy.mock.calls.map(([, opts]) => opts?.timeout);
+    expect(timeouts).toContain(1111);
+    expect(timeouts).toContain(2222);
+    expect(timeouts).not.toContain(NaN);
+  } finally {
+    spy.mockRestore();
+  }
+});

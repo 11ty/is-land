@@ -367,18 +367,19 @@ class Conditions {
     return v;
   }
 
-  static visible(noop, el) {
+  static visible(rootMargin, el) {
     let { promise, resolve } = resolvers();
 
     // Support: (optional) IntersectionObserver Chrome 58 Firefox 55 Safari 12.1
     if("IntersectionObserver" in win) {
+      // rootMargin override e.g. on:visible="200px 0px"
       let observer = new IntersectionObserver(entries => {
         let [entry] = entries;
         if(entry.isIntersecting) {
           observer.unobserve(entry.target);
           resolve();
         }
-      });
+      }, rootMargin ? { rootMargin } : undefined);
 
       observer.observe(el);
     } else {
@@ -406,12 +407,16 @@ class Conditions {
 
   // Global (not element dependent)
   // TODO fix this to resolve *last* when used with other conditions
-  static idle() {
-    return Conditions.cached("idle", () => {
+  static idle(value) {
+    // timeout override (ms) e.g. on:idle="2000", cached separately per timeout
+    let timeout = Number(value);
+    let hasTimeout = timeout > 0;
+
+    return Conditions.cached(hasTimeout ? "idle:" + timeout : "idle", () => {
       let { promise, resolve } = resolvers();
 
       if("requestIdleCallback" in win) {
-        requestIdleCallback(() => resolve());
+        requestIdleCallback(() => resolve(), hasTimeout ? { timeout } : undefined);
       } else {
         resolve();
       }

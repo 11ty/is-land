@@ -60,8 +60,10 @@ It can be deferred and/or loaded asynchronously. When using with web components 
 Add any number of loading conditions to this tag to control how and when the island is initialized. You can mix and match. _All_ conditions be satisfied to initialize.
 
 * `on:visible`
+  * Change the `IntersectionObserver` `rootMargin` with `on:visible="200px 0px"`
 * `on:load` (new in v5)
 * `on:idle`
+  * Set a maximum `requestIdleCallback` wait (in milliseconds) with `on:idle="2000"`
 * `on:interaction` (defaults to `touchstart,click`)
   * Change events with `on:interaction="mouseenter,focusin"`
 * `on:media`
@@ -90,8 +92,8 @@ Add any number of loading conditions to this tag to control how and when the isl
 Each loading condition is also available as a promise-returning method on `Island`.
 
 ```js
-await Island.onidle();
-await Island.onvisible(element);
+await Island.onidle(); // or Island.onidle("2000")
+await Island.onvisible(element); // or Island.onvisible(element, "200px 0px")
 await Island.onload();
 await Island.oninteraction(element); // or Island.oninteraction(element, "mouseenter,focusin")
 await Island.onmedia("(min-width: 64em)");
