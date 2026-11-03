@@ -34,7 +34,7 @@
   "homepage": "https://github.com/11ty/is-land#readme",
   "devDependencies": {
     "@11ty/eleventy": "^3.1.7",
-    "@babel/core": "^7.29.7",
+    "@babel/core": "^8.0.10",
     "@vitest/browser-playwright": "^5.0.5",
     "babel-preset-solid": "^1.9.16",
     "brotli-size-cli": "^1.0.0",
