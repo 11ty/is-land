@@ -34,19 +34,19 @@
   "homepage": "https://github.com/11ty/is-land#readme",
   "devDependencies": {
     "@11ty/eleventy": "^3.1.8",
-    "@babel/core": "^7.29.7",
+    "@babel/core": "^7.29.13",
     "@vitest/browser-playwright": "^5.1.0",
     "babel-preset-solid": "^1.9.16",
     "brotli-size-cli": "^1.0.0",
-    "esm-import-transformer": "^3.0.5",
+    "esm-import-transformer": "^4.0.0",
     "htm": "^3.1.1",
-    "playwright": "^1.64.1",
-    "preact": "^11.1.1",
+    "playwright": "^1.65.0",
+    "preact": "^11.2.0",
     "preact-render-to-string": "^6.8.2",
     "solid-js": "^1.9.18",
     "svelte": "^5.57.3",
     "terser": "^5.51.2",
     "vitest": "^5.1.0",
-    "vue": "^3.5.44"
+    "vue": "^3.5.45"
   }
 }
