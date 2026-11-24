@@ -43,7 +43,7 @@
     "playwright": "^1.65.0",
     "preact": "^11.2.0",
     "preact-render-to-string": "^6.8.2",
-    "solid-js": "^1.9.18",
+    "solid-js": "^2.0.3",
     "svelte": "^5.57.3",
     "terser": "^5.51.2",
     "vitest": "^5.1.0",
